@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <p>Sample form</p>
+    <form action="/response" method="post">
+      <div>
+        <label for="entry">Input: </label>
+        <input type="test" name="entry" required>
+      </div>
+      <div>
+        <input type="submit" value="Go!">
+      </div>
+    </form>
+    {% if name %}
+    <p>Thank you for entering: {{ name }}</p>
+    {% endif %}
+  </body>
+</html>
