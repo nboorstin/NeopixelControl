@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def root():
-    return redirect(url_for('send_html', path='test.html'))
+    return redirect(url_for('send_html', path='tabs.html'))
 
 @app.route("/static/<path>")
 def send_static(path):
@@ -20,7 +20,7 @@ def send_html(path, entered=None):
 def response():
     print(request.form)
     if 'entry' in request.form:
-        return send_html(path='test.html', entered=request.form['entry'])
+        return send_html(path='tabs.html', entered=request.form['entry'])
     else:
         print(request.json['entry'])
         return make_response("test")

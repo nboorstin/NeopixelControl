@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Neopixel control</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="../static/test.js"></script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-8">
+      <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="pills-solid-color-tab" data-toggle="pill" href="#pills-solid-color" role="tab" aria-controls="pills-solid-color" aria-selected="true">Solid Color</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-many-colors-tab" data-toggle="pill" href="#pills-many-colors" role="tab" aria-controls="pills-many-colors" aria-selected="false">Many Colors</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-layout-tab" data-toggle="pill" href="#pills-layout" role="tab" aria-controls="pills-layout" aria-selected="false">Layout</a>
+        </li>
+      </ul>
+        </div>
+        <div class="col-md-4">
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input" id="customSwitch1" checked>
+              <label class="custom-control-label" for="customSwitch1">Lights on/off</label>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" id="pills-tabContent">
+      <div class="tab-pane fade show active" id="pills-solid-color" role="tabpanel" aria-labelledby="pills-solid-color-tab">
+        <!-- solid color tab -->
+        <input type="color" name="entry" id="textbox">
+        <br>
+        brightness:<br>
+        <input type="range" name="entry" id="textbox">
+      </div>
+      <div class="tab-pane fade" id="pills-many-colors" role="tabpanel" aria-labelledby="pills-many-colors-tab">
+        <!-- many colors tab -->
+        So I guess color selection goes here
+      </div>
+      <div class="tab-pane fade" id="pills-layout" role="tabpanel" aria-labelledby="pills-layout-tab">
+        <!-- layout tab -->
+        layout goes here?
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  </body>
+</html>
