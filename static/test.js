@@ -17,6 +17,9 @@ function sendRequest(name, value) {
   }));
 
 }
+function lightsOnOff(input) {
+  sendRequest("on", input.checked);
+}
 
 // solid color handlers
 function solidColorChange(input) {
@@ -33,4 +36,7 @@ function solidColorBrightnessChange(input) {
 window.onload = function() {
   document.getElementById("sliderPercent").innerHTML =
     document.getElementById("solidColorBrightness").value + "%";
+  document.getElementById("solidColor").jscolor.show();
+  //hackishly keep this one open
+  document.getElementById("solidColor").jscolor.hide = function(){};
 }

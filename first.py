@@ -36,13 +36,13 @@ writeToFile = Timer(5, writeFunc)
 def response():
     global writeToFile
     writeToFile.cancel()
+    writeToFile = Timer(5, writeFunc)
 
     data.update(request.json)
 
     for i in data:
         print(i+":", data[i])
 
-    writeToFile = Timer(5, writeFunc)
     writeToFile.start()
 
     return make_response("test")
