@@ -22,13 +22,15 @@ function lightsOnOff(input) {
 }
 
 // solid color handlers
+var lastColor = null;
 function solidColorChange(input) {
-  //console.log(selectedObject.value);
-  sendRequest("solidColor", input.value);
+  if(lastColor != input.value) {
+    sendRequest("solidColor", input.value);
+    lastColor = input.value;
+  }
 }
 
 function solidColorBrightnessChange(input) {
-  //console.log(selectedObject.value);
   document.getElementById("sliderPercent").innerHTML = input.value + "%";
   sendRequest("solidColorBrightness", input.value);
 }
