@@ -32,10 +32,11 @@
     <div class="tab-content" id="pills-tabContent">
       <div class="tab-pane fade show active" id="pills-solid-color" role="tabpanel" aria-labelledby="pills-solid-color-tab">
         <!-- solid color tab -->
-        <input type="color" name="entry" id="textbox">
+        Color: <input type="color" name="entry" id="solidColor" onInput="solidColorChange(this)">
         <br>
-        brightness:<br>
-        <input type="range" name="entry" id="textbox">
+        brightness: 
+        <input type="range" name="entry" id="solidColorBrightness" onInput="solidColorBrightnessChange(this)" onload="test()">
+        <label id="sliderPercent"/>
       </div>
       <div class="tab-pane fade" id="pills-many-colors" role="tabpanel" aria-labelledby="pills-many-colors-tab">
         <!-- many colors tab -->

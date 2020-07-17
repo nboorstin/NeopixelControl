@@ -1,6 +1,11 @@
-from flask import Flask, send_from_directory, redirect, url_for, request, render_template, make_response
+from flask import Flask, send_from_directory, redirect, url_for, request, render_template, make_response, json
+from threading import Timer
 
 app = Flask(__name__)
+
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 
 @app.route("/")
@@ -15,12 +20,29 @@ def send_static(path):
 def send_html(path, entered=None):
     return render_template(path, name = entered);
 
+data = {}
+
+with open('data.json') as f:
+    data = json.load(f)
+
+def writeFunc():
+    with open('data.json', 'w') as f:
+        json.dump(data, f)
+    print("done!")
+
+writeToFile = Timer(5, writeFunc)
 
 @app.route("/response", methods=['POST'])
 def response():
-    print(request.form)
-    if 'entry' in request.form:
-        return send_html(path='tabs.html', entered=request.form['entry'])
-    else:
-        print(request.json['entry'])
-        return make_response("test")
+    global writeToFile
+    writeToFile.cancel()
+
+    data.update(request.json)
+
+    for i in data:
+        print(i+":", data[i])
+
+    writeToFile = Timer(5, writeFunc)
+    writeToFile.start()
+
+    return make_response("test")
