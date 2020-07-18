@@ -89,7 +89,7 @@ void setup() {
    USE_SERIAL.printf("Connected\n");
 
 	// server address, port and URL
-	webSocket.begin("192.168.1.223", 5000, "/");
+	webSocket.begin("192.168.1.223", 8765, "/");
 
 	// event handler
 	webSocket.onEvent(webSocketEvent);
