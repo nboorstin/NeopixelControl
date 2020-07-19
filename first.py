@@ -89,8 +89,8 @@ def response():
     with cond:
         cond.notifyAll()
 
-    for i in data:
-        print(i+":", data[i])
+    #for i in data:
+    #    print(i+":", data[i])
 
 
     return make_response("test")
