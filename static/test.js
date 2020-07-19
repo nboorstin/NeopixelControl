@@ -1,4 +1,17 @@
-function sendRequest(name, value) {
+var lastSent = 0
+var minDelay = 10;
+async function sendRequest(name, value) {
+  var d = new Date()
+  if(d.getTime() - lastSent < minDelay) {
+    lastSent = d.getTime()
+    await new Promise(r => setTimeout(r, minDelay));
+    if(d.getTime() - lastSent < 0) {
+      return;
+    }
+  } else {
+    lastSent = d.getTime()
+  }
+
   var xhr = new XMLHttpRequest();
 
   var url = window.location.href;
