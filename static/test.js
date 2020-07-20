@@ -1,16 +1,17 @@
 var lastSent = 0
-var minDelay = 10;
+var lastRequest = 0
+var minDelay = 40;
 async function sendRequest(name, value) {
   var d = new Date()
+  var thisRequest = lastRequest = d.getTime();
   if(d.getTime() - lastSent < minDelay) {
-    lastSent = d.getTime()
     await new Promise(r => setTimeout(r, minDelay));
-    if(d.getTime() - lastSent < 0) {
+    if(lastRequest != thisRequest) {
       return;
     }
-  } else {
-    lastSent = d.getTime()
+	  console.log(d.getTime() - lastSent);
   }
+  lastSent = d.getTime()
 
   var xhr = new XMLHttpRequest();
 
