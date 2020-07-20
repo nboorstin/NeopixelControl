@@ -1,7 +1,7 @@
 var lastSent = 0
 var lastRequest = 0
 var minDelay = 40;
-async function sendRequest(name, value) {
+async function sendRequest(name, value, callback = null) {
   var d = new Date()
   var thisRequest = lastRequest = d.getTime();
   if(d.getTime() - lastSent < minDelay) {
@@ -21,9 +21,11 @@ async function sendRequest(name, value) {
 
   xhr.open("POST", url, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      //console.log(xhr.response);
+  if(callback != null) {
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        callback(xhr.response);
+      }
     }
   }
   xhr.send(JSON.stringify({
@@ -55,4 +57,27 @@ window.onload = function() {
   document.getElementById("solidColor").jscolor.show();
   //hackishly keep this one open
   document.getElementById("solidColor").jscolor.hide = function(){};
+
+  // get current state
+  sendRequest("getState", null, initialSetState);
+}
+
+function initialSetState(stateInfo) {
+  var data = JSON.parse(stateInfo)
+  for(var key in data) {
+    switch(key) {
+      case "on":
+        document.getElementById("customSwitch1").checked = data.on;
+        break;
+      case "solidColor":
+        document.getElementById("solidColor").jscolor.fromString(data.solidColor);
+        break;
+      case "solidColorBrightness":
+        document.getElementById("solidColorBrightness").value = data.solidColorBrightness;
+        document.getElementById("sliderPercent").innerHTML = data.solidColorBrightness + "%";
+      default:
+    }
+
+  }
+
 }

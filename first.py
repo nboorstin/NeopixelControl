@@ -77,23 +77,26 @@ lock = Lock()
 
 @app.route("/response", methods=['POST'])
 def response():
-    global writeToFile
-    lock.acquire()
-    writeToFile.cancel()
-    writeToFile = Timer(5, writeFunc)
-    writeToFile.start()
-    lock.release()
+    if "getState" in request.json:
+        return make_response(data)
+    else:
+        global writeToFile
+        lock.acquire()
+        writeToFile.cancel()
+        writeToFile = Timer(5, writeFunc)
+        writeToFile.start()
+        lock.release()
 
-    data.update(request.json)
+        data.update(request.json)
 
-    with cond:
-        cond.notifyAll()
+        with cond:
+            cond.notifyAll()
 
-    #for i in data:
-    #    print(i+":", data[i])
+        #for i in data:
+        #    print(i+":", data[i])
 
 
-    return make_response("test")
+        return make_response("test")
 
 
 if __name__ == "__main__":
