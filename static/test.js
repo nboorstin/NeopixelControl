@@ -40,9 +40,10 @@ function lightsOnOff(input) {
 // solid color handlers
 var lastColor = null;
 function solidColorChange(input) {
-  if(lastColor != input.value) {
-    sendRequest("solidColor", input.value);
-    lastColor = input.value;
+  var newColor = input.jscolor.toString("hex");
+  if(lastColor != newColor) {
+    sendRequest("solidColor", newColor);
+    lastColor = newColor;
   }
 }
 

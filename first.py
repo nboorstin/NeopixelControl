@@ -39,7 +39,7 @@ def sendToESP():
         r = int(ceil(int(data["solidColor"][1:3], 16) * i))
         g = int(ceil(int(data["solidColor"][3:5], 16) * i))
         b = int(ceil(int(data["solidColor"][5:7], 16) * i))
-        print('{:02x}{:02x}{:02x}'.format(r,g,b))
+        #print('{:02x}{:02x}{:02x}'.format(r,g,b))
         return bytes([r,g,b])
     return bytes()
 
