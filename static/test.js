@@ -52,15 +52,73 @@ function solidColorBrightnessChange(input) {
   sendRequest("solidColorBrightness", input.value);
 }
 
+var solidColorHide = null;
+
+// on tab switch
+$(document).on('shown.bs.tab', function (e) {
+  var newTab = $(e.target).attr("href");
+  if(newTab == "#pills-solid-color") {
+    document.getElementById("solidColor").jscolor.show();
+    solidColorHide = document.getElementById("solidColor").jscolor.hide;
+    document.getElementById("solidColor").jscolor.hide = function(){};
+  } else {
+    document.getElementById("solidColor").jscolor.hide = solidColorHide;
+    document.getElementById("solidColor").jscolor.hide();
+  }
+});
+var lightSize = 20;
+var lightsPos = [[10, 10], [10, 45]];
+var lightsColor = ["#F00000", "#F00000"];
+
+function drawMultiLights() {
+  var canvas = document.getElementById("manyColorCanvas");
+
+  canvas.addEventListener('click', function(event) {
+    var canvasLeft = canvas.offsetLeft + canvas.clientLeft;
+    var canvasTop = canvas.offsetTop + canvas.clientTop;
+    var x = event.pageX - canvasLeft,
+        y = event.pageY - canvasTop;
+    var changed = false;
+    for(var i=0; i<lightsPos.length; i++) {
+      if(lightsPos[i][0] <= x && lightsPos[i][0] + lightSize >= x &&
+         lightsPos[i][1] <= y && lightsPos[i][1] + lightSize >= y) {
+        changed = true;
+        lightsColor[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
+      }
+    }
+    if(changed) {
+      redrawLights();
+    }
+  });
+  var ctx = canvas.getContext("2d");
+  ctx.fillStyle="#808080";
+  //ctx.fillRect(0,0,canvas.width, canvas.height);
+  redrawLights();
+}
+function redrawLights() {
+  var canvas = document.getElementById("manyColorCanvas");
+  var ctx = canvas.getContext("2d");
+  for(var i=0; i<lightsPos.length; i++) {
+    ctx.fillStyle = lightsColor[i];
+    ctx.fillRect(lightsPos[i][0], lightsPos[i][1], lightSize, lightSize);
+  }
+}
+
 window.onload = function() {
   document.getElementById("sliderPercent").innerHTML =
     document.getElementById("solidColorBrightness").value + "%";
   document.getElementById("solidColor").jscolor.show();
   //hackishly keep this one open
+  solidColorHide = document.getElementById("solidColor").jscolor.hide;
   document.getElementById("solidColor").jscolor.hide = function(){};
 
   // get current state
   sendRequest("getState", null, initialSetState);
+
+  drawMultiLights();
+
+  //just for testing
+  document.querySelector('a[href="#pills-many-colors"]').click();
 }
 
 function initialSetState(stateInfo) {
