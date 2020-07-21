@@ -49,7 +49,6 @@ def sendToESP():
             ret = bytes()
             for c in data["manyColors"]:
                 ret += hexToBytes(c, i)
-            print(ret)
             return ret
     return bytes()
 
@@ -98,13 +97,12 @@ def response():
         lock.release()
 
         data.update(request.json)
-        sendToESP()
 
         with cond:
             cond.notifyAll()
 
-        for i in data:
-            print(i+":", data[i])
+        #for i in data:
+        #    print(i+":", data[i])
 
 
         return make_response("test")

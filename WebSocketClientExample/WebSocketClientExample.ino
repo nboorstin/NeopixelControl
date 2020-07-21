@@ -22,7 +22,7 @@ WebSocketsClient webSocket;
 #define USE_SERIAL Serial
 
 #define LED_PIN D2
-#define NUM_LEDS 2
+#define NUM_LEDS 20
 
 CRGB leds[NUM_LEDS];
 
@@ -45,14 +45,22 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 			// webSocket.sendTXT("message here");
 			break;
 		case WStype_BIN:
-			//USE_SERIAL.printf("[WSc] get binary length: %u\n", length);
-			//hexdump(payload, length);
-      if (length >= 3) {
-        for(int i=0; i<3; i++)
-          Serial.print(payload[i], HEX);
-        Serial.println();
-        leds[0] = leds[1] = CRGB(payload[0], payload[1], payload[2]);
+      if (length == 3) {
+//        for(int i=0; i<3; i++)
+//          Serial.print(payload[i], HEX);
+//        Serial.println();
+        for(int i=0; i<NUM_LEDS; i++) {
+          leds[i] = CRGB(payload[0], payload[1], payload[2]);
+        }
         FastLED.show();
+      } else if (length % 3 == 0) {
+        for(int i=0; i<length / 3 && i < NUM_LEDS; i++) {
+          leds[i] = CRGB(payload[3*i+0], payload[3*i+1], payload[3*i+2]);
+        }
+        FastLED.show();
+      } else {
+        USE_SERIAL.printf("[WSc] get binary length: %u\n", length);
+        hexdump(payload, length);
       }
 
 			// send data to server
@@ -74,7 +82,9 @@ void setup() {
 	// USE_SERIAL.begin(921600);
 	USE_SERIAL.begin(115200);
    FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
-   leds[0] = leds[1] = CRGB(0,0,0);
+   for(int i=0; i<NUM_LEDS; i++) {
+          leds[i] = CRGB(0,0,0);
+        }
    FastLED.show();
  USE_SERIAL.print("...");
  delay(1000);
