@@ -61,38 +61,77 @@ $(document).on('shown.bs.tab', function (e) {
     document.getElementById("solidColor").jscolor.show();
     solidColorHide = document.getElementById("solidColor").jscolor.hide;
     document.getElementById("solidColor").jscolor.hide = function(){};
+    sendRequest("mode", "solidColor");
   } else {
+    if(newTab == "#pills-many-colors") {
+      sendRequest("mode", "manyColors");
+    }
     document.getElementById("solidColor").jscolor.hide = solidColorHide;
     document.getElementById("solidColor").jscolor.hide();
   }
 });
-var lightSize = 20;
-var lightsPos = [[10, 10], [10, 45]];
-var lightsColor = ["#F00000", "#F00000"];
+var lightSize = 10;
+var border = 1;
+var lightsPos = [
+[10, 10],
+[10, 22],
+[10, 34],
+[10, 46],
+[10, 58],
+[10, 70],
+[10, 82],
+[10, 94],
+[10, 106],
+[10, 118],
+[10, 130],
+[10, 142],
+[10, 154],
+[10, 166],
+[10, 178],
+[10, 190],
+[10, 202],
+[10, 214],
+[10, 226],
+[10, 238]];
+var lightsColor = Array(20).fill("#FFFFFF");
 
+function checkLightsMouse(e) {
+  console.log(".");
+  var canvas = document.getElementById("manyColorCanvas");
+  var canvasLeft = canvas.offsetLeft + canvas.clientLeft;
+  var canvasTop = canvas.offsetTop + canvas.clientTop;
+  var x = event.pageX - canvasLeft,
+    y = event.pageY - canvasTop;
+  var changed = false;
+  for(var i=0; i<lightsPos.length; i++) {
+    if(lightsPos[i][0] <= x && lightsPos[i][0] + lightSize >= x &&
+      lightsPos[i][1] <= y && lightsPos[i][1] + lightSize >= y) {
+      console.log(i);
+      changed = true;
+      lightsColor[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
+    }
+  }
+  if(changed) {
+    redrawLights();
+    sendRequest("manyColors", lightsColor);
+  }
+}
 function drawMultiLights() {
   var canvas = document.getElementById("manyColorCanvas");
-
-  canvas.addEventListener('click', function(event) {
-    var canvasLeft = canvas.offsetLeft + canvas.clientLeft;
-    var canvasTop = canvas.offsetTop + canvas.clientTop;
-    var x = event.pageX - canvasLeft,
-        y = event.pageY - canvasTop;
-    var changed = false;
-    for(var i=0; i<lightsPos.length; i++) {
-      if(lightsPos[i][0] <= x && lightsPos[i][0] + lightSize >= x &&
-         lightsPos[i][1] <= y && lightsPos[i][1] + lightSize >= y) {
-        changed = true;
-        lightsColor[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
-      }
-    }
-    if(changed) {
-      redrawLights();
+  canvas.addEventListener('mousemove', function(event) {
+    if(event.buttons % 2 == 1) {
+      checkLightsMouse(event);
     }
   });
+
+  canvas.addEventListener('click', checkLightsMouse);
   var ctx = canvas.getContext("2d");
-  ctx.fillStyle="#808080";
+  //ctx.fillStyle="#808080";
   //ctx.fillRect(0,0,canvas.width, canvas.height);
+  ctx.fillStyle="#000000";
+  for(var i=0; i<lightsPos.length; i++) {
+    ctx.fillRect(lightsPos[i][0], lightsPos[i][1], lightSize, lightSize);
+  }
   redrawLights();
 }
 function redrawLights() {
@@ -100,7 +139,7 @@ function redrawLights() {
   var ctx = canvas.getContext("2d");
   for(var i=0; i<lightsPos.length; i++) {
     ctx.fillStyle = lightsColor[i];
-    ctx.fillRect(lightsPos[i][0], lightsPos[i][1], lightSize, lightSize);
+    ctx.fillRect(lightsPos[i][0]+border, lightsPos[i][1]+border, lightSize-(2*border), lightSize-(2*border));
   }
 }
 

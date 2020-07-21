@@ -29,18 +29,28 @@ async def socket_handler(websocket, path):
 
 
 
+def hexToBytes(color, i):
+    r = int(ceil(int(color[1:3], 16) * i))
+    g = int(ceil(int(color[3:5], 16) * i))
+    b = int(ceil(int(color[5:7], 16) * i))
+    #print('{:02x}{:02x}{:02x}'.format(r,g,b))
+    return bytes([r,g,b])
+
 def sendToESP():
-    if "solidColor" in data:
-        i = 1
-        if "on" in data and data["on"] == False:
-            i = 0
-        if "solidColorBrightness" in data:
-            i = i * (int(data["solidColorBrightness"]) / 100)
-        r = int(ceil(int(data["solidColor"][1:3], 16) * i))
-        g = int(ceil(int(data["solidColor"][3:5], 16) * i))
-        b = int(ceil(int(data["solidColor"][5:7], 16) * i))
-        #print('{:02x}{:02x}{:02x}'.format(r,g,b))
-        return bytes([r,g,b])
+    i = 1
+    if "on" in data and data["on"] == False:
+        i = 0
+    if "solidColorBrightness" in data:
+        i = i * (int(data["solidColorBrightness"]) / 100)
+    if "mode" in data:
+        if data["mode"] == "solidColor" and "solidColor" in data:
+            return hexToBytes(data["solidColor"], i)
+        elif data["mode"] == "manyColors" and "manyColors" in data:
+            ret = bytes()
+            for c in data["manyColors"]:
+                ret += hexToBytes(c, i)
+            print(ret)
+            return ret
     return bytes()
 
 @app.route("/")
@@ -88,12 +98,13 @@ def response():
         lock.release()
 
         data.update(request.json)
+        sendToESP()
 
         with cond:
             cond.notifyAll()
 
-        #for i in data:
-        #    print(i+":", data[i])
+        for i in data:
+            print(i+":", data[i])
 
 
         return make_response("test")
