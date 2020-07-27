@@ -143,6 +143,20 @@ function redrawLights() {
   }
 }
 
+function makeGradient() {
+  var canvas = document.getElementById("manyColorCanvas");
+  var unfilledlist = [];
+  var filledlist = [];
+  for(var i = o; i < lightsPos.length; i++){
+    if(lightscolor[i] == "#FFFFFF"){
+      unfilledlist.push(i);
+    }
+    else{
+      filledlist.push(i);
+    }
+  }
+}
+
 window.onload = function() {
   document.getElementById("sliderPercent").innerHTML =
     document.getElementById("solidColorBrightness").value + "%";
