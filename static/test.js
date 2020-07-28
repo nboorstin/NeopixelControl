@@ -144,17 +144,41 @@ function redrawLights() {
 }
 
 function makeGradient() {
-  var canvas = document.getElementById("manyColorCanvas");
   var unfilledlist = [];
   var filledlist = [];
-  for(var i = o; i < lightsPos.length; i++){
-    if(lightscolor[i] == "#FFFFFF"){
+  for(var i = 0; i < lightsPos.length; i++){
+    if(lightsColor[i] == "#FFFFFF"){
       unfilledlist.push(i);
     }
     else{
       filledlist.push(i);
     }
   }
+  for(var i = 0; i < unfilledlist.length; i++){
+    var total = 0;
+    for(var j = 0; j < filledlist.length; j++){
+      total = total + (1 / Math.sqrt((lightsPos[filledlist[j]][0] - lightsPos[unfilledlist[i]][0])**2 + (lightsPos[filledlist[j]][1] - lightsPos[unfilledlist[i]][1])**2));
+    }
+    var red = 0;
+    var green = 0;
+    var blue = 0;
+    for(var j = 0; j < filledlist.length; j++){
+      var thisdist = 1 / Math.sqrt((lightsPos[filledlist[j]][0] - lightsPos[unfilledlist[i]][0])**2 + (lightsPos[filledlist[j]][1] - lightsPos[unfilledlist[i]][1])**2);
+      var proportion = thisdist/total;
+      red = red + (proportion * parseInt(lightsColor[filledlist[j]].substring(1,3), 16));
+      green = green + (proportion * parseInt(lightsColor[filledlist[j]].substring(3,5), 16));
+      blue = blue + (proportion * parseInt(lightsColor[filledlist[j]].substring(5,7), 16));
+    }
+    var redint = Math.round(red);
+    var greenint = Math.round(green);
+    var blueint = Math.round(blue);
+    colorstring = "#";
+    colorstring += redint.toString(16);
+    colorstring += greenint.toString(16);
+    colorstring += blueint.toString(16);
+    lightsColor[unfilledlist[i]] = colorstring;
+  }
+  redrawLights();
 }
 
 window.onload = function() {
@@ -172,6 +196,8 @@ window.onload = function() {
 
   //just for testing
   document.querySelector('a[href="#pills-many-colors"]').click();
+  var gradientbutton = document.getElementById("makeGradientButton");
+  gradientbutton.addEventListener("click", makeGradient);
 }
 
 function initialSetState(stateInfo) {
