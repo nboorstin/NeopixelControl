@@ -181,8 +181,15 @@ function makeGradient() {
   redrawLights();
 }
 
+function clearLights(){
+  for(var i = 0; i < lightsColor.length; i++){
+    lightsColor[i] = "#FFFFFF";
+  }
+  redrawLights();
+}
+
 window.onload = function() {
-  document.getElementById("sliderPercent").innerHTML =
+  document.getElementById("sliderPercent").innerHTML = 
     document.getElementById("solidColorBrightness").value + "%";
   document.getElementById("solidColor").jscolor.show();
   //hackishly keep this one open
@@ -198,6 +205,8 @@ window.onload = function() {
   document.querySelector('a[href="#pills-many-colors"]').click();
   var gradientbutton = document.getElementById("makeGradientButton");
   gradientbutton.addEventListener("click", makeGradient);
+  var clearbutton = document.getElementById("clearlights");
+  clearbutton.addEventListener("click", clearLights);
 }
 
 function initialSetState(stateInfo) {

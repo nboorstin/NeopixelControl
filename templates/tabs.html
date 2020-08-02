@@ -8,11 +8,56 @@
     <script src="../static/test.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
+  <style>
+    body{
+      /*background-color: rgb(170, 255, 241);*/
+      padding-left:25%;
+      padding-right:25%;
+    }
+    @media (max-width:1000px){
+      body{
+        padding-left:0%;
+        padding-right:0%;
+      }
+    }
+    input:not([type='checkbox']):not([type='range']) {    
+      width: 100%;
+    }
+    .slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;  
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%; 
+  background: #0400ff;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #0400ff;
+  cursor: pointer;
+}
+  </style>
   <body>
     <!-- <div class="container-fluid"> -->
       <!-- <div class="row"> -->
         <!-- <div class="col-md-8"> -->
-      <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+      <ul class="nav nav-pills mb-3 nav-justified" id="pills-tab" role="tablist">
         <li class="nav-item">
           <a class="nav-link active" id="pills-solid-color-tab" data-toggle="pill" href="#pills-solid-color" role="tab" aria-controls="pills-solid-color" aria-selected="true">Solid Color</a>
         </li>
@@ -25,7 +70,7 @@
       </ul>
       <!-- </div> -->
         <!-- <div class="col-md-4"> -->
-            <div class="custom-control custom-switch">
+            <div class="custom-control custom-switch" style="margin: 10px;">
               <input type="checkbox" class="custom-control-input" id="customSwitch1" checked onInput="lightsOnOff(this)">
               <label class="custom-control-label" for="customSwitch1">Lights on/off</label>
             </div>
@@ -33,15 +78,14 @@
       <!-- </div> -->
     <!-- </div> -->
     <div class="tab-content" id="pills-tabContent">
-      <div class="tab-pane fade show active" id="pills-solid-color" role="tabpanel" aria-labelledby="pills-solid-color-tab">
+      <div class="tab-pane fade show active" id="pills-solid-color" role="tabpanel" aria-labelledby="pills-solid-color-tab" style="padding: 10px">
         <!-- solid color tab -->
-        Color: <input data-jscolor="" id="solidColor" onInput="solidColorChange(this)">
+        Color: <br><input data-jscolor="" id="solidColor" onInput="solidColorChange(this)" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;">
         <br><br><br><br><br><br><br>
-        Brightness: 
-        <input type="range" name="entry" id="solidColorBrightness" onInput="solidColorBrightnessChange(this)" style="background: transparent;">
-        <label id="sliderPercent"/>
+        Brightness: <label id="sliderPercent">0%</label><br>
+        <input type="range" name="entry" class="slider" id="solidColorBrightness" onInput="solidColorBrightnessChange(this)" style="width:100%;">
       </div>
-      <div class="tab-pane fade" id="pills-many-colors" role="tabpanel" aria-labelledby="pills-many-colors-tab">
+      <div class="tab-pane fade" id="pills-many-colors" role="tabpanel" aria-labelledby="pills-many-colors-tab" style="padding: 10px;">
         <!-- many colors tab -->
         <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
           <li class="nav-item">
@@ -53,15 +97,16 @@
         </ul>
         <div class="tab-content" id="pills-tabContent">
           <div class="tab-pane fade show active" id="pills-one-color" role="tabpanel" aria-labelledby="pills-one-color-tab">
-            <input data-jscolor="" id="multiColorSelect"></br>
+            <input data-jscolor="" id="multiColorSelect" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
           </div>
           <div class="tab-pane fade" id="pills-gradient" role="tabpanel" aria-labelledby="pills-gradient-tab">
-            <input data-jscolor="" id="gradientFirstColor"></br>
-            <input data-jscolor="" id="gradientSecondColor"></br>
+            <input data-jscolor="" id="gradientFirstColor" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
+            <input data-jscolor="" id="gradientSecondColor" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
           </div>
         </div>
-        <canvas id="manyColorCanvas" height="400" style="border:1px solid #000000;"></canvas></br>
-        <button id="makeGradientButton" height="20" onclick="makeGradient">Make Gradient</button>
+        <canvas id="manyColorCanvas" height="400" style="border:2px solid #000000;"></canvas></br>
+        <button type="button" class="btn btn-primary" id="makeGradientButton" style="width:49%" onclick="makeGradient">Make Gradient</button>
+        <button type="button" class="btn btn-primary" id="clearlights" style="width:49%" onclick="clearLights">Clear</button>
       </div>
       <div class="tab-pane fade" id="pills-layout" role="tabpanel" aria-labelledby="pills-layout-tab">
         <!-- layout tab -->
