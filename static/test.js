@@ -189,8 +189,11 @@ function clearLights(){
 }
 
 window.onload = function() {
-  document.getElementById("sliderPercent").innerHTML = 
+  document.getElementById("sliderPercent").innerHTML =
     document.getElementById("solidColorBrightness").value + "%";
+  document.getElementById("solidColor").jscolor.width = window.innerWidth * 0.9;
+  document.getElementById("solidColor").jscolor.height =
+    Math.min(window.innerWidth * 0.45, window.innerHeight * 0.45);
   document.getElementById("solidColor").jscolor.show();
   //hackishly keep this one open
   solidColorHide = document.getElementById("solidColor").jscolor.hide;
