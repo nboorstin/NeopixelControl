@@ -70,11 +70,11 @@ $(document).on('shown.bs.tab', function (e) {
     document.getElementById("solidColor").jscolor.hide();
   }
 });
-var lightSize = 10;
+var lightSize = 20;
 var border = 1;
 var lightsPos = [
 [10, 10],
-[10, 22],
+[10, 50],
 [10, 34],
 [10, 46],
 [10, 58],
@@ -93,7 +93,7 @@ var lightsPos = [
 [10, 214],
 [10, 226],
 [10, 238]];
-var lightsColor = Array(20).fill("#FFFFFF");
+var lightsColor = Array(20).fill("#FF0000");
 
 function checkLightsMouse(e) {
   console.log(".");
@@ -116,6 +116,11 @@ function checkLightsMouse(e) {
     sendRequest("manyColors", lightsColor);
   }
 }
+
+
+
+var backgroundColor = "#808080";
+
 function drawMultiLights() {
   var canvas = document.getElementById("manyColorCanvas");
   canvas.addEventListener('mousemove', function(event) {
@@ -126,20 +131,73 @@ function drawMultiLights() {
 
   canvas.addEventListener('click', checkLightsMouse);
   var ctx = canvas.getContext("2d");
-  //ctx.fillStyle="#808080";
-  //ctx.fillRect(0,0,canvas.width, canvas.height);
+  ctx.fillStyle=backgroundColor;
+  ctx.fillRect(0,0,canvas.width, canvas.height);
   ctx.fillStyle="#000000";
   for(var i=0; i<lightsPos.length; i++) {
-    ctx.fillRect(lightsPos[i][0], lightsPos[i][1], lightSize, lightSize);
+    //drawLEDFrame(ctx, lightsPos[i][0], lightsPos[i][1]);
+    if(i==1)
+      break;
   }
   redrawLights();
 }
+
+function hexToRgb(hex) {
+  return /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex).slice(1).map(x => parseInt(x, 16));
+}
+function componentToHex(c) {
+    var hex = Math.min(255, Math.max(0, c)).toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+function rgbToHex(color) {
+  return "#" + color.map(x => componentToHex(Math.round(x))).join('');
+}
+
 function redrawLights() {
   var canvas = document.getElementById("manyColorCanvas");
   var ctx = canvas.getContext("2d");
   for(var i=0; i<lightsPos.length; i++) {
+    var x = lightsPos[i][0];
+    var y = lightsPos[i][1];
+    var glowColor = rgbToHex(hexToRgb(lightsColor[i]).map(x => x + 130));
+
+    ctx.beginPath();
+    var glow = ctx.createRadialGradient(
+      x + lightSize/2, y+lightSize/2, lightSize/2,
+      x + lightSize/2, y+lightSize/2, lightSize/1);
+    glow.addColorStop(0, glowColor);
+    glow.addColorStop(1, backgroundColor);
+    ctx.fillStyle = glow;
+    ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/1, 0, 2 * Math.PI, false);
+    ctx.fill();
+
+
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(x, y, lightSize, lightSize);
+    ctx.beginPath();
+    ctx.fillStyle = glowColor;
+    ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/2, 0, 2 * Math.PI, false);
+    ctx.fill();
+    ctx.beginPath();
     ctx.fillStyle = lightsColor[i];
-    ctx.fillRect(lightsPos[i][0]+border, lightsPos[i][1]+border, lightSize-(2*border), lightSize-(2*border));
+    ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/3, 0, 2 * Math.PI, false);
+    ctx.fill();
+
+    ctx.strokeStyle="#000000";
+    ctx.lineWidth = 2;
+    // draw outer rectangle
+    ctx.strokeRect(x, y, lightSize, lightSize);
+    ctx.beginPath();
+    ctx.lineWidth = 1;
+    // draw larger circle
+    ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/2, 0, 2 * Math.PI, false);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/3, 0, 2 * Math.PI, false);
+    ctx.stroke();
+    if(i==1)
+      break;
   }
 }
 
