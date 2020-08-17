@@ -86,7 +86,7 @@ ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
-DocumentUniqueId=
+DocumentUniqueId=PJPTOFYK
 
 [Document4]
 DocumentPath=..\ESP_helper\ESP_helper.SchLib
@@ -104,6 +104,10 @@ ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=KDYUYBCW
+
+[GeneratedDocument1]
+DocumentPath=Project Outputs for ESP_helper_2\Design Rule Check - ESP_with_usb_2.html
+DItemRevisionGUID=
 
 [Configuration1]
 Name=Sources
