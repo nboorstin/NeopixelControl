@@ -163,7 +163,7 @@ function redrawLights() {
 
     ctx.beginPath();
     var glow = ctx.createRadialGradient(
-      x + lightSize/2, y+lightSize/2, lightSize/2,
+      x + lightSize/2, y+lightSize/2, lightSize/3,
       x + lightSize/2, y+lightSize/2, lightSize/1);
     glow.addColorStop(0, glowColor);
     glow.addColorStop(1, backgroundColor);
@@ -173,29 +173,41 @@ function redrawLights() {
 
 
 
-    ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(x, y, lightSize, lightSize);
-    ctx.beginPath();
-    ctx.fillStyle = glowColor;
-    ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/2, 0, 2 * Math.PI, false);
-    ctx.fill();
+    //ctx.fillStyle = "#FFFFFF";
+    //ctx.fillRect(x, y, lightSize, lightSize);
+    //ctx.beginPath();
+    //ctx.fillStyle = glowColor;
+    //ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/2, 0, 2 * Math.PI, false);
+    //ctx.fill();
     ctx.beginPath();
     ctx.fillStyle = lightsColor[i];
     ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/3, 0, 2 * Math.PI, false);
     ctx.fill();
 
     ctx.strokeStyle="#000000";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1;
     // draw outer rectangle
     ctx.strokeRect(x, y, lightSize, lightSize);
-    ctx.beginPath();
-    ctx.lineWidth = 1;
+    var innerRect = lightSize/8;
+    ctx.strokeRect(x+innerRect, y+innerRect, lightSize-2*innerRect, lightSize-2*innerRect);
+    ctx.beginPath()
+    ctx.moveTo(x, y);
+    ctx.lineTo(x+innerRect, y+innerRect);
+    ctx.moveTo(x, y+lightSize);
+    ctx.lineTo(x+innerRect, y+lightSize-innerRect);
+    ctx.moveTo(x+lightSize, y);
+    ctx.lineTo(x+lightSize-innerRect, y+innerRect);
+    ctx.moveTo(x+lightSize, y+lightSize);
+    ctx.lineTo(x+lightSize-innerRect, y+lightSize-innerRect);
+    ctx.stroke();
+    //ctx.beginPath();
+    //ctx.lineWidth = 1;
     // draw larger circle
-    ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/2, 0, 2 * Math.PI, false);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/3, 0, 2 * Math.PI, false);
-    ctx.stroke();
+    //ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/2, 0, 2 * Math.PI, false);
+    //ctx.stroke();
+    //ctx.beginPath();
+    //ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/3, 0, 2 * Math.PI, false);
+    //ctx.stroke();
     if(i==1)
       break;
   }
