@@ -21,7 +21,7 @@ WebSocketsClient webSocket;
 
 #define USE_SERIAL Serial
 
-#define LED_PIN D2
+#define LED_PIN 2
 #define NUM_LEDS 20
 
 CRGB leds[NUM_LEDS];
@@ -80,7 +80,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 
 void setup() {
 	// USE_SERIAL.begin(921600);
-	USE_SERIAL.begin(115200);
+	USE_SERIAL.begin(9600);
    FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
    for(int i=0; i<NUM_LEDS; i++) {
           leds[i] = CRGB(0,0,0);
@@ -88,6 +88,7 @@ void setup() {
    FastLED.show();
  USE_SERIAL.print("...");
  delay(1000);
+ FastLED.show();
  USE_SERIAL.print("...");
  
 
@@ -114,7 +115,7 @@ void setup() {
    USE_SERIAL.printf("Connected\n");
 
 	// server address, port and URL
-	webSocket.begin("192.168.1.223", 8765, "/");
+	webSocket.begin("70.176.119.77", 8765, "/");
 
 	// event handler
 	webSocket.onEvent(webSocketEvent);
