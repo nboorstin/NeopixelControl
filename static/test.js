@@ -39,12 +39,14 @@ function lightsOnOff(input) {
 
 // solid color handlers
 var lastColor = null;
-function solidColorChange(input) {
+function solidColorChange(input,whichcolor) {
   var newColor = input.jscolor.toString("hex");
   if(lastColor != newColor) {
     sendRequest("solidColor", newColor);
     lastColor = newColor;
   }
+  document.getElementById(whichcolor).style.backgroundColor = newColor;
+  console.log(newColor);
 }
 
 function solidColorBrightnessChange(input) {
@@ -53,6 +55,8 @@ function solidColorBrightnessChange(input) {
 }
 
 var solidColorHide = null;
+
+
 
 // on tab switch
 $(document).on('shown.bs.tab', function (e) {
