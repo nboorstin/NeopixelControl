@@ -47,6 +47,20 @@ function solidColorChange(input,whichcolor) {
   }
   document.getElementById(whichcolor).style.backgroundColor = newColor;
   console.log(newColor);
+  var r = newColor.substring(1,3);
+  console.log(r);
+  var g = newColor.substring(3,5);
+  console.log(g);
+  var b = newColor.substring(5,7);
+  console.log(b);
+  var total = (parseInt(r,16) + parseInt(g,16) + parseInt(b,16))/3;
+  console.log(total);
+  if(total > 128){
+    document.getElementById(whichcolor).style.color = "#000000";
+  }
+  else{
+    document.getElementById(whichcolor).style.color = "#FFFFFF";
+  }
 }
 
 function solidColorBrightnessChange(input) {
