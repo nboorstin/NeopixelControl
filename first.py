@@ -56,7 +56,7 @@ def sendToESP():
 
 @app.route("/")
 def root():
-    return redirect(url_for('send_html', path='tabs.html'))
+    return redirect(url_for('send_html'))
 
 @app.route("/static/<path>")
 def send_static(path):
