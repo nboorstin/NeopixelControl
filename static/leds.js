@@ -86,29 +86,18 @@ $(document).on('shown.bs.tab', function (e) {
   }
 });
 var lightSize = 20;
-var border = 1;
 var lightsPos = [
-[10, 10],
-[10, 50],
-[10, 34],
-[10, 46],
-[10, 58],
-[10, 70],
-[10, 82],
-[10, 94],
-[10, 106],
-[10, 118],
-[10, 130],
-[10, 142],
-[10, 154],
-[10, 166],
-[10, 178],
-[10, 190],
-[10, 202],
-[10, 214],
-[10, 226],
-[10, 238]];
-var lightsColor = Array(20).fill("#FF0000");
+  [10, 10],
+  [10, 50],
+  [10, 90],
+  [10, 130],
+  [10, 170],
+  [10, 210],
+  [10, 250],
+  [10, 290],
+  [10, 330],
+  [10, 370]];
+var lightsColor = Array(lightsPos.length).fill("#FF0000");
 
 function checkLightsMouse(e) {
   console.log(".");
@@ -162,11 +151,6 @@ function drawMultiLights() {
   ctx.fillStyle=backgroundColor;
   ctx.fillRect(0,0,canvas.width, canvas.height);
   ctx.fillStyle="#000000";
-  for(var i=0; i<lightsPos.length; i++) {
-    //drawLEDFrame(ctx, lightsPos[i][0], lightsPos[i][1]);
-    if(i==1)
-      break;
-  }
   redrawLights();
 }
 
@@ -199,14 +183,6 @@ function redrawLights() {
     ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/1, 0, 2 * Math.PI, false);
     ctx.fill();
 
-
-
-    //ctx.fillStyle = "#FFFFFF";
-    //ctx.fillRect(x, y, lightSize, lightSize);
-    //ctx.beginPath();
-    //ctx.fillStyle = glowColor;
-    //ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/2, 0, 2 * Math.PI, false);
-    //ctx.fill();
     ctx.beginPath();
     ctx.fillStyle = lightsColor[i];
     ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/3, 0, 2 * Math.PI, false);
@@ -228,16 +204,6 @@ function redrawLights() {
     ctx.moveTo(x+lightSize, y+lightSize);
     ctx.lineTo(x+lightSize-innerRect, y+lightSize-innerRect);
     ctx.stroke();
-    //ctx.beginPath();
-    //ctx.lineWidth = 1;
-    // draw larger circle
-    //ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/2, 0, 2 * Math.PI, false);
-    //ctx.stroke();
-    //ctx.beginPath();
-    //ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/3, 0, 2 * Math.PI, false);
-    //ctx.stroke();
-    if(i==1)
-      break;
   }
 }
 
@@ -374,7 +340,8 @@ window.onload = function() {
 }
 
 function initialSetState(stateInfo) {
-  var data = JSON.parse(stateInfo)
+  var data = JSON.parse(stateInfo);
+  console.log(data);
   for(var key in data) {
     switch(key) {
       case "on":
@@ -386,6 +353,15 @@ function initialSetState(stateInfo) {
       case "brightness":
         $(".sliderPercent").html(data.brightness + "%");
         $(".slider").val(data.brightness);
+        break;
+      case "manyColors":
+        if(lightsColor.length <= data.manyColors.length) {
+          lightsColor = data.manyColors;
+        } else {
+          lightsColor = data.manyColors + lightsColor.slice(data.manyColors.length);
+        }
+        drawMultiLights();
+        break;
       case "mode":
         if(data.mode != 'solidColor') {
           var sel = null;
@@ -399,6 +375,7 @@ function initialSetState(stateInfo) {
             document.querySelector('a[href="#pills-' + sel + '"]').click();
           }
         }
+        break;
       default:
     }
 
