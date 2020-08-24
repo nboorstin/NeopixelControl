@@ -260,7 +260,7 @@ window.onresize = function(event) {
 }
 
 function setSolidColorpickerSize() {
-  $("#solidColor")[0].jscolor.width = $("#pills-solid-color").width();
+  $("#solidColor")[0].jscolor.width = $("#pills-solid-color").width() - 57;
   $("#solidColor")[0].jscolor.height = $("#pills-solid-color").width() * 0.55;
   $("#solidColor").css("margin-bottom", $("#pills-solid-color").width() * 0.55 + 50);
   $("#solidColor")[0].jscolor.show();
@@ -341,7 +341,6 @@ window.onload = function() {
 
 function initialSetState(stateInfo) {
   var data = JSON.parse(stateInfo);
-  console.log(data);
   for(var key in data) {
     switch(key) {
       case "on":
