@@ -58,9 +58,11 @@ function solidColorChange(input,whichcolor) {
   }
 }
 
-function solidColorBrightnessChange(input) {
-  document.getElementById("sliderPercent").innerHTML = input.value + "%";
-  sendRequest("solidColorBrightness", input.value);
+function brightnessChange(input) {
+  $(".sliderPercent").html(input.value + "%");
+  //TODO: remove this if you find a way to not have two different brightness sliders
+  $(".slider").val(input.value);
+  sendRequest("brightness", input.value);
 }
 
 var solidColorHide = null;
@@ -71,7 +73,7 @@ var solidColorHide = null;
 $(document).on('shown.bs.tab', function (e) {
   var newTab = $(e.target).attr("href");
   if(newTab == "#pills-solid-color") {
-    document.getElementById("solidColor").jscolor.show();
+    setSolidColorpickerSize();
     solidColorHide = document.getElementById("solidColor").jscolor.hide;
     document.getElementById("solidColor").jscolor.hide = function(){};
     sendRequest("mode", "solidColor");
@@ -284,13 +286,31 @@ function clearLights(){
   redrawLights();
 }
 
+window.onresize = function(event) {
+  //TODO: wow ok this should just be a variable for what tab we're in
+  if($("#solidColor")[0].jscolor.hide.toString().length < 13) {
+    setSolidColorpickerSize();
+  }
+}
+
+function setSolidColorpickerSize() {
+  $("#solidColor")[0].jscolor.width = $("#pills-solid-color").width();
+  $("#solidColor")[0].jscolor.height = $("#pills-solid-color").width() * 0.55;
+  $("#solidColor").css("margin-bottom", $("#pills-solid-color").width() * 0.55 + 50);
+  $("#solidColor")[0].jscolor.show();
+}
+
+
 window.onload = function() {
-  document.getElementById("sliderPercent").innerHTML =
-    document.getElementById("solidColorBrightness").value + "%";
-  document.getElementById("solidColor").jscolor.width = window.innerWidth * 0.9;
-  document.getElementById("solidColor").jscolor.height =
-    Math.min(window.innerWidth * 0.45, window.innerHeight * 0.45);
-  document.getElementById("solidColor").jscolor.show();
+  // set brightness slider text
+  var currSliderPercent = $(".slider").val();
+  $(".sliderPercent").html(currSliderPercent + "%");
+  //TODO: remove this if you find a way to not have two different brightness sliders
+  $(".slider").val(currSliderPercent);
+
+  //set solid color picker's size
+  setSolidColorpickerSize();
+
   //hackishly keep this one open
   solidColorHide = document.getElementById("solidColor").jscolor.hide;
   document.getElementById("solidColor").jscolor.hide = function(){};
@@ -351,13 +371,6 @@ window.onload = function() {
   sendRequest("getState", null, initialSetState);
 
   drawMultiLights();
-
-  //just for testing
-  document.querySelector('a[href="#pills-many-colors"]').click();
-  var gradientbutton = document.getElementById("makeGradientButton");
-  gradientbutton.addEventListener("click", makeGradient);
-  var clearbutton = document.getElementById("clearlights");
-  clearbutton.addEventListener("click", clearLights);
 }
 
 function initialSetState(stateInfo) {
@@ -370,9 +383,22 @@ function initialSetState(stateInfo) {
       case "solidColor":
         document.getElementById("solidColor").jscolor.fromString(data.solidColor);
         break;
-      case "solidColorBrightness":
-        document.getElementById("solidColorBrightness").value = data.solidColorBrightness;
-        document.getElementById("sliderPercent").innerHTML = data.solidColorBrightness + "%";
+      case "brightness":
+        $(".sliderPercent").html(data.brightness + "%");
+        $(".slider").val(data.brightness);
+      case "mode":
+        if(data.mode != 'solidColor') {
+          var sel = null;
+          switch(data.mode) {
+            case "manyColors":
+              sel = "many-colors"
+              break;
+            default:
+          }
+          if(sel != null) {
+            document.querySelector('a[href="#pills-' + sel + '"]').click();
+          }
+        }
       default:
     }
 

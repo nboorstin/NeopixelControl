@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="../static/jscolor.js"></script>
-    <script src="../static/test.js"></script>
+    <script src="../static/leds.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <style>
@@ -87,11 +87,9 @@
       <div class="tab-pane fade show active" id="pills-solid-color" role="tabpanel" aria-labelledby="pills-solid-color-tab" style="padding: 10px">
         <!-- solid color tab -->
         Color: <br><input data-jscolor="{previewElement:'#pr1'}" id="solidColor" onInput="solidColorChange(this,'solidColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;">
-        <br><br><br><br><br><br><br>
-        <br><br><br><br><br><br><br>
-        <br><br><br><br><br><br><br>
-        Brightness: <label id="sliderPercent">0%</label><br>
-        <input type="range" name="entry" class="slider" id="solidColorBrightness" onInput="solidColorBrightnessChange(this)" style="width:100%;">
+        <br>
+        Brightness: <label class="sliderPercent">0%</label><br>
+        <input type="range" name="entry" class="slider" onInput="brightnessChange(this)" style="width:100%;">
         <br>
         <em id="pr1" style="display:none; padding:1em;">previewElement</em>
       </div>
@@ -115,10 +113,13 @@
           </div>
         </div>
         <canvas id="manyColorCanvas" height="400" style="border:2px solid #000000;"></canvas></br>
-        <button type="button" class="btn btn-primary" id="makeGradientButton" style="width:49%" onclick="makeGradient">Make Gradient</button>
-        <button type="button" class="btn btn-primary" id="clearlights" style="width:49%" onclick="clearLights">Clear</button>
+        <button type="button" class="btn btn-primary" id="makeGradientButton" style="width:49%" onclick="makeGradient()">Make Gradient</button>
+        <button type="button" class="btn btn-primary" id="clearlights" style="width:49%" onclick="clearLights()">Clear</button>
         <br>
         <em id="pr2" style="display:none; padding:1em;">previewElement</em>
+        Brightness: <label class="sliderPercent">0%</label><br>
+        <input type="range" name="entry" class="slider" onInput="brightnessChange(this)" style="width:100%;">
+        <br>
       </div>
       <div class="tab-pane fade" id="pills-layout" role="tabpanel" aria-labelledby="pills-layout-tab">
         <!-- layout tab -->
