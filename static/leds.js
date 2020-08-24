@@ -45,17 +45,7 @@ function solidColorChange(input,whichcolor) {
     sendRequest("solidColor", newColor);
     lastColor = newColor;
   }
-  document.getElementById(whichcolor).style.backgroundColor = newColor;
-  var r = newColor.substring(1,3);
-  var g = newColor.substring(3,5);
-  var b = newColor.substring(5,7);
-  var total = (parseInt(r,16) + parseInt(g,16) + parseInt(b,16))/3;
-  if(total > 128){
-    document.getElementById(whichcolor).style.color = "#000000";
-  }
-  else{
-    document.getElementById(whichcolor).style.color = "#FFFFFF";
-  }
+  setColorBox("solidColor");
 }
 
 function brightnessChange(input) {
@@ -122,18 +112,7 @@ function checkLightsMouse(e) {
 }
 
 function colorBoxChange(input,whichcolor) {
-  var newColor = input.jscolor.toString("hex");
-  document.getElementById(whichcolor).style.backgroundColor = newColor;
-  var r = newColor.substring(1,3);
-  var g = newColor.substring(3,5);
-  var b = newColor.substring(5,7);
-  var total = (parseInt(r,16) + parseInt(g,16) + parseInt(b,16))/3;
-  if(total > 128){
-    document.getElementById(whichcolor).style.color = "#000000";
-  }
-  else{
-    document.getElementById(whichcolor).style.color = "#FFFFFF";
-  }
+  setColorBox(whichcolor);
 }
 
 var backgroundColor = "#808080";
@@ -266,6 +245,11 @@ function setSolidColorpickerSize() {
   $("#solidColor")[0].jscolor.show();
 }
 
+function setColorBox(name) {
+  var color = $("#"+name)[0].jscolor.toString("hex");
+  $("#"+name).css("backgroundColor", color);
+  $("#"+name).css("color", hexToRgb(color).reduce((a,b) => a+b)/3 > 128 ? "#000000" : "#FFFFFF");
+}
 
 window.onload = function() {
   // set brightness slider text
@@ -277,61 +261,12 @@ window.onload = function() {
   //set solid color picker's size
   setSolidColorpickerSize();
 
-  //hackishly keep this one open
+  //hackishly keep the solid color open
   solidColorHide = document.getElementById("solidColor").jscolor.hide;
   document.getElementById("solidColor").jscolor.hide = function(){};
 
-  var currentSolidColor = document.getElementById("solidColor").jscolor.toString("hex");
-  document.getElementById("solidColor").style.backgroundColor = currentSolidColor;
-  var r = currentSolidColor.substring(1,3);
-  var g = currentSolidColor.substring(3,5);
-  var b = currentSolidColor.substring(5,7);
-  var total = (parseInt(r,16) + parseInt(g,16) + parseInt(b,16))/3;
-  if(total > 128){
-    document.getElementById("solidColor").style.color = "#000000";
-  }
-  else{
-    document.getElementById("solidColor").style.color = "#FFFFFF";
-  }
-
-  var currentSingleColor = document.getElementById("multiColorSelect").jscolor.toString("hex");
-  document.getElementById("multiColorSelect").style.backgroundColor = currentSingleColor;
-  r = currentSingleColor.substring(1,3);
-  g = currentSingleColor.substring(3,5);
-  b = currentSingleColor.substring(5,7);
-  total = (parseInt(r,16) + parseInt(g,16) + parseInt(b,16))/3;
-  if(total > 128){
-    document.getElementById("multiColorSelect").style.color = "#000000";
-  }
-  else{
-    document.getElementById("multiColorSelect").style.color = "#FFFFFF";
-  }
-
-  var currentGradientOne = document.getElementById("gradientFirstColor").jscolor.toString("hex");
-  document.getElementById("gradientFirstColor").style.backgroundColor = currentGradientOne;
-  r = currentGradientOne.substring(1,3);
-  g = currentGradientOne.substring(3,5);
-  b = currentGradientOne.substring(5,7);
-  total = (parseInt(r,16) + parseInt(g,16) + parseInt(b,16))/3;
-  if(total > 128){
-    document.getElementById("gradientFirstColor").style.color = "#000000";
-  }
-  else{
-    document.getElementById("gradientFirstColor").style.color = "#FFFFFF";
-  }
-
-  var currentGradientTwo = document.getElementById("gradientSecondColor").jscolor.toString("hex");
-  document.getElementById("gradientSecondColor").style.backgroundColor = currentGradientTwo;
-  r = currentGradientTwo.substring(1,3);
-  g = currentGradientTwo.substring(3,5);
-  b = currentGradientTwo.substring(5,7);
-  total = (parseInt(r,16) + parseInt(g,16) + parseInt(b,16))/3;
-  if(total > 128){
-    document.getElementById("gradientSecondColor").style.color = "#000000";
-  }
-  else{
-    document.getElementById("gradientSecondColor").style.color = "#FFFFFF";
-  }
+  //set the background color of the solid color boxes
+  ["solidColor", "multiColorSelect", "gradientFirstColor", "gradientSecondColor"].map(c => setColorBox(c));
 
   // get current state
   sendRequest("getState", null, initialSetState);
@@ -377,7 +312,5 @@ function initialSetState(stateInfo) {
         break;
       default:
     }
-
   }
-
 }
