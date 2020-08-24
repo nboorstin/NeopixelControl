@@ -1,7 +1,9 @@
+#!/usr/bin/env python3
 from flask import Flask, send_from_directory, redirect, url_for, request, render_template, make_response, json
 from threading import Timer, Lock, Thread, Condition
 from os import path
 from math import ceil
+from multiprocessing import Process
 
 app = Flask(__name__)
 
@@ -60,8 +62,8 @@ def root():
 def send_static(path):
     return send_from_directory('static', path);
 
-@app.route("/<path>", methods=['GET'])
-def send_html(path, entered=None):
+@app.route("/tabs.html", methods=['GET'])
+def send_html(path='tabs.html', entered=None):
     return render_template(path, name = entered);
 
 
@@ -79,7 +81,7 @@ if(path.exists(data_filename)):
 def writeFunc():
     with open(data_filename, 'w') as f:
         json.dump(data, f)
-    print("done!")
+    print("saved to file")
 
 writeToFile = Timer(5, writeFunc)
 lock = Lock()
@@ -101,16 +103,15 @@ def response():
         with cond:
             cond.notifyAll()
 
-        #for i in data:
-        #    print(i+":", data[i])
-
-
         return make_response("test")
 
 
 if __name__ == "__main__":
-    Thread(target=app.run, kwargs={'host': "0.0.0.0"}).start()
+    Process(target=app.run, kwargs={'host': "0.0.0.0"}).start()
     start_server = websockets.serve(socket_handler, "0.0.0.0", 8765)
 
     asyncio.get_event_loop().run_until_complete(start_server)
-    asyncio.get_event_loop().run_forever()
+    try:
+        asyncio.get_event_loop().run_forever()
+    except KeyboardInterrupt:
+        print()
