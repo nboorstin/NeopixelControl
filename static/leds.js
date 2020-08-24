@@ -266,6 +266,7 @@ window.onload = function() {
   document.getElementById("solidColor").jscolor.hide = function(){};
 
   //set the background color of the solid color boxes
+  //I don't think this really belongs in this function tbh
   ["solidColor", "multiColorSelect", "gradientFirstColor", "gradientSecondColor"].map(c => setColorBox(c));
 
   // get current state
@@ -283,6 +284,7 @@ function initialSetState(stateInfo) {
         break;
       case "solidColor":
         document.getElementById("solidColor").jscolor.fromString(data.solidColor);
+        setColorBox("solidColor");
         break;
       case "brightness":
         $(".sliderPercent").html(data.brightness + "%");
