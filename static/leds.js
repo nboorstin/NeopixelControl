@@ -70,6 +70,7 @@ $(document).on('shown.bs.tab', function (e) {
   } else {
     if(newTab == "#pills-many-colors") {
       sendRequest("mode", "manyColors");
+      setMultiColorpickerSize();
     }
     document.getElementById("solidColor").jscolor.hide = solidColorHide;
     document.getElementById("solidColor").jscolor.hide();
@@ -235,6 +236,8 @@ window.onresize = function(event) {
   //TODO: wow ok this should just be a variable for what tab we're in
   if($("#solidColor")[0].jscolor.hide.toString().length < 13) {
     setSolidColorpickerSize();
+  } else {
+    setMultiColorpickerSize();
   }
 }
 
@@ -243,6 +246,13 @@ function setSolidColorpickerSize() {
   $("#solidColor")[0].jscolor.height = $("#pills-solid-color").width() * 0.55;
   $("#solidColor").css("margin-bottom", $("#pills-solid-color").width() * 0.55 + 50);
   $("#solidColor")[0].jscolor.show();
+}
+
+function setMultiColorpickerSize() {
+  //TODO: maybe filling the screen isn't the best idea?
+  $("#manyColorCanvas").prop('width', $("#pills-many-colors").width() - 4);
+  $("#manyColorCanvas").prop('height', $("#pills-many-colors").width());
+  drawMultiLights();
 }
 
 function setColorBox(name) {
@@ -260,6 +270,9 @@ window.onload = function() {
 
   //set solid color picker's size
   setSolidColorpickerSize();
+
+  //try to set canvas size
+  setMultiColorpickerSize();
 
   //hackishly keep the solid color open
   solidColorHide = document.getElementById("solidColor").jscolor.hide;
