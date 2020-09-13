@@ -89,6 +89,7 @@ var lightsPos = [
   [10, 330],
   [10, 370]];
 var lightsColor = Array(lightsPos.length).fill("#FF0000");
+var lightsSelected = Array(lightsPos.length).fill(false);
 
 function checkLightsMouse(e) {
   console.log(".");
@@ -103,7 +104,7 @@ function checkLightsMouse(e) {
       lightsPos[i][1] <= y && lightsPos[i][1] + lightSize >= y) {
       console.log(i);
       changed = true;
-      lightsColor[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
+      // lightsColor[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
     }
   }
   if(changed) {
@@ -168,7 +169,13 @@ function redrawLights() {
     ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/3, 0, 2 * Math.PI, false);
     ctx.fill();
 
-    ctx.strokeStyle="#000000";
+    // ctx.strokeStyle="#000000";
+    if(lightsSelected[i]){
+      ctx.strokeStyle = "#FFFFFF";
+    }
+    else{
+      ctx.strokeStyle="#000000";
+    }
     ctx.lineWidth = 1;
     // draw outer rectangle
     ctx.strokeRect(x, y, lightSize, lightSize);
@@ -328,4 +335,273 @@ function initialSetState(stateInfo) {
       default:
     }
   }
+}
+
+var selectiontab = 0;
+
+function setShape(shape){
+  selectiontab = shape;
+  console.log("shapechange");
+  console.log(shape);
+}
+
+function drawShape(){
+  // var canvas = document.getAnimations("manyColorCanvas");
+  $("manyColorCanvas").unbind("mousedown");
+  $("manyColorCanvas").unbind("mousemove");
+  $("manyColorCanvas").unbind("mouseup");
+  var a = document.getElementById("pills-rectangle").getAttribute("aria-selected");
+  var b = document.getElementById("pills-circle").getAttribute("aria-selected");
+  var c = document.getElementById("pills-dot").getAttribute("aria-selected");
+  var d = document.getElementById("pills-squiggle").getAttribute("aria-selected");
+  console.log(a);
+  console.log(b);
+  console.log(c);
+  console.log(d);
+  if(a.toString() == "true"){// for some reason a isn't true but prints as true.
+    console.log("rectangle");
+    drawRect();
+  }
+  else if(b.toString() == "true"){
+    console.log("circle");
+    drawCircle();
+  }
+  else if(c.toString() == "true"){
+    console.log("dot");
+    drawDot();
+  }
+  else if(d.toString == "true"){
+    drawSquiggle();
+  }
+}
+
+function drawRect(){
+  var canvas = document.getElementById("manyColorCanvas");
+  var isrectangle = true;
+  var startx = 0;
+  var starty = 0;
+  var endx = 0;
+  var endy = 0;
+  const context = canvas.getContext('2d');
+  var isSelecting = false;
+  canvas.addEventListener('mousedown', e => {
+    startx = e.offsetX;
+    starty = e.offsetY;
+    endx = startx;
+    endy = starty;
+    isSelecting = true;
+  });
+  canvas.addEventListener('mousemove', e => {
+    if(isSelecting && isrectangle){
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      drawMultiLights();
+      endx = e.offsetX;
+      endy = e.offsetY;
+      //figure out how to display temp rectangle
+      context.beginPath();
+      context.moveTo(startx, starty);
+      context.lineTo(endx, starty);
+      context.lineTo(endx, endy);
+      context.lineTo(startx, endy);
+      context.lineTo(startx, starty);
+      context.closePath();
+      context.lineWidth = 2;
+      context.strokeStyle = 'black';
+      context.stroke();
+    }
+  });
+  canvas.addEventListener('mouseup', e => {
+    if(isrectangle){
+      endx = e.offsetX;
+      endy = e.offsetY;
+      isSelecting = false;
+      var ctx = canvas.getContext("2d");
+      ctx.fillStyle=backgroundColor;
+      ctx.fillRect(0,0,canvas.width, canvas.height);
+      ctx.fillStyle="#000000";
+      for(var i = 0; i < lightsPos.length; i++){
+        var x = lightsPos[i][0];
+        var y = lightsPos[i][1];
+        if(((x > startx && x < endx) || (x < startx && x > endx)) && ((y > starty && y < endy) || (y < starty && y > endy))){
+          lightsSelected[i] = true;
+        }
+        else{
+          if(((x+lightSize > startx && x+lightSize < endx) || (x+lightSize < startx && x+lightSize > endx)) && ((y+lightSize > starty && y+lightSize < endy) || (y+lightSize < starty && y+lightSize > endy))){
+            lightsSelected[i] = true;
+          }
+        }
+      }
+      redrawLights();
+      isrectangle = false;
+    }
+  });
+}
+
+function drawCircle(){
+  var canvas = document.getElementById("manyColorCanvas");
+  var startx = 0;
+  var starty = 0;
+  var endx = 0;
+  var endy = 0;
+  const context = canvas.getContext('2d');
+  var isSelecting = false;
+  var iscircle = true;
+  canvas.addEventListener('mousedown', e => {
+    startx = e.offsetX;
+    starty = e.offsetY;
+    endx = startx;
+    endy = starty;
+    isSelecting = true;
+  });
+  canvas.addEventListener('mousemove', e => {
+    if(isSelecting && iscircle){
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      drawMultiLights();
+      endx = e.offsetX;
+      endy = e.offsetY;
+      //figure out how to display temp circle
+      context.beginPath();
+      context.arc((startx + endx)/2, (starty + endy)/2, Math.abs(startx - endx)/2, 0, 2*Math.PI, false);
+      context.closePath();
+      context.lineWidth = 2;
+      context.strokeStyle = 'black';
+      context.stroke();
+    }
+  });
+  canvas.addEventListener('mouseup', e => {
+    if(iscircle){
+      endx = e.offsetX;
+      endy = e.offsetY;
+      isSelecting = false;
+      var ctx = canvas.getContext("2d");
+      ctx.fillStyle=backgroundColor;
+      ctx.fillRect(0,0,canvas.width, canvas.height);
+      ctx.fillStyle="#000000";
+      for(var i = 0; i < lightsPos.length; i++){
+        var x = lightsPos[i][0];
+        var y = lightsPos[i][1];
+        var cx = (startx + endx)/2;
+        var cy = (starty + endy)/2;
+        var r = Math.abs(startx - endx)/2;
+        var dist1 = Math.sqrt((x-cx)**2 + (y-cy)**2);
+        var dist2 = Math.sqrt((x+lightSize-cx)**2 + (y+lightSize-cy)**2);
+        if(dist1 < r || dist2 < r){
+          lightsSelected[i] = true;
+        }
+      }
+      redrawLights();
+      iscircle = false;
+    }
+  });
+}
+
+function drawDot(){
+  var canvas = document.getElementById("manyColorCanvas");
+  var myx = 0;
+  var myy = 0;
+  const context = canvas.getContext('2d');
+  var isSelecting = false;
+  var isdot = true;
+  canvas.addEventListener('mousedown', e => {
+    if(isdot){
+      myx = e.offsetX;
+      myy = e.offsetY;
+      isSelecting = true;
+      for(var i = 0; i < lightsPos.length; i++){
+        var x = lightsPos[i][0];
+        var y = lightsPos[i][1];
+        if(myx - x < 20 && myx - x > 0 && myy - y < 20 && myy - y > 0){
+          lightsSelected[i] = true;
+        }
+      }
+      redrawLights();
+    }
+  });
+  canvas.addEventListener('mousemove', e => {
+    if(isSelecting && isdot){
+      myx = e.offsetX;
+      myy = e.offsetY;
+      for(var i = 0; i < lightsPos.length; i++){
+        var x = lightsPos[i][0];
+        var y = lightsPos[i][1];
+        if(myx - x < 20 && myx - x > 0 && myy - y < 20 && myy - y > 0){
+          lightsSelected[i] = true;
+        }
+      }
+      redrawLights();
+    }
+  });
+  canvas.addEventListener('mouseup', e => {
+    isSelecting = false;
+    isdot = false;
+  });
+}
+
+function drawSquiggle(){
+  var canvas = document.getElementById("manyColorCanvas");
+  var startx = 0;
+  var starty = 0;
+  var cx = 0;
+  var cy = 0;
+  const context = canvas.getContext('2d');
+  var isSelecting = false;
+  canvas.addEventListener('mousedown', e => {
+    startx = e.offsetX;
+    starty = e.offsetY;
+    cx = startx;
+    cy = starty;
+    isSelecting = true;
+  });
+  canvas.addEventListener('mousemove', e => {
+    if(isSelecting){
+      drawLine(context, cx, cy, e.offsetX, e.offsetY);
+      cx = e.offsetX;
+      cy = e.offsetY;
+    }
+  });
+  canvas.addEventListener('mouseup', e => {
+    if(isSelecting){
+      drawLine(context, cx, cy, e.offsetX, e.offsetY);
+      cx = e.offsetX;
+      cy = e.offsetY;
+      drawLine(context, cx, cy, startx, starty);
+    }
+    isSelecting = false;
+    redrawLights();
+  });
+}
+
+function drawLine(context, x1, y1, x2, y2) {
+  context.beginPath();
+  context.moveTo(x1, y1);
+  context.lineTo(x2, y2);
+  context.lineWidth = 2;
+  context.strokeStyle = 'black';
+  context.stroke();
+  context.closePath();
+}
+
+function deselect(){
+  for(var i = 0; i < lightsPos.length; i++){
+    // console.log(lightsSelected[i]);
+    lightsSelected[i] = false;
+  }
+  redrawLights();
+}
+
+function fillColor(){
+  //this is where we deal with color picker, gradient stuff
+  overlayOn();
+}
+
+function applyColor(){
+  overlayOff();
+}
+
+function overlayOn() {
+  document.getElementById("overlay").style.display = "block";
+}
+
+function overlayOff(){
+  document.getElementById("overlay").style.display = "none";
 }

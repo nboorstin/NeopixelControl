@@ -58,6 +58,28 @@
   background: #0400ff;
   cursor: pointer;
 }
+#overlay {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding:25px;
+  background-color: rgba(0,0,0,0.7); /* white background with opacity */
+  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+#overlaybox {
+  position:relative;
+  width: 100%;
+  height: 350px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+}
   </style>
   <body>
     <!-- <div class="container-fluid"> -->
@@ -95,15 +117,29 @@
       </div>
       <div class="tab-pane fade" id="pills-many-colors" role="tabpanel" aria-labelledby="pills-many-colors-tab" style="padding: 10px;">
         <!-- many colors tab -->
-        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+        <!-- <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
           <li class="nav-item">
             <a class="nav-link active" id="pills-one-color-tab" data-toggle="pill" href="#pills-one-color" role="tab" aria-controls="pills-one-color" aria-selected="true">One Color</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" id="pills-gradient-tab" data-toggle="pill" href="#pills-gradient" role="tab" aria-controls="pills-gradient" aria-selected="false">Gradient</a>
           </li>
+        </ul> -->
+        <ul class="nav nav-pills mb-3 nav-justified" id="shape-tab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="pills-rectangle" data-toggle="pill" href="#pills-rectangle" role="tab" aria-controls="pills-rectangle" aria-selected="true" onclick="setShape(0);setShape(0);">R</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-circle" data-toggle="pill" href="#pills-circle" role="tab" aria-controls="pills-circle" aria-selected="false" onclick="setShape(1)">C</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-dot" data-toggle="pill" href="#pills-dot" role="tab" aria-controls="pills-dot" aria-selected="false" onclick="setShape(2)">D</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-squiggle" data-toggle="pill" href="#pills-squiggle" role="tab" aria-controls="pills-squiggle" aria-selected="false" onclick="setShape(3)">S</a>
+          </li>
         </ul>
-        <div class="tab-content" id="pills-tabContent">
+        <!-- <div class="tab-content" id="pills-tabContent">
           <div class="tab-pane fade show active" id="pills-one-color" role="tabpanel" aria-labelledby="pills-one-color-tab">
             <input data-jscolor="{previewElement:'#pr2'}" id="multiColorSelect" onInput="colorBoxChange(this,'multiColorSelect')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
           </div>
@@ -111,11 +147,47 @@
             <input data-jscolor="{previewElement:'#pr2'}" id="gradientFirstColor" onInput="colorBoxChange(this,'gradientFirstColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
             <input data-jscolor="{previewElement:'#pr2'}" id="gradientSecondColor" onInput="colorBoxChange(this,'gradientSecondColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
           </div>
-        </div>
-        <canvas id="manyColorCanvas" height="400" style="border:2px solid #000000;"></canvas></br>
-        <button type="button" class="btn btn-primary" id="makeGradientButton" style="width:49%" onclick="makeGradient()">Make Gradient</button>
-        <button type="button" class="btn btn-primary" id="clearlights" style="width:49%" onclick="clearLights()">Clear</button>
+        </div> -->
+        <canvas id="manyColorCanvas" height="400" style="border:2px solid #000000;" onclick="drawShape()"></canvas></br>
+        <button type="button" class="btn btn-primary" id="deselectButton" style="width:24%" onclick="deselect()">Deselect</button>
+        <button type="button" class="btn btn-primary" id="pickColorButton" style="width:24%" onclick="fillColor()">Fill</button>
+        <button type="button" class="btn btn-primary" id="makeGradientButton" style="width:24%" onclick="makeGradient()">Gradient</button>
+        <button type="button" class="btn btn-primary" id="clearlights" style="width:24%" onclick="clearLights()">Clear</button>
         <br>
+        <div id="overlay">
+          <br><br><br>
+          <div id="overlaybox">
+          <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="pills-one-color-tab" data-toggle="pill" href="#pills-one-color" role="tab" aria-controls="pills-one-color" aria-selected="true">One Color</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="pills-gradient-tab" data-toggle="pill" href="#pills-gradient" role="tab" aria-controls="pills-gradient" aria-selected="false">Gradient</a>
+            </li>
+          </ul>
+          <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-one-color" role="tabpanel" aria-labelledby="pills-one-color-tab">
+              <input data-jscolor="{previewElement:'#pr2'}" id="multiColorSelect" onInput="colorBoxChange(this,'multiColorSelect')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
+            </div>
+            <div class="tab-pane fade" id="pills-gradient" role="tabpanel" aria-labelledby="pills-gradient-tab">
+              <input data-jscolor="{previewElement:'#pr2'}" id="gradientFirstColor" onInput="colorBoxChange(this,'gradientFirstColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
+              <input data-jscolor="{previewElement:'#pr2'}" id="gradientSecondColor" onInput="colorBoxChange(this,'gradientSecondColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
+              <ul class="nav nav-pills mb-3" id="pills-gradient-direction" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" id="pills-ttb" data-toggle="pill" href="#pills-ttb" role="tab" aria-controls="pills-ttb" aria-selected="true">Top to Bottom</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="pills-ltr" data-toggle="pill" href="#pills-ltr" role="tab" aria-controls="pills-ltr" aria-selected="false">Left to Right</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="pills-radial" data-toggle="pill" href="#pills-radial" role="tab" aria-controls="pills-radial" aria-selected="false">Radial</a>
+                </li>
+              </ul>
+            </div>
+            <button type="button" class="btn btn-primary" id="apply" style="position:absolute;right:5px;bottom:5px;width:33%;" onclick="applyColor()">Apply</button>
+          </div>
+        </div>
+        </div>
         <em id="pr2" style="display:none; padding:1em;">previewElement</em>
         Brightness: <label class="sliderPercent">0%</label><br>
         <input type="range" name="entry" class="slider" onInput="brightnessChange(this)" style="width:100%;">
