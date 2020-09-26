@@ -48,8 +48,22 @@ function solidColorChange(input,whichcolor) {
   setColorBox("solidColor");
 }
 
+function randomnessChange(input) {
+  $(".sliderPercent1").html(input.value + "%");
+  //TODO: remove this if you find a way to not have two different brightness sliders
+  $(".slider").val(input.value);
+}
+
+function patternChange(input) {
+  $(".sliderPercent2").html(input.value + "%");
+  var inverse = 100 - input.value;
+  $(".sliderPercent2inverse").html(inverse + "%");
+  //TODO: remove this if you find a way to not have two different brightness sliders
+  $(".slider").val(input.value);
+}
+
 function brightnessChange(input) {
-  $(".sliderPercent").html(input.value + "%");
+  $(".sliderPercent3").html(input.value + "%");
   //TODO: remove this if you find a way to not have two different brightness sliders
   $(".slider").val(input.value);
   sendRequest("brightness", input.value);
@@ -269,11 +283,19 @@ function setColorBox(name) {
 }
 
 window.onload = function() {
+  document.getElementById("defaultOpen").click();
   // set brightness slider text
-  var currSliderPercent = $(".slider").val();
-  $(".sliderPercent").html(currSliderPercent + "%");
-  //TODO: remove this if you find a way to not have two different brightness sliders
-  $(".slider").val(currSliderPercent);
+  var currSliderPercent = $(".slider1").val();
+  $(".sliderPercent1").html(currSliderPercent + "%");
+  $(".slider1").val(currSliderPercent);
+  var currSliderPercent = $(".slider2").val();
+  $(".sliderPercent2").html(currSliderPercent + "%");
+  var inverse = 100 - currSliderPercent
+  $(".sliderPercent2inverse").html(inverse + "%");
+  $(".slider2").val(currSliderPercent);
+  var currSliderPercent = $(".slider3").val();
+  $(".sliderPercent3").html(currSliderPercent + "%");
+  $(".slider3").val(currSliderPercent);
 
   //set solid color picker's size
   setSolidColorpickerSize();

@@ -6,6 +6,8 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="../static/jscolor.js"></script>
     <script src="../static/leds.js"></script>
+    <script src="../static/tabstyle.js"></script>
+    <!-- <script type="module" src="https://unpkg.com/@microsoft/fast-components"></script> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <style>
@@ -29,7 +31,7 @@
     input:not([type='checkbox']):not([type='range']) {    
       width: 100%;
     }
-    .slider {
+    .slider1 {
   -webkit-appearance: none;
   width: 100%;
   height: 15px;
@@ -41,7 +43,7 @@
   transition: opacity .2s;
 }
 
-.slider::-webkit-slider-thumb {
+.slider1::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 25px;
@@ -51,154 +53,148 @@
   cursor: pointer;
 }
 
-.slider::-moz-range-thumb {
+.slider1::-moz-range-thumb {
   width: 25px;
   height: 25px;
   border-radius: 50%;
   background: #0400ff;
   cursor: pointer;
 }
-#overlay {
-  position: fixed; /* Sit on top of the page content */
-  display: none; /* Hidden by default */
-  width: 100%; /* Full width (cover the whole page) */
-  height: 100%; /* Full height (cover the whole page) */
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding:25px;
-  background-color: rgba(0,0,0,0.7); /* white background with opacity */
-  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
-  cursor: pointer; /* Add a pointer on hover */
-}
-#overlaybox {
-  position:relative;
+.slider2 {
+  -webkit-appearance: none;
   width: 100%;
-  height: 350px;
+  height: 15px;
+  border-radius: 5px;  
+  background: #a3a3a3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider2::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%; 
+  background: #0400ff;
+  cursor: pointer;
+}
+
+.slider2::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #0400ff;
+  cursor: pointer;
+}
+.slider3 {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;  
+  background: #a3a3a3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider3::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%; 
+  background: #0400ff;
+  cursor: pointer;
+}
+
+.slider3::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #0400ff;
+  cursor: pointer;
+}
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  width:33%;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
   padding: 10px;
-  border-radius: 10px;
-  background-color: #FFFFFF;
+  border: 1px solid #ccc;
+  border-top: none;
 }
   </style>
   <body>
-    <!-- <div class="container-fluid"> -->
-      <!-- <div class="row"> -->
-        <!-- <div class="col-md-8"> -->
-      <ul class="nav nav-pills mb-3 nav-justified" id="pills-tab" role="tablist">
-        <li class="nav-item">
-          <a class="nav-link active" id="pills-solid-color-tab" data-toggle="pill" href="#pills-solid-color" role="tab" aria-controls="pills-solid-color" aria-selected="true">Solid Color</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" id="pills-many-colors-tab" data-toggle="pill" href="#pills-many-colors" role="tab" aria-controls="pills-many-colors" aria-selected="false">Many Colors</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" id="pills-layout-tab" data-toggle="pill" href="#pills-layout" role="tab" aria-controls="pills-layout" aria-selected="false">Layout</a>
-        </li>
-      </ul>
-      <!-- </div> -->
-        <!-- <div class="col-md-4"> -->
+    <div class="tab">
+      <button class="tablinks" onclick="openCity(event, 'London')">Solid Color</button>
+      <button class="tablinks" onclick="openCity(event, 'Paris')"  id="defaultOpen">Many Colors</button>
+      <button class="tablinks" onclick="openCity(event, 'Tokyo')">Layout</button>
+    </div>
             <div class="custom-control custom-switch" style="margin: 10px;">
               <input type="checkbox" class="custom-control-input" id="customSwitch1" checked onInput="lightsOnOff(this)">
               <label class="custom-control-label" for="customSwitch1">Lights on/off</label>
             </div>
-        <!-- </div> -->
-      <!-- </div> -->
-    <!-- </div> -->
-    <div class="tab-content" id="pills-tabContent">
-      <div class="tab-pane fade show active" id="pills-solid-color" role="tabpanel" aria-labelledby="pills-solid-color-tab" style="padding: 10px">
+            <div id="London" class="tabcontent">
         <!-- solid color tab -->
         Color: <br><input data-jscolor="{previewElement:'#pr1'}" id="solidColor" onInput="solidColorChange(this,'solidColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;">
         <br>
-        Brightness: <label class="sliderPercent">0%</label><br>
-        <input type="range" name="entry" class="slider" onInput="brightnessChange(this)" style="width:100%;">
-        <br>
+        Brightness: <label class="sliderPercent3">0%</label><br>
+        <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)" style="width:100%;">
         <em id="pr1" style="display:none; padding:1em;">previewElement</em>
       </div>
-      <div class="tab-pane fade" id="pills-many-colors" role="tabpanel" aria-labelledby="pills-many-colors-tab" style="padding: 10px;">
+      <div id="Paris" class="tabcontent">
         <!-- many colors tab -->
-        <!-- <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active" id="pills-one-color-tab" data-toggle="pill" href="#pills-one-color" role="tab" aria-controls="pills-one-color" aria-selected="true">One Color</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="pills-gradient-tab" data-toggle="pill" href="#pills-gradient" role="tab" aria-controls="pills-gradient" aria-selected="false">Gradient</a>
-          </li>
-        </ul> -->
-        <ul class="nav nav-pills mb-3 nav-justified" id="shape-tab" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active" id="pills-rectangle" data-toggle="pill" href="#pills-rectangle" role="tab" aria-controls="pills-rectangle" aria-selected="true" onclick="setShape(0);setShape(0);">R</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="pills-circle" data-toggle="pill" href="#pills-circle" role="tab" aria-controls="pills-circle" aria-selected="false" onclick="setShape(1)">C</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="pills-dot" data-toggle="pill" href="#pills-dot" role="tab" aria-controls="pills-dot" aria-selected="false" onclick="setShape(2)">D</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="pills-squiggle" data-toggle="pill" href="#pills-squiggle" role="tab" aria-controls="pills-squiggle" aria-selected="false" onclick="setShape(3)">S</a>
-          </li>
-        </ul>
-        <!-- <div class="tab-content" id="pills-tabContent">
-          <div class="tab-pane fade show active" id="pills-one-color" role="tabpanel" aria-labelledby="pills-one-color-tab">
-            <input data-jscolor="{previewElement:'#pr2'}" id="multiColorSelect" onInput="colorBoxChange(this,'multiColorSelect')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
-          </div>
-          <div class="tab-pane fade" id="pills-gradient" role="tabpanel" aria-labelledby="pills-gradient-tab">
-            <input data-jscolor="{previewElement:'#pr2'}" id="gradientFirstColor" onInput="colorBoxChange(this,'gradientFirstColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
-            <input data-jscolor="{previewElement:'#pr2'}" id="gradientSecondColor" onInput="colorBoxChange(this,'gradientSecondColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
-          </div>
-        </div> -->
         <canvas id="manyColorCanvas" height="400" style="border:2px solid #000000;" onclick="drawShape()"></canvas></br>
-        <button type="button" class="btn btn-primary" id="deselectButton" style="width:24%" onclick="deselect()">Deselect</button>
-        <button type="button" class="btn btn-primary" id="pickColorButton" style="width:24%" onclick="fillColor()">Fill</button>
-        <button type="button" class="btn btn-primary" id="makeGradientButton" style="width:24%" onclick="makeGradient()">Gradient</button>
-        <button type="button" class="btn btn-primary" id="clearlights" style="width:24%" onclick="clearLights()">Clear</button>
+        Randomness: <label class="sliderPercent1">0%</label>
         <br>
-        <div id="overlay">
-          <br><br><br>
-          <div id="overlaybox">
-          <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-            <li class="nav-item">
-              <a class="nav-link active" id="pills-one-color-tab" data-toggle="pill" href="#pills-one-color" role="tab" aria-controls="pills-one-color" aria-selected="true">One Color</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="pills-gradient-tab" data-toggle="pill" href="#pills-gradient" role="tab" aria-controls="pills-gradient" aria-selected="false">Gradient</a>
-            </li>
-          </ul>
-          <div class="tab-content" id="pills-tabContent">
-            <div class="tab-pane fade show active" id="pills-one-color" role="tabpanel" aria-labelledby="pills-one-color-tab">
-              <input data-jscolor="{previewElement:'#pr2'}" id="multiColorSelect" onInput="colorBoxChange(this,'multiColorSelect')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
-            </div>
-            <div class="tab-pane fade" id="pills-gradient" role="tabpanel" aria-labelledby="pills-gradient-tab">
-              <input data-jscolor="{previewElement:'#pr2'}" id="gradientFirstColor" onInput="colorBoxChange(this,'gradientFirstColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
-              <input data-jscolor="{previewElement:'#pr2'}" id="gradientSecondColor" onInput="colorBoxChange(this,'gradientSecondColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></br>
-              <ul class="nav nav-pills mb-3" id="pills-gradient-direction" role="tablist">
-                <li class="nav-item">
-                  <a class="nav-link active" id="pills-ttb" data-toggle="pill" href="#pills-ttb" role="tab" aria-controls="pills-ttb" aria-selected="true">Top to Bottom</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" id="pills-ltr" data-toggle="pill" href="#pills-ltr" role="tab" aria-controls="pills-ltr" aria-selected="false">Left to Right</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" id="pills-radial" data-toggle="pill" href="#pills-radial" role="tab" aria-controls="pills-radial" aria-selected="false">Radial</a>
-                </li>
-              </ul>
-            </div>
-            <button type="button" class="btn btn-primary" id="apply" style="position:absolute;right:5px;bottom:5px;width:33%;" onclick="applyColor()">Apply</button>
-          </div>
-        </div>
-        </div>
+        <input type="range" name="entry" class="slider1" onInput="randomnessChange(this)" style="width:100%;">
+        <br>
+        Pattern: <label class="sliderPercent2">100%</label>, Gradient: <label class="sliderPercent2inverse">0%</label>
+        <br>
+        <input type="range" name="entry" class="slider2" onInput="patternChange(this)" style="width:100%;">
+        <br>
         <em id="pr2" style="display:none; padding:1em;">previewElement</em>
-        Brightness: <label class="sliderPercent">0%</label><br>
-        <input type="range" name="entry" class="slider" onInput="brightnessChange(this)" style="width:100%;">
+        Brightness: <label class="sliderPercent3">0%</label>
+        <br>
+        <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)" style="width:100%;">
         <br>
       </div>
-      <div class="tab-pane fade" id="pills-layout" role="tabpanel" aria-labelledby="pills-layout-tab">
+      <div id="Tokyo" class="tabcontent">
         <!-- layout tab -->
         layout goes here?
       </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
   </body>
