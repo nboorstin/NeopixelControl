@@ -22,7 +22,7 @@ WebSocketsClient webSocket;
 #define USE_SERIAL Serial
 
 #define LED_PIN 2
-#define NUM_LEDS 20
+#define NUM_LEDS 2
 
 CRGB leds[NUM_LEDS];
 
@@ -45,6 +45,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 			// webSocket.sendTXT("message here");
 			break;
 		case WStype_BIN:
+      Serial.println(length);
       if (length == 3) {
 //        for(int i=0; i<3; i++)
 //          Serial.print(payload[i], HEX);
@@ -81,13 +82,15 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 void setup() {
 	// USE_SERIAL.begin(921600);
 	USE_SERIAL.begin(9600);
+ //delay(100);
    FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
    for(int i=0; i<NUM_LEDS; i++) {
           leds[i] = CRGB(0,0,0);
         }
-   FastLED.show();
- USE_SERIAL.print("...");
- delay(1000);
+   //FastLED.show();
+   
+ //USE_SERIAL.print("...");
+ delay(2);
  FastLED.show();
  USE_SERIAL.print("...");
  
