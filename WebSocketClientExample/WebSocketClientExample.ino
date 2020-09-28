@@ -1,8 +1,14 @@
 /*
  * WebSocketClient.ino
  *
- *  Created on: 24.05.2015
- *
+ * Uses the fastLED library: https://www.arduino.cc/reference/en/libraries/fastled/
+ * and websocket library: https://github.com/Links2004/arduinoWebSockets
+ * and ESP8266 board definitions: https://github.com/esp8266/Arduino
+ * 
+ * set board to Generic ESP8266 Module
+ * IDK about everything else, try things?
+ * 
+ * Windows automatically installed the FT231X driver, idk about linux tho
  */
 
 #include <Arduino.h>
