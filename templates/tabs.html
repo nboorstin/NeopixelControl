@@ -2,171 +2,23 @@
 <html>
   <head>
     <title>Neopixel control</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"> -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="../static/jscolor.js"></script>
     <script src="../static/leds.js"></script>
     <script src="../static/tabstyle.js"></script>
-    <!-- <script type="module" src="https://unpkg.com/@microsoft/fast-components"></script> -->
+    <link rel="stylesheet" href="../static/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-  <style>
-    body{
-      background-color: rgb(230, 230, 230);
-      padding-left:30%;
-      padding-right:30%;
-    }
-    @media (max-width:700px){
-      body{
-        padding-left:0%;
-        padding-right:0%;
-      }
-    }
-    @media (max-width:1100px) and (min-width: 701px){
-      body{
-        padding-left:15%;
-        padding-right:15%;
-      }
-    }
-    input:not([type='checkbox']):not([type='range']) {    
-      width: 100%;
-    }
-    .slider1 {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 15px;
-  border-radius: 5px;  
-  background: #a3a3a3;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-}
-
-.slider1::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%; 
-  background: #0400ff;
-  cursor: pointer;
-}
-
-.slider1::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: #0400ff;
-  cursor: pointer;
-}
-.slider2 {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 15px;
-  border-radius: 5px;  
-  background: #a3a3a3;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-}
-
-.slider2::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%; 
-  background: #0400ff;
-  cursor: pointer;
-}
-
-.slider2::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: #0400ff;
-  cursor: pointer;
-}
-.slider3 {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 15px;
-  border-radius: 5px;  
-  background: #a3a3a3;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-}
-
-.slider3::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%; 
-  background: #0400ff;
-  cursor: pointer;
-}
-
-.slider3::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: #0400ff;
-  cursor: pointer;
-}
-/* Style the tab */
-.tab {
-  overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
-}
-
-/* Style the buttons inside the tab */
-.tab button {
-  background-color: inherit;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  width:33%;
-  transition: 0.3s;
-  font-size: 17px;
-}
-
-/* Change background color of buttons on hover */
-.tab button:hover {
-  background-color: #ddd;
-}
-
-/* Create an active/current tablink class */
-.tab button.active {
-  background-color: #ccc;
-}
-
-/* Style the tab content */
-.tabcontent {
-  display: none;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-top: none;
-}
-  </style>
   <body>
-    <div class="tab">
-      <button class="tablinks" onclick="openCity(event, 'London')">Solid Color</button>
-      <button class="tablinks" onclick="openCity(event, 'Paris')"  id="defaultOpen">Many Colors</button>
-      <button class="tablinks" onclick="openCity(event, 'Tokyo')">Layout</button>
+    <div>
+    <button onclick="activateTab('tabSolidColor')">Solid Color</button>
+    <button onclick="activateTab('tabManyColorEntry')">Many Color Entry</button>
+    <button onclick="activateTab('tabManyColorSelect')">Many Color Select</button>
+    <button onclick="activateTab('tabAnimate')">Animate</button>
     </div>
-            <div class="custom-control custom-switch" style="margin: 10px;">
-              <input type="checkbox" class="custom-control-input" id="customSwitch1" checked onInput="lightsOnOff(this)">
-              <label class="custom-control-label" for="customSwitch1">Lights on/off</label>
-            </div>
-            <div id="London" class="tabcontent">
+    <div id="tabCtrl">
+      <div id="tabSolidColor" style="display: block;">
         <!-- solid color tab -->
         Color: <br><input data-jscolor="{previewElement:'#pr1'}" id="solidColor" onInput="solidColorChange(this,'solidColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;">
         <br>
@@ -174,28 +26,13 @@
         <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)" style="width:100%;">
         <em id="pr1" style="display:none; padding:1em;">previewElement</em>
       </div>
-      <div id="Paris" class="tabcontent">
-        <!-- many colors tab -->
+      <div id="tabManyColorEntry" style="display: none;">
+        <!-- many color tab -->
+        many color entry
         <canvas id="manyColorCanvas" height="400" style="border:2px solid #000000;" onclick="drawShape()"></canvas></br>
-        Randomness: <label class="sliderPercent1">0%</label>
-        <br>
-        <input type="range" name="entry" class="slider1" onInput="randomnessChange(this)" style="width:100%;">
-        <br>
-        Pattern: <label class="sliderPercent2">100%</label>, Gradient: <label class="sliderPercent2inverse">0%</label>
-        <br>
-        <input type="range" name="entry" class="slider2" onInput="patternChange(this)" style="width:100%;">
-        <br>
-        <em id="pr2" style="display:none; padding:1em;">previewElement</em>
-        Brightness: <label class="sliderPercent3">0%</label>
-        <br>
-        <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)" style="width:100%;">
-        <br>
       </div>
-      <div id="Tokyo" class="tabcontent">
-        <!-- layout tab -->
-        layout goes here?
-      </div>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+      <div id="tabManyColorSelect" style="display: none;">many color select</br>work in progress...</div>
+      <div id="tabAnimate" style="display: none;">animate</br>yeah i'm sure this will happen at some point...</div>
+    </div>
   </body>
 </html>

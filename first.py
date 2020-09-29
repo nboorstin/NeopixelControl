@@ -66,6 +66,10 @@ def send_static(path):
 def send_html(path='tabs.html', entered=None):
     return render_template(path, name = entered);
 
+@app.route("/tabsOld.html", methods=['GET'])
+def send_htmlOld(path='tabsOld.html', entered=None):
+    return render_template(path, name = entered);
+
 
 data = {}
 data_filename = 'data.json'

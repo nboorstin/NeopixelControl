@@ -9,7 +9,7 @@ async function sendRequest(name, value, callback = null) {
     if(lastRequest != thisRequest) {
       return;
     }
-	  console.log(d.getTime() - lastSent);
+    //console.log(d.getTime() - lastSent);
   }
   lastSent = d.getTime()
 
@@ -90,6 +90,34 @@ $(document).on('shown.bs.tab', function (e) {
     document.getElementById("solidColor").jscolor.hide();
   }
 });
+
+function activateTab(pageId) {
+  /* thank you stackoverflow https://stackoverflow.com/a/1029252 */
+  var tabCtrl = document.getElementById('tabCtrl');
+  var pageToActivate = document.getElementById(pageId);
+  for (var i = 0; i < tabCtrl.childNodes.length; i++) {
+    var node = tabCtrl.childNodes[i];
+    if (node.nodeType == 1) { /* Element */
+      node.style.display = (node == pageToActivate) ? 'block' : 'none';
+    }
+  }
+  if(pageId == 'tabSolidColor') {
+    setSolidColorpickerSize();
+    solidColorHide = document.getElementById("solidColor").jscolor.hide;
+    document.getElementById("solidColor").jscolor.hide = function(){};
+    sendRequest("mode", "solidColor");
+  } else {
+    if(pageId == 'tabManyColorEntry') {
+      sendRequest("mode", "manyColors");
+      setMultiColorpickerSize();
+    }
+    document.getElementById("solidColor").jscolor.hide = solidColorHide;
+    document.getElementById("solidColor").jscolor.hide();
+  }
+}
+
+
+
 var lightSize = 20;
 var lightsPos = [
   [10, 10],
@@ -263,16 +291,18 @@ window.onresize = function(event) {
 }
 
 function setSolidColorpickerSize() {
-  $("#solidColor")[0].jscolor.width = $("#pills-solid-color").width() - 57;
-  $("#solidColor")[0].jscolor.height = $("#pills-solid-color").width() * 0.55;
-  $("#solidColor").css("margin-bottom", $("#pills-solid-color").width() * 0.55 + 50);
+  var width = $("#tabSolidColor").width();
+  $("#solidColor")[0].jscolor.width = width - 57;
+  $("#solidColor")[0].jscolor.height = width * 0.55;
+  $("#solidColor").css("margin-bottom", width * 0.55 + 50);
   $("#solidColor")[0].jscolor.show();
 }
 
 function setMultiColorpickerSize() {
   //TODO: maybe filling the screen isn't the best idea?
-  $("#manyColorCanvas").prop('width', $("#pills-many-colors").width() - 4);
-  $("#manyColorCanvas").prop('height', $("#pills-many-colors").width());
+  var width = $("#tabManyColorEntry").width();
+  $("#manyColorCanvas").prop('width', width - 4);
+  $("#manyColorCanvas").prop('height', width);
   drawMultiLights();
 }
 
@@ -283,7 +313,7 @@ function setColorBox(name) {
 }
 
 window.onload = function() {
-  document.getElementById("defaultOpen").click();
+  // document.getElementById("defaultOpen").click();
   // set brightness slider text
   var currSliderPercent = $(".slider1").val();
   $(".sliderPercent1").html(currSliderPercent + "%");
@@ -309,7 +339,8 @@ window.onload = function() {
 
   //set the background color of the solid color boxes
   //I don't think this really belongs in this function tbh
-  ["solidColor", "multiColorSelect", "gradientFirstColor", "gradientSecondColor"].map(c => setColorBox(c));
+  //["solidColor", "multiColorSelect", "gradientFirstColor", "gradientSecondColor"].map(c => setColorBox(c));
+  ["solidColor"].map(c => setColorBox(c));
 
   // get current state
   sendRequest("getState", null, initialSetState);
@@ -318,6 +349,7 @@ window.onload = function() {
 }
 
 function initialSetState(stateInfo) {
+  return;
   var data = JSON.parse(stateInfo);
   for(var key in data) {
     switch(key) {
