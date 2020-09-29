@@ -23,8 +23,10 @@
         Color: <br><input data-jscolor="{previewElement:'#pr1'}" id="solidColor" onInput="solidColorChange(this,'solidColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;">
         <br>
         Brightness: <label class="sliderPercent3">0%</label><br>
-        <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)" style="width:100%;">
-        <em id="pr1" style="display:none; padding:1em;">previewElement</em>
+        <div style="display: flex;">
+          <label>Lights&nbspon/off: </label>
+          <input type="checkbox" checked onInput="lightsOnOff(this)">
+          <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)" style="flex-grow: 1;"> </div>
       </div>
       <div id="tabManyColorEntry" style="display: none;">
         <!-- many color tab -->
