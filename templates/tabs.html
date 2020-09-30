@@ -16,22 +16,22 @@
     <button onclick="activateTab('tabManyColorEntry')">Many Color Entry</button>
     <button onclick="activateTab('tabManyColorSelect')">Many Color Select</button>
     <button onclick="activateTab('tabAnimate')">Animate</button>
-    </div><br>
-    <label class="switch">
-      <input type="checkbox">
-      <span class="slider round"></span>
-    </label>&nbsp;&nbsp;&nbsp;Lights Off/On<br><br>
+    </div>
     <div id="tabCtrl">
       <div id="tabSolidColor" style="display: block;">
         <!-- solid color tab -->
         Color: <br><input data-jscolor="{previewElement:'#pr1'}" id="solidColor" onInput="solidColorChange(this,'solidColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;">
         <br>
-        Brightness: <label class="sliderPercent3">0%</label><br>
+        Brightness: <label class="sliderPercent3">0%</label><br><br>
         <div style="display: flex;">
-          <!-- <label>Lights&nbspon/off: </label>
-          <input type="checkbox" checked onInput="lightsOnOff(this)"> -->
+          <div style="display: block;">
+          <label class="switch">
+            <input type="checkbox">
+            <span class="slider round"><span class="on">ON</span><span class="off">OFF</span></span>
+          </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </div>
           <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)" style="flex-grow: 1;"> </div>
-      </div>
+      </div><br/>
       <div id="tabManyColorEntry" style="display: none;">
         <!-- many color tab -->
         many color entry
