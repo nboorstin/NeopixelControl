@@ -41,6 +41,16 @@ input:not([type='checkbox']):not([type='range']) {
   border-width: 1px;  
 }
 
+.background-rect{
+  background-color: aliceblue;
+  border-radius: 12px;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;  
+  padding-left: 3%;
+  padding-right: 3%;
+}
+
 .slider1 {
   -webkit-appearance: none;
   width: 100%;
