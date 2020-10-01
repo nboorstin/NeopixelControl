@@ -12,10 +12,10 @@
   </head>
   <body>
     <div>
-    <button onclick="activateTab('tabSolidColor')">Solid Color</button>
-    <button onclick="activateTab('tabManyColorEntry')">Many Color Entry</button>
-    <button onclick="activateTab('tabManyColorSelect')">Many Color Select</button>
-    <button onclick="activateTab('tabAnimate')">Animate</button>
+    <button class="topbutton-active" onclick="activateTab(this, 'tabSolidColor')">Solid Color</button>
+    <button class="topbutton" onclick="activateTab(this, 'tabManyColorEntry')">Many Color Entry</button>
+    <button class="topbutton" onclick="activateTab(this, 'tabManyColorSelect')">Many Color Select</button>
+    <button class="topbutton" onclick="activateTab(this, 'tabAnimate')">Animate</button>
     </div>
     <div id="tabCtrl">
       <div id="tabSolidColor" style="display: block;">

@@ -18,6 +18,29 @@ body{
 input:not([type='checkbox']):not([type='range']) {    
   width: 100%;
 }
+
+
+.topbutton {
+  width: 24.4%;
+  box-shadow: none;
+  background-color: aliceblue;
+  border-radius: 12px;
+  height: 40px;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;  
+}
+.topbutton-active {
+  width: 24.4%;
+  box-shadow: none;
+  background-color: lightblue;
+  border-radius: 12px;
+  height: 40px;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;  
+}
+
 .slider1 {
   -webkit-appearance: none;
   width: 100%;

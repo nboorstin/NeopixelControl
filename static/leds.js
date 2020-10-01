@@ -91,8 +91,14 @@ $(document).on('shown.bs.tab', function (e) {
   }
 });
 
-function activateTab(pageId) {
+function activateTab(button, pageId) {
   /* thank you stackoverflow https://stackoverflow.com/a/1029252 */
+  if(button.className == "topbutton-active") {
+    return;
+  }
+  $(".topbutton-active")[0].className = "topbutton";
+  button.className = "topbutton-active";
+
   var tabCtrl = document.getElementById('tabCtrl');
   var pageToActivate = document.getElementById(pageId);
   for (var i = 0; i < tabCtrl.childNodes.length; i++) {
