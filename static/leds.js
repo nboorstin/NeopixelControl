@@ -297,8 +297,8 @@ window.onresize = function(event) {
 }
 
 function setSolidColorpickerSize() {
-  var width = $("#tabSolidColor").width();
-  $("#solidColor")[0].jscolor.width = width - 57;
+  var width = $("#solidColor").width();
+  $("#solidColor")[0].jscolor.width = width - 52;
   $("#solidColor")[0].jscolor.height = width * 0.55;
   $("#solidColor").css("margin-bottom", width * 0.55 + 50);
   $("#solidColor")[0].jscolor.show();
