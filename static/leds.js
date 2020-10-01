@@ -299,8 +299,10 @@ window.onresize = function(event) {
 function setSolidColorpickerSize() {
   var width = $("#solidColor").width();
   $("#solidColor")[0].jscolor.width = width - 52;
-  $("#solidColor")[0].jscolor.height = width * 0.55;
-  $("#solidColor").css("margin-bottom", width * 0.55 + 50);
+  // idk why this is wrong but the extra 53 makes it almost ok so....
+  var height = $(window).height() - $("#solidColor").offset().top - $("#solidColorSliders").height() - 53;
+  $("#solidColor")[0].jscolor.height = height - 50;
+  $("#solidColor").css("margin-bottom", height);
   $("#solidColor")[0].jscolor.show();
 }
 

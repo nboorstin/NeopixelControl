@@ -112,7 +112,7 @@ input:not([type='checkbox']):not([type='range']) {
 .slider3 {
   -webkit-appearance: none;
   width: 100%;
-  height: 30px; /*change to make slider on inside or outside of bar*/
+  height: 15px; /*change to make slider on inside or outside of bar*/
   border-radius: 5px;  
   background: #a3a3a3;
   outline: none;
