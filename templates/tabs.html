@@ -10,13 +10,18 @@
     <script src="../static/tabstyle.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
+
   <body>
+    <!-- tab select -->
     <div>
-    <button class="topbutton-active" onclick="activateTab(this, 'tabSolidColor')">Solid Color</button>
-    <button class="topbutton" onclick="activateTab(this, 'tabManyColorEntry')">Many Color Entry</button>
-    <button class="topbutton" onclick="activateTab(this, 'tabManyColorSelect')">Many Color Select</button>
-    <button class="topbutton" onclick="activateTab(this, 'tabAnimate')">Animate</button>
+    <table width="100%"><tr>
+      <td style="text-align:center"><button class="topbutton-active" onclick="activateTab(this, 'tabSolidColor')">Solid Color</button></td>
+      <td style="text-align:center"><button class="topbutton" onclick="activateTab(this, 'tabManyColorEntry')">Many Color Entry</button></td>
+      <td style="text-align:center"><button class="topbutton" onclick="activateTab(this, 'tabManyColorSelect')">Many Color Select</button></td>
+      <td style="text-align:center"><button class="topbutton" onclick="activateTab(this, 'tabAnimate')">Animate</button></td>
+    </tr></table>
     </div>
+
     <div id="tabCtrl">
       <div id="tabSolidColor" style="display: block;">
         <!-- solid color tab -->
@@ -32,6 +37,7 @@
           </div>
           <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)" style="flex-grow: 1;"> </div>
       </div><br/>
+      
       <div id="tabManyColorEntry" style="display: none;">
         <!-- many color tab -->
         many color entry

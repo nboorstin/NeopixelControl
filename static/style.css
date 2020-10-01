@@ -21,7 +21,7 @@ input:not([type='checkbox']):not([type='range']) {
 
 
 .topbutton {
-  width: 24.4%;
+  width: 100%;
   box-shadow: none;
   background-color: aliceblue;
   border-radius: 12px;
@@ -31,7 +31,7 @@ input:not([type='checkbox']):not([type='range']) {
   border-width: 1px;  
 }
 .topbutton-active {
-  width: 24.4%;
+  width: 100%;
   box-shadow: none;
   background-color: lightblue;
   border-radius: 12px;
