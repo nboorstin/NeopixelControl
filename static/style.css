@@ -1,5 +1,5 @@
 body{
-  background-color: rgb(230, 230, 230);
+  background-color: #f3f3f3ff;
   padding-left:30%;
   padding-right:30%;
 }
@@ -23,7 +23,7 @@ input:not([type='checkbox']):not([type='range']) {
 .topbutton {
   width: 100%;
   box-shadow: none;
-  background-color: aliceblue;
+  background-color: white;
   border-radius: 12px;
   height: 40px;
   border-color: black;
@@ -33,7 +33,7 @@ input:not([type='checkbox']):not([type='range']) {
 .topbutton-active {
   width: 100%;
   box-shadow: none;
-  background-color: lightblue;
+  background-color: #b7b7b7ff;
   border-radius: 12px;
   height: 40px;
   border-color: black;
@@ -42,7 +42,7 @@ input:not([type='checkbox']):not([type='range']) {
 }
 
 .background-rect{
-  background-color: aliceblue;
+  background-color: #ccccccff;
   border-radius: 12px;
   border-color: black;
   border-style: solid;
@@ -114,7 +114,7 @@ input:not([type='checkbox']):not([type='range']) {
   width: 100%;
   height: 15px; /*change to make slider on inside or outside of bar*/
   border-radius: 5px;  
-  background: #a3a3a3;
+  background: #999999ff;
   outline: none;
   opacity: 0.7;
   -webkit-transition: .2s;
@@ -127,7 +127,7 @@ input:not([type='checkbox']):not([type='range']) {
   width: 25px;
   height: 25px;
   border-radius: 50%; 
-  background: #0400ff;
+  background: #1155ccff;
   cursor: pointer;
 }
 

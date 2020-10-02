@@ -165,7 +165,7 @@ function colorBoxChange(input,whichcolor) {
   setColorBox(whichcolor);
 }
 
-var backgroundColor = "aliceblue";
+var backgroundColor = "#ccccccff";
 
 function drawMultiLights() {
   var canvas = document.getElementById("manyColorCanvas");
