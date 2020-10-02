@@ -26,9 +26,10 @@
       <div id="tabSolidColor" style="display: block;">
         <!-- solid color tab -->
         <br>
-        <div class="background-rect">
+        <div class="background-rect" id="solidColorCenter">
           <br>
-          <input data-jscolor="{previewElement:'#pr1', shadow:false}" id="solidColor" onInput="solidColorChange(this,'solidColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;"></div>
+          <input data-jscolor="{previewElement:'#pr1', shadow:false}" id="solidColor" onInput="solidColorChange(this,'solidColor')" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;">
+        </div>
         <br>
         <div class="background-rect" id="solidColorSliders">
           <span style="margin-left:83px">Brightness: <label class="sliderPercent3">0%</label></span><br>
@@ -45,8 +46,22 @@
 
       <div id="tabManyColorEntry" style="display: none;">
         <!-- many color tab -->
-        many color entry
-        <canvas id="manyColorCanvas" height="400" style="border:2px solid #000000;" onclick="drawShape()"></canvas></br>
+        <br>
+        <div class="background-rect" id="manyColorEntryCenter" style="padding:0.5%">
+          <canvas id="manyColorCanvas" height="200"  onclick="drawShape()"></canvas>
+        </div>
+        </br> 
+        <div class="background-rect" id="manyColorEntrySliders">
+          <table width="100%" style="table-layout: fixed;"><tr>
+              <td style="text-align:center"><button class="topbutton">button</button></td>
+              <td style="text-align:center"><button class="topbutton">button</button></td>
+              <td style="text-align:center"><button class="topbutton">button</button></td>
+              <td style="text-align:center"><button class="topbutton">button</button></td>
+            </tr></table>
+            <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)">
+            <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)">
+            <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)">
+        </div>
       </div>
       <div id="tabManyColorSelect" style="display: none;">many color select</br>work in progress...</div>
       <div id="tabAnimate" style="display: none;">animate</br>yeah i'm sure this will happen at some point...</div>

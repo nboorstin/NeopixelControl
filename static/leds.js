@@ -165,7 +165,7 @@ function colorBoxChange(input,whichcolor) {
   setColorBox(whichcolor);
 }
 
-var backgroundColor = "#808080";
+var backgroundColor = "aliceblue";
 
 function drawMultiLights() {
   var canvas = document.getElementById("manyColorCanvas");
@@ -300,7 +300,7 @@ function setSolidColorpickerSize() {
   var width = $("#solidColor").width();
   $("#solidColor")[0].jscolor.width = width - 52;
   // idk why this is wrong but the extra 53 makes it almost ok so....
-  var height = $(window).height() - $("#solidColor").offset().top - $("#solidColorSliders").height() - 53;
+  var height = $(window).height() - $("#solidColorCenter").offset().top - $("#solidColorSliders").height() - 73;
   $("#solidColor")[0].jscolor.height = height - 50;
   $("#solidColor").css("margin-bottom", height);
   $("#solidColor")[0].jscolor.show();
@@ -308,9 +308,13 @@ function setSolidColorpickerSize() {
 
 function setMultiColorpickerSize() {
   //TODO: maybe filling the screen isn't the best idea?
-  var width = $("#tabManyColorEntry").width();
-  $("#manyColorCanvas").prop('width', width - 4);
-  $("#manyColorCanvas").prop('height', width);
+  var width = $("#manyColorEntryCenter").width();
+  $("#manyColorCanvas").prop('width', width);
+  var height = $(window).height() - $("#manyColorEntryCenter").offset().top - $("#manyColorEntrySliders").height() - 73;
+  console.log($("#manyColorEntryCenter").offset().top);
+  console.log($("#manyColorEntrySliders").height())
+
+  $("#manyColorCanvas").prop('height', height + 26);
   drawMultiLights();
 }
 
@@ -344,6 +348,9 @@ window.onload = function() {
   //hackishly keep the solid color open
   solidColorHide = document.getElementById("solidColor").jscolor.hide;
   document.getElementById("solidColor").jscolor.hide = function(){};
+
+  //just for now, set the default to many colors
+  activateTab($(".topbutton")[0], 'tabManyColorEntry');
 
   //set the background color of the solid color boxes
   //I don't think this really belongs in this function tbh
