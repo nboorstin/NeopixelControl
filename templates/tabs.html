@@ -32,7 +32,6 @@
         </div>
         <br>
         <div class="background-rect" id="solidColorSliders">
-          <span style="margin-left:83px">Brightness: <label class="sliderPercent3">0%</label></span><br>
           <div style="display: flex;">
             <div style="display: block;">
               <label class="switch">
@@ -40,7 +39,11 @@
                 <span class="slider round"><span class="on">ON</span><span class="off">OFF</span></span>
               </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </div>
-            <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)" style="flex-grow: 1;"> </div>
+            <div style="flex-grow: 1;">
+              <span style="position:fixed;z-index:1;">Brightness: <label class="sliderPercent3">0%</label></span>
+              <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)">
+            </div>
+          </div>
         </div>
       </div>
 
