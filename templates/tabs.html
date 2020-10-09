@@ -50,20 +50,33 @@
       <div id="tabManyColorEntry" style="display: none;">
         <!-- many color tab -->
         <br>
-        <div class="background-rect" id="manyColorEntryCenter" style="padding:0.5%">
+        <div class="background-rect" id="manyColorEntryCenter" style="padding:0.6%">
           <canvas id="manyColorCanvas" height="200"  onclick="drawShape()"></canvas>
         </div>
         </br> 
         <div class="background-rect" id="manyColorEntrySliders">
           <table width="100%" style="table-layout: fixed;"><tr>
-              <td style="text-align:center"><button class="topbutton">button</button></td>
-              <td style="text-align:center"><button class="topbutton">button</button></td>
-              <td style="text-align:center"><button class="topbutton">button</button></td>
-              <td style="text-align:center"><button class="topbutton">button</button></td>
+              <td style="text-align:center"><button class="topbutton">reset</button></td>
+              <td style="text-align:center"><button class="topbutton">solid color fill</button></td>
+              <td style="text-align:center"><button class="topbutton">save</button></td>
+              <td style="text-align:center"><button class="topbutton">load</button></td>
             </tr></table>
+            <span style="position:fixed;z-index:1;">Gradient/pattern</span>
             <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)">
+            <span style="position:fixed;z-index:1;">Randomness</span>
             <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)">
-            <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)">
+            <div style="display: flex;">
+              <div style="display: block;">
+                <label class="switch">
+                  <input type="checkbox">
+                  <span class="slider round"><span class="on">ON</span><span class="off">OFF</span></span>
+                </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </div>
+              <div style="flex-grow: 1;">
+                <span style="position:fixed;z-index:1;">Brightness: <label class="sliderPercent3">0%</label></span>
+                <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)">
+              </div>
+            </div>
         </div>
       </div>
       <div id="tabManyColorSelect" style="display: none;">many color select</br>work in progress...</div>

@@ -74,23 +74,6 @@ var solidColorHide = null;
 
 
 // on tab switch
-$(document).on('shown.bs.tab', function (e) {
-  var newTab = $(e.target).attr("href");
-  if(newTab == "#pills-solid-color") {
-    setSolidColorpickerSize();
-    solidColorHide = document.getElementById("solidColor").jscolor.hide;
-    document.getElementById("solidColor").jscolor.hide = function(){};
-    sendRequest("mode", "solidColor");
-  } else {
-    if(newTab == "#pills-many-colors") {
-      sendRequest("mode", "manyColors");
-      setMultiColorpickerSize();
-    }
-    document.getElementById("solidColor").jscolor.hide = solidColorHide;
-    document.getElementById("solidColor").jscolor.hide();
-  }
-});
-
 function activateTab(button, pageId) {
   /* thank you stackoverflow https://stackoverflow.com/a/1029252 */
   if(button.className == "topbutton-active") {
@@ -124,20 +107,57 @@ function activateTab(button, pageId) {
 
 
 
-var lightSize = 20;
 var lightsPos = [
-  [10, 10],
-  [10, 50],
-  [10, 90],
-  [10, 130],
-  [10, 170],
-  [10, 210],
-  [10, 250],
-  [10, 290],
-  [10, 330],
-  [10, 370]];
+[0, 0],
+[0, 1],
+[0, 2],
+[0, 3],
+[0, 4],
+[0, 5],
+[0, 6],
+[0, 7],
+[0, 8],
+[0, 9],
+[0, 10],
+[0, 11],
+[0, 12],
+[0, 13],
+[0, 14],
+[1, 14],
+[2, 14],
+[3, 14],
+[4, 14],
+[5, 14],
+[6, 14],
+[7, 14],
+[8, 14],
+[9, 14],
+[9, 13],
+[9, 12],
+[9, 11],
+[9, 10],
+[9, 9],
+[9, 8],
+[9, 7],
+[9, 6],
+[9, 5],
+[9, 4],
+[9, 3],
+[9, 2],
+[9, 1],
+[9, 0],
+[8, 0],
+[7, 0],
+[6, 0],
+[5, 0],
+[4, 0],
+[3, 0],
+[2, 0],
+[1, 0],
+];
 var lightsColor = Array(lightsPos.length).fill("#FF0000");
 var lightsSelected = Array(lightsPos.length).fill(false);
+lightsSelected[0] = lightsSelected[14] = lightsSelected[23] = lightsSelected[37] = true;
 
 function checkLightsMouse(e) {
   console.log(".");
@@ -196,49 +216,59 @@ function rgbToHex(color) {
 
 function redrawLights() {
   var canvas = document.getElementById("manyColorCanvas");
+
+  var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
+  var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
+  var spacing = 0.75;
+  spacing += 1;
+  var sizeX = canvas.width / (spacing * countX);
+  var sizeY = canvas.height / (spacing * countY);
+  var size = Math.min(sizeX, sizeY);
+  // override spacing if it's too big
+  //size = Math.min(size, 30);
+
   var ctx = canvas.getContext("2d");
   for(var i=0; i<lightsPos.length; i++) {
-    var x = lightsPos[i][0];
-    var y = lightsPos[i][1];
-    var glowColor = rgbToHex(hexToRgb(lightsColor[i]).map(x => x + 130));
+    var x = ((spacing/4)+lightsPos[i][0]) * spacing * size;
+    var y = ((spacing/4)+lightsPos[i][1]) * spacing * size;
 
     ctx.beginPath();
-    var glow = ctx.createRadialGradient(
-      x + lightSize/2, y+lightSize/2, lightSize/3,
-      x + lightSize/2, y+lightSize/2, lightSize/1);
-    glow.addColorStop(0, glowColor);
-    glow.addColorStop(1, backgroundColor);
-    ctx.fillStyle = glow;
-    ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/1, 0, 2 * Math.PI, false);
-    ctx.fill();
 
     ctx.beginPath();
     ctx.fillStyle = lightsColor[i];
-    ctx.arc(x + lightSize/2, y+lightSize/2, lightSize/3, 0, 2 * Math.PI, false);
+    ctx.lineWidth = 2;
+    if (lightsSelected[i]) {
+      ctx.strokeStyle = 'white';
+      ctx.arc(x, y, 1.5*size / (spacing+1), 0, 2 * Math.PI, false);
+    } else {
+      ctx.strokeStyle = 'black';
+      ctx.arc(x, y, size / (spacing+1), 0, 2 * Math.PI, false);
+    }
     ctx.fill();
-
-    // ctx.strokeStyle="#000000";
-    if(lightsSelected[i]){
-      ctx.strokeStyle = "#FFFFFF";
-    }
-    else{
-      ctx.strokeStyle="#000000";
-    }
-    ctx.lineWidth = 1;
-    // draw outer rectangle
-    ctx.strokeRect(x, y, lightSize, lightSize);
-    var innerRect = lightSize/8;
-    ctx.strokeRect(x+innerRect, y+innerRect, lightSize-2*innerRect, lightSize-2*innerRect);
-    ctx.beginPath()
-    ctx.moveTo(x, y);
-    ctx.lineTo(x+innerRect, y+innerRect);
-    ctx.moveTo(x, y+lightSize);
-    ctx.lineTo(x+innerRect, y+lightSize-innerRect);
-    ctx.moveTo(x+lightSize, y);
-    ctx.lineTo(x+lightSize-innerRect, y+innerRect);
-    ctx.moveTo(x+lightSize, y+lightSize);
-    ctx.lineTo(x+lightSize-innerRect, y+lightSize-innerRect);
     ctx.stroke();
+
+    //// ctx.strokeStyle="#000000";
+    //if(lightsSelected[i]){
+    //  ctx.strokeStyle = "#FFFFFF";
+    //}
+    //else{
+    //  ctx.strokeStyle="#000000";
+    //}
+    //ctx.lineWidth = 1;
+    //// draw outer rectangle
+    //ctx.strokeRect(x, y, lightSize, lightSize);
+    //var innerRect = lightSize/8;
+    //ctx.strokeRect(x+innerRect, y+innerRect, lightSize-2*innerRect, lightSize-2*innerRect);
+    //ctx.beginPath()
+    //ctx.moveTo(x, y);
+    //ctx.lineTo(x+innerRect, y+innerRect);
+    //ctx.moveTo(x, y+lightSize);
+    //ctx.lineTo(x+innerRect, y+lightSize-innerRect);
+    //ctx.moveTo(x+lightSize, y);
+    //ctx.lineTo(x+lightSize-innerRect, y+innerRect);
+    //ctx.moveTo(x+lightSize, y+lightSize);
+    //ctx.lineTo(x+lightSize-innerRect, y+lightSize-innerRect);
+    //ctx.stroke();
   }
 }
 
@@ -308,13 +338,14 @@ function setSolidColorpickerSize() {
 
 function setMultiColorpickerSize() {
   //TODO: maybe filling the screen isn't the best idea?
-  var width = $("#manyColorEntryCenter").width();
-  $("#manyColorCanvas").prop('width', width);
+  var width = $("#manyColorEntryCenter").width() * .99;
+  var canvas = document.getElementById("manyColorCanvas");
+  canvas.style.width = width + 'px';
+  canvas.width = width * window.devicePixelRatio;
   var height = $(window).height() - $("#manyColorEntryCenter").offset().top - $("#manyColorEntrySliders").height() - 73;
-  console.log($("#manyColorEntryCenter").offset().top);
-  console.log($("#manyColorEntrySliders").height())
-
-  $("#manyColorCanvas").prop('height', height + 26);
+  height = height + 26;
+  canvas.style.height = height + 'px';
+  canvas.height = height * window.devicePixelRatio;
   drawMultiLights();
 }
 
@@ -412,36 +443,6 @@ function setShape(shape){
   selectiontab = shape;
   console.log("shapechange");
   console.log(shape);
-}
-
-function drawShape(){
-  // var canvas = document.getAnimations("manyColorCanvas");
-  $("manyColorCanvas").unbind("mousedown");
-  $("manyColorCanvas").unbind("mousemove");
-  $("manyColorCanvas").unbind("mouseup");
-  var a = document.getElementById("pills-rectangle").getAttribute("aria-selected");
-  var b = document.getElementById("pills-circle").getAttribute("aria-selected");
-  var c = document.getElementById("pills-dot").getAttribute("aria-selected");
-  var d = document.getElementById("pills-squiggle").getAttribute("aria-selected");
-  console.log(a);
-  console.log(b);
-  console.log(c);
-  console.log(d);
-  if(a.toString() == "true"){// for some reason a isn't true but prints as true.
-    console.log("rectangle");
-    drawRect();
-  }
-  else if(b.toString() == "true"){
-    console.log("circle");
-    drawCircle();
-  }
-  else if(c.toString() == "true"){
-    console.log("dot");
-    drawDot();
-  }
-  else if(d.toString == "true"){
-    drawSquiggle();
-  }
 }
 
 function drawRect(){
