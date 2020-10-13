@@ -66,6 +66,7 @@ function brightnessChange(input) {
   $(".sliderPercent3").html(input.value + "%");
   //TODO: remove this if you find a way to not have two different brightness sliders
   $(".slider").val(input.value);
+  centerSliders();
   sendRequest("brightness", input.value);
 }
 
@@ -324,6 +325,18 @@ window.onresize = function(event) {
   } else {
     setMultiColorpickerSize();
   }
+  centerSliders();
+}
+
+function centerSliders() {
+  // eh fuck it just do all the text sliders at once
+  for(slider of $(".sliderText")) {
+    w = slider.getBoundingClientRect().width;
+    if(w != 0) {
+      parentWidth = slider.parentElement.getBoundingClientRect().width;
+      slider.style.marginLeft = (parentWidth - w) / 2 + "px";
+    }
+  }
 }
 
 function setSolidColorpickerSize() {
@@ -376,12 +389,16 @@ window.onload = function() {
   //try to set canvas size
   setMultiColorpickerSize();
 
+  //*shrug*
+  centerSliders();
+
   //hackishly keep the solid color open
   solidColorHide = document.getElementById("solidColor").jscolor.hide;
   document.getElementById("solidColor").jscolor.hide = function(){};
 
   //just for now, set the default to many colors
   activateTab($(".topbutton")[0], 'tabManyColorEntry');
+  centerSliders();
 
   //set the background color of the solid color boxes
   //I don't think this really belongs in this function tbh
