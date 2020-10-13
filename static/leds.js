@@ -230,8 +230,8 @@ function redrawLights() {
 
   var ctx = canvas.getContext("2d");
   for(var i=0; i<lightsPos.length; i++) {
-    var x = ((spacing/4)+lightsPos[i][0]) * spacing * size;
-    var y = ((spacing/4)+lightsPos[i][1]) * spacing * size;
+    var x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
+    var y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
 
     ctx.beginPath();
 

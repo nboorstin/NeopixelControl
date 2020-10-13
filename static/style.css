@@ -120,9 +120,10 @@ input:not([type='checkbox']):not([type='range']) {
   border-style: solid;
 
   outline: none;
-  opacity: 0.7;
+  /*opacity: 0.7;*/
   -webkit-transition: .2s;
   transition: opacity .2s;
+  border-width: 2px;
 }
 
 .slider3::-webkit-slider-thumb {
@@ -139,7 +140,7 @@ input:not([type='checkbox']):not([type='range']) {
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: #606060;
+  background: #909090;
   border: black;
   border-style: solid;
   border-width: 1px;
@@ -150,6 +151,7 @@ input:not([type='checkbox']):not([type='range']) {
 .sliderText {
   position: fixed;
   margin-top: 0.29%;
+  pointer-events: none;
 }
 /* Style the tab */
 .tab {
