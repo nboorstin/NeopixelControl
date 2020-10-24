@@ -84,7 +84,9 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     }
 
 }
-
+ICACHE_RAM_ATTR void test() {
+  Serial.println(digitalRead(0));
+}
 void setup() {
 	// USE_SERIAL.begin(921600);
 	USE_SERIAL.begin(9600);
@@ -108,6 +110,8 @@ void setup() {
 	USE_SERIAL.println();
 	USE_SERIAL.println();
 
+ pinMode(0, INPUT_PULLUP);
+ attachInterrupt(digitalPinToInterrupt(0), test, CHANGE);
 	for(uint8_t t = 4; t > 0; t--) {
 		USE_SERIAL.printf("[SETUP] BOOT WAIT %d...\n", t);
 		USE_SERIAL.flush();
