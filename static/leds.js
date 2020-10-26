@@ -49,17 +49,25 @@ function solidColorChange(input,whichcolor) {
 }
 
 function randomnessChange(input) {
-  $(".sliderPercent1").html(input.value + "%");
-  //TODO: remove this if you find a way to not have two different brightness sliders
-  $(".slider").val(input.value);
+  $(".sliderPercent2").html(input.value + "%");
+  for(var i=0; i<lightsPos.length; i++) {
+    if(lightsSelected[i] == false){
+      var red = Math.floor(Math.random() * Math.floor(255));
+      var green = Math.floor(Math.random() * Math.floor(255));
+      var blue = Math.floor(Math.random() * Math.floor(255));
+      var randomcolor = rgbToHexString(red, green, blue);
+      lightsColor[i] = blendColors([randomcolor, lightsColorSet[i]], [input.value, 100-input.value]);
+    }
+  }
+  redrawLights();
 }
 
 function patternChange(input) {
-  $(".sliderPercent2").html(input.value + "%");
+  $(".sliderPercent1").html(input.value + "%");
   var inverse = 100 - input.value;
   $(".sliderPercent2inverse").html(inverse + "%");
   //TODO: remove this if you find a way to not have two different brightness sliders
-  $(".slider").val(input.value);
+  // $(".slider").val(input.value);
 }
 
 function brightnessChange(input) {
@@ -68,6 +76,38 @@ function brightnessChange(input) {
   $(".slider").val(input.value);
   centerSliders();
   sendRequest("brightness", input.value);
+}
+
+function blendColors(colorlist, percentagelist){
+  var red = 0;
+  var blue = 0;
+  var green = 0;
+  for(var i = 0; i < colorlist.length; i++){
+    red = red + (parseInt(colorlist[i].substring(1,3),16) * percentagelist[i]/100);
+    green = green + (parseInt(colorlist[i].substring(3,5),16) * percentagelist[i]/100);
+    blue = blue + (parseInt(colorlist[i].substring(5,7),16) * percentagelist[i]/100);
+  }
+  red = Math.round(red);
+  green = Math.round(green);
+  blue = Math.round(blue);
+  return rgbToHexString(red, green, blue);
+}
+
+function rgbToHexString(red, green, blue){
+  var redstring = red.toString(16);
+  if(redstring.length < 2){
+    redstring = "0" + redstring;
+  }
+  var greenstring = green.toString(16);
+  if(greenstring.length < 2){
+    greenstring = "0" + greenstring;
+  }
+  var bluestring = blue.toString(16);
+  if(bluestring.length < 2){
+    bluestring = "0" + bluestring;
+  }
+  var hexstring = "#" + redstring + greenstring + bluestring;
+  return hexstring;
 }
 
 var solidColorHide = null;
@@ -157,6 +197,7 @@ var lightsPos = [
 [1, 0],
 ];
 var lightsColor = Array(lightsPos.length).fill("#FF0000");
+var lightsColorSet = Array(lightsPos.length).fill("#FF0000");
 var lightsSelected = Array(lightsPos.length).fill(false);
 lightsSelected[0] = lightsSelected[14] = lightsSelected[23] = lightsSelected[37] = true;
 
