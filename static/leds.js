@@ -209,18 +209,30 @@ function checkLightsMouse(e) {
   var x = event.pageX - canvasLeft,
     y = event.pageY - canvasTop;
   var changed = false;
+  var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
+  var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
+  var spacing = 0.75;
+  spacing += 1;
+  var sizeX = canvas.width / (spacing * countX);
+  var sizeY = canvas.height / (spacing * countY);
+  var size = Math.min(sizeX, sizeY);
   for(var i=0; i<lightsPos.length; i++) {
-    if(lightsPos[i][0] <= x && lightsPos[i][0] + lightSize >= x &&
-      lightsPos[i][1] <= y && lightsPos[i][1] + lightSize >= y) {
-      console.log(i);
-      changed = true;
-      // lightsColor[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
+    if(lightsSelected[i]){
+      var xPos = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
+      var yPos = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
+      if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
+        yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
+        console.log(i);
+        changed = true;
+        overlayOn();
+        // lightsColor[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
+      }
     }
   }
-  if(changed) {
-    redrawLights();
-    sendRequest("manyColors", lightsColor);
-  }
+  // if(changed) {
+  //   redrawLights();
+  //   sendRequest("manyColors", lightsColor);
+  // }
 }
 
 function colorBoxChange(input,whichcolor) {

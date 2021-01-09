@@ -51,7 +51,7 @@
         <!-- many color tab -->
         <br>
         <div class="background-rect" id="manyColorEntryCenter" style="padding:0.6%">
-          <canvas id="manyColorCanvas" height="200"  onclick="drawShape()"></canvas>
+          <canvas id="manyColorCanvas" height="200"></canvas>
         </div>
         </br> 
         <div class="background-rect" id="manyColorEntrySliders">
@@ -82,5 +82,13 @@
       <div id="tabManyColorSelect" style="display: none;">many color select</br>work in progress...</div>
       <div id="tabAnimate" style="display: none;">animate</br>yeah i'm sure this will happen at some point...</div>
     </div>
+    <div id="overlay">
+    <br/><br/><br/>
+      <div id="overlaybox">
+        Color picker goes here!
+        <br/><br/>
+        <button class="topbutton" onclick="overlayOff()">Exit</button>
+      </div>
+    </div> 
   </body>
 </html>
