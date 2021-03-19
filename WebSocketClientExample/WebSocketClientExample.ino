@@ -4,6 +4,7 @@
  * Uses the fastLED library: https://www.arduino.cc/reference/en/libraries/fastled/
  * and websocket library: https://github.com/Links2004/arduinoWebSockets
  * and ESP8266 board definitions: https://github.com/esp8266/Arduino
+ * https://learn.sparkfun.com/tutorials/how-to-install-ftdi-drivers/windows---quick-and-easy
  * 
  * set board to Generic ESP8266 Module
  * IDK about everything else, try things?
@@ -93,7 +94,7 @@ void setup() {
  //delay(100);
    FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
    for(int i=0; i<NUM_LEDS; i++) {
-          leds[i] = CRGB(0,0,0);
+          leds[i] = CRGB(0,255,0);
         }
    //FastLED.show();
    
