@@ -11,8 +11,8 @@ import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-import asyncio
-import websockets
+#import asyncio
+#import websockets
 
 cond = Condition()
 
@@ -110,12 +110,14 @@ def response():
         return make_response("test")
 
 
-if __name__ == "__main__":
-    Process(target=app.run, kwargs={'host': "0.0.0.0"}).start()
-    start_server = websockets.serve(socket_handler, "0.0.0.0", 8765)
 
-    asyncio.get_event_loop().run_until_complete(start_server)
-    try:
-        asyncio.get_event_loop().run_forever()
-    except KeyboardInterrupt:
-        print()
+app.run(host='0.0.0.0')
+#if __name__ == "__main__":
+#    Process(target=app.run, kwargs={'host': "0.0.0.0"}).start()
+#    start_server = websockets.serve(socket_handler, "0.0.0.0", 8765)
+#
+#    asyncio.get_event_loop().run_until_complete(start_server)
+#    try:
+#        asyncio.get_event_loop().run_forever()
+#    except KeyboardInterrupt:
+#        print()
