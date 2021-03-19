@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from flask import Flask, send_from_directory, redirect, url_for, request, render_template, make_response, json
 from threading import Timer, Lock, Thread, Condition
-from os import path
+from os import path, environ
 from math import ceil
 from multiprocessing import Process
 
@@ -111,7 +111,8 @@ def response():
 
 
 
-app.run(host='0.0.0.0')
+port = int(environ.get("PORT", 5000))
+app.run(host='0.0.0.0', port=port)
 #if __name__ == "__main__":
 #    Process(target=app.run, kwargs={'host': "0.0.0.0"}).start()
 #    start_server = websockets.serve(socket_handler, "0.0.0.0", 8765)
