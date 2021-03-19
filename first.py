@@ -111,8 +111,9 @@ def response():
 
 
 
-port = int(environ.get("PORT", 5000))
-app.run(host='0.0.0.0', port=port)
+if __name == "__main__":
+    port = int(environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
 #if __name__ == "__main__":
 #    Process(target=app.run, kwargs={'host': "0.0.0.0"}).start()
 #    start_server = websockets.serve(socket_handler, "0.0.0.0", 8765)
