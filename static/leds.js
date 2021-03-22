@@ -222,7 +222,7 @@ function checkLightsMouse(e) {
       if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
         yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
         changed = true;
-        overlayOn(i);
+        overlayOn(i, x, y);
         // lightsColor[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
       }
     }
@@ -739,10 +739,11 @@ function applyColor(){
 }
 
 var activeOverlay = -1;
-function overlayOn(i) {
+function overlayOn(i, x, y) {
   activeOverlay = i;
-  $("#multiColorPicker")[0].jscolor.show();
   document.getElementById("overlay").style.display = "block";
+  $("#overlay").css({top: y/2, left: x/2});
+  $("#multiColorPicker")[0].jscolor.show();
 }
 
 function overlayOff(){
@@ -756,8 +757,7 @@ function onDocumentMouseDown(e) {
     var t = target;
     var inOverlay = false;
     while (t != null) {
-      console.log(t);
-      if (t.id == "overlaybox") {
+      if (t.id == "overlaybox" || t.className == "jscolor-picker") {
         inOverlay = true;
         break;
       }
