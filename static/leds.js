@@ -2,8 +2,8 @@ var lastSent = 0
 var lastRequest = 0
 var minDelay = 40;
 async function sendRequest(name, value, callback = null) {
-  console.log("sending " + name);
-  console.trace();
+  //console.log("sending " + name);
+  //console.trace();
   var d = new Date()
   var thisRequest = lastRequest = d.getTime();
   if(d.getTime() - lastSent < minDelay) {
