@@ -222,7 +222,7 @@ function checkLightsMouse(e) {
       if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
         yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
         changed = true;
-        overlayOn();
+        overlayOn(i);
         // lightsColor[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
       }
     }
@@ -419,6 +419,7 @@ function setColorBox(name) {
   $("#"+name).css("color", hexToRgb(color).reduce((a,b) => a+b)/3 > 128 ? "#000000" : "#FFFFFF");
 }
 
+
 window.onload = function() {
   // document.getElementById("defaultOpen").click();
   // set brightness slider text
@@ -434,6 +435,7 @@ window.onload = function() {
   $(".sliderPercent3").html(currSliderPercent + "%");
   $(".slider3").val(currSliderPercent);
 
+  document.addEventListener('mousedown', onDocumentMouseDown, false);
   //set solid color picker's size
   setSolidColorpickerSize();
 
@@ -736,10 +738,33 @@ function applyColor(){
   overlayOff();
 }
 
-function overlayOn() {
+var activeOverlay = -1;
+function overlayOn(i) {
+  activeOverlay = i;
+  $("#multiColorPicker")[0].jscolor.show();
   document.getElementById("overlay").style.display = "block";
 }
 
 function overlayOff(){
+  activeOverlay = -1;
   document.getElementById("overlay").style.display = "none";
+}
+
+function onDocumentMouseDown(e) {
+  var target = e.target || e.srcElement;
+  if (activeOverlay !== -1) {
+    var t = target;
+    var inOverlay = false;
+    while (t != null) {
+      console.log(t);
+      if (t.id == "overlaybox") {
+        inOverlay = true;
+        break;
+      }
+      t = t.parentElement;
+    }
+    if(!inOverlay) {
+      overlayOff();
+    }
+  }
 }
