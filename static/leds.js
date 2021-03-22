@@ -74,8 +74,9 @@ function patternChange(input) {
 function brightnessChange(input) {
   $(".sliderPercent3").html(input.value + "%");
   //TODO: remove this if you find a way to not have two different brightness sliders
-  $(".slider").val(input.value);
+  $(".slider3").val(input.value);
   centerSliders();
+  console.log(input.value);
   sendRequest("brightness", input.value);
 }
 
@@ -485,7 +486,7 @@ function initialSetState(stateInfo) {
         break;
       case "brightness":
         $(".sliderPercent").html(data.brightness + "%");
-        $(".slider").val(data.brightness);
+        $(".slider3").val(data.brightness);
         break;
       case "manyColors":
         //if(lightsColor.length <= data.manyColors.length) {
