@@ -742,7 +742,7 @@ var activeOverlay = -1;
 function overlayOn(i, x, y) {
   activeOverlay = i;
   document.getElementById("overlay").style.display = "block";
-  $("#overlay").css({top: y, left: x, position:'absolute'});
+  $("#overlay").css({top: y, left: x, position:'fixed'});
   $("#multiColorPicker")[0].jscolor.show();
 }
 
