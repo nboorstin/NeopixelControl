@@ -61,6 +61,7 @@ function randomnessChange(input) {
     }
   }
   redrawLights();
+  sendRequest("randomness", input.value);
 }
 
 function patternChange(input) {
@@ -69,6 +70,7 @@ function patternChange(input) {
   $(".sliderPercent2inverse").html(inverse + "%");
   //TODO: remove this if you find a way to not have two different brightness sliders
   // $(".slider").val(input.value);
+  sendRequest("gradient", input.value);
 }
 
 function brightnessChange(input) {
@@ -485,8 +487,16 @@ function initialSetState(stateInfo) {
         setColorBox("solidColor");
         break;
       case "brightness":
-        $(".sliderPercent").html(data.brightness + "%");
+        $(".sliderPercent3").html(data.brightness + "%");
         $(".slider3").val(data.brightness);
+        break;
+      case "randomness":
+        $(".sliderPercent2").html(data.randomness + "%");
+        $(".slider2").val(data.randomness);
+        break;
+      case "gradient":
+        $(".sliderPercent1").html(data.gradient + "%");
+        $(".slider1").val(data.gradient);
         break;
       case "manyColors":
         //if(lightsColor.length <= data.manyColors.length) {
