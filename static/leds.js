@@ -743,12 +743,23 @@ function overlayOn(i, x, y) {
   activeOverlay = i;
   document.getElementById("overlay").style.display = "block";
   $("#overlay").css({top: y, left: x, position:'fixed'});
+  $("#multiColorPicker")[0].jscolor.fromString(lightsColor[i]);
   $("#multiColorPicker")[0].jscolor.show();
 }
 
 function overlayOff(){
   activeOverlay = -1;
   document.getElementById("overlay").style.display = "none";
+}
+
+function multiColorPickerChange(input,whichcolor) {
+  var newColor = input.jscolor.toString("hex");
+  if(activeOverlay != -1) {
+    if(newColor != lightsColor[activeOverlay]) {
+      lightsColor[activeOverlay] = newColor;
+      redrawLights();
+    }
+  }
 }
 
 function onDocumentMouseDown(e) {
