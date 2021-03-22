@@ -34,6 +34,7 @@ async function sendRequest(name, value, callback = null) {
 
 }
 function lightsOnOff(input) {
+  $(":checkbox").prop('checked', input.checked);
   sendRequest("on", input.checked);
 }
 
@@ -140,6 +141,13 @@ function activateTab(button, pageId) {
     if(pageId == 'tabManyColorEntry') {
       sendRequest("mode", "manyColors");
       setMultiColorpickerSize();
+      centerSliders();
+    } else if (pageId == 'tabManyColorSelect') {
+      sendRequest('mode', 'manyColorSelect');
+    } else if (pageId == 'tabAnimate') {
+      sendRequest('mode', 'animate');
+    } else {
+      console.log(pageId);
     }
     document.getElementById("solidColor").jscolor.hide = solidColorHide;
     document.getElementById("solidColor").jscolor.hide();
@@ -450,7 +458,7 @@ window.onload = function() {
   document.getElementById("solidColor").jscolor.hide = function(){};
 
   //just for now, set the default to many colors
-  activateTab($(".topbutton")[0], 'tabManyColorEntry');
+  //activateTab($(".topbutton")[0], 'tabManyColorEntry');
   centerSliders();
 
   //set the background color of the solid color boxes
@@ -465,12 +473,11 @@ window.onload = function() {
 }
 
 function initialSetState(stateInfo) {
-  return;
   var data = JSON.parse(stateInfo);
   for(var key in data) {
     switch(key) {
       case "on":
-        document.getElementById("customSwitch1").checked = data.on;
+        $(":checkbox").prop('checked', data.on);
         break;
       case "solidColor":
         document.getElementById("solidColor").jscolor.fromString(data.solidColor);
@@ -481,28 +488,30 @@ function initialSetState(stateInfo) {
         $(".slider").val(data.brightness);
         break;
       case "manyColors":
-        if(lightsColor.length <= data.manyColors.length) {
-          lightsColor = data.manyColors;
-        } else {
-          lightsColor = data.manyColors + lightsColor.slice(data.manyColors.length);
-        }
-        drawMultiLights();
+        //if(lightsColor.length <= data.manyColors.length) {
+        //  lightsColor = data.manyColors;
+        //} else {
+        //  lightsColor = data.manyColors + lightsColor.slice(data.manyColors.length);
+        //}
+        //drawMultiLights();
         break;
       case "mode":
-        if(data.mode != 'solidColor') {
-          var sel = null;
-          switch(data.mode) {
-            case "manyColors":
-              sel = "many-colors"
-              break;
-            default:
-          }
-          if(sel != null) {
-            document.querySelector('a[href="#pills-' + sel + '"]').click();
-          }
+        var loadedTab = '';
+        switch(data.mode) {
+          case 'solidColor':
+            loadedTab = 'tabSolidColor';
+          activateTab($(".topbutton-active")[0], loadedTab);
+            break;
+          case 'manyColors':
+            loadedTab = 'tabManyColorEntry';
+          activateTab($(".topbutton")[0], loadedTab);
+            break;
+          default:
+            console.log(data.mode);
         }
         break;
       default:
+        console.log(key);
     }
   }
 }
