@@ -1,0 +1,13 @@
+Output: NC Drill Files
+Type  : NC Drill
+From  : Project [ESP_helper.PrjPcb]
+   Generated File[ESP_with_usb-RoundHoles.TXT]
+   Generated File[ESP_with_usb-SlotHoles.TXT]
+   Generated File[ESP_with_usb.LDP]
+   Generated File[ESP_with_usb.DRR]
+
+
+Files Generated   : 4
+Documents Printed : 0
+
+Finished Output Generation At 6:32:55 PM On 10/31/2020

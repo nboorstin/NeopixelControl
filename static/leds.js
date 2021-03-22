@@ -202,12 +202,11 @@ var lightsSelected = Array(lightsPos.length).fill(false);
 lightsSelected[0] = lightsSelected[14] = lightsSelected[23] = lightsSelected[37] = true;
 
 function checkLightsMouse(e) {
-  console.log(".");
   var canvas = document.getElementById("manyColorCanvas");
   var canvasLeft = canvas.offsetLeft + canvas.clientLeft;
   var canvasTop = canvas.offsetTop + canvas.clientTop;
-  var x = event.pageX - canvasLeft,
-    y = event.pageY - canvasTop;
+  var x = (event.pageX - canvasLeft) * window.devicePixelRatio,
+    y = (event.pageY - canvasTop) * window.devicePixelRatio;
   var changed = false;
   var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
   var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
@@ -222,7 +221,6 @@ function checkLightsMouse(e) {
       var yPos = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
       if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
         yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
-        console.log(i);
         changed = true;
         overlayOn();
         // lightsColor[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
