@@ -2,6 +2,8 @@ var lastSent = 0
 var lastRequest = 0
 var minDelay = 40;
 async function sendRequest(name, value, callback = null) {
+  console.log("sending " + name);
+  console.trace();
   var d = new Date()
   var thisRequest = lastRequest = d.getTime();
   if(d.getTime() - lastSent < minDelay) {
@@ -250,7 +252,7 @@ function colorBoxChange(input,whichcolor) {
 
 var backgroundColor = "#ccccccff";
 
-function drawMultiLights() {
+function drawMultiLights(redraw=false) {
   var canvas = document.getElementById("manyColorCanvas");
   canvas.addEventListener('mousemove', function(event) {
     if(event.buttons % 2 == 1) {
@@ -263,7 +265,9 @@ function drawMultiLights() {
   ctx.fillStyle=backgroundColor;
   ctx.fillRect(0,0,canvas.width, canvas.height);
   ctx.fillStyle="#000000";
-  redrawLights();
+  if (redraw) {
+    redrawLights();
+  }
 }
 
 function hexToRgb(hex) {
@@ -412,7 +416,7 @@ function setSolidColorpickerSize() {
   $("#solidColor")[0].jscolor.show();
 }
 
-function setMultiColorpickerSize() {
+function setMultiColorpickerSize(redraw=true) {
   //TODO: maybe filling the screen isn't the best idea?
   var width = $("#manyColorEntryCenter").width() * .99;
   var canvas = document.getElementById("manyColorCanvas");
@@ -422,7 +426,7 @@ function setMultiColorpickerSize() {
   height = height + 26;
   canvas.style.height = height + 'px';
   canvas.height = height * window.devicePixelRatio;
-  drawMultiLights();
+  drawMultiLights(redraw);
 }
 
 function setColorBox(name) {
@@ -452,7 +456,7 @@ window.onload = function() {
   setSolidColorpickerSize();
 
   //try to set canvas size
-  setMultiColorpickerSize();
+  setMultiColorpickerSize(false);
 
   //*shrug*
   centerSliders();
@@ -472,8 +476,6 @@ window.onload = function() {
 
   // get current state
   sendRequest("getState", null, initialSetState);
-
-  drawMultiLights();
 }
 
 function initialSetState(stateInfo) {
@@ -500,12 +502,13 @@ function initialSetState(stateInfo) {
         $(".slider1").val(data.gradient);
         break;
       case "manyColors":
-        //if(lightsColor.length <= data.manyColors.length) {
-        //  lightsColor = data.manyColors;
-        //} else {
-        //  lightsColor = data.manyColors + lightsColor.slice(data.manyColors.length);
-        //}
-        //drawMultiLights();
+        console.log("!!!");
+        if(lightsColor.length <= data.manyColors.length) {
+          lightsColor = data.manyColors;
+        } else {
+          lightsColor = data.manyColors + lightsColor.slice(data.manyColors.length);
+        }
+        //redrawLights(); //for some reason this isn't actually necessary here
         break;
       case "mode":
         var loadedTab = '';
