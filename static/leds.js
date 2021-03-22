@@ -53,15 +53,7 @@ function solidColorChange(input,whichcolor) {
 
 function randomnessChange(input) {
   $(".sliderPercent2").html(input.value + "%");
-  for(var i=0; i<lightsPos.length; i++) {
-    if(lightsSelected[i] == false){
-      var red = Math.floor(Math.random() * Math.floor(255));
-      var green = Math.floor(Math.random() * Math.floor(255));
-      var blue = Math.floor(Math.random() * Math.floor(255));
-      var randomcolor = rgbToHexString(red, green, blue);
-      lightsColor[i] = blendColors([randomcolor, lightsColorSet[i]], [input.value, 100-input.value]);
-    }
-  }
+  randomAmount = input.value;
   redrawLights();
   sendRequest("randomness", input.value);
 }
@@ -69,9 +61,7 @@ function randomnessChange(input) {
 function patternChange(input) {
   $(".sliderPercent1").html(input.value + "%");
   var inverse = 100 - input.value;
-  $(".sliderPercent2inverse").html(inverse + "%");
-  //TODO: remove this if you find a way to not have two different brightness sliders
-  // $(".slider").val(input.value);
+  $(".sliderPercent2inverse").html(inverse + "%"); //what is this?
   sendRequest("gradient", input.value);
 }
 
@@ -281,6 +271,37 @@ function rgbToHex(color) {
   return "#" + color.map(x => componentToHex(Math.round(x))).join('');
 }
 
+function updateColors() {
+  // step 1: search for all selected lights
+  var selected = [];
+  for (var i=0; i<lightsPos.length; i++) {
+    if (lightsSelected[i]) {
+      selected.push(i);
+    }
+  }
+  // step 2: for each unselected light, set its color to the nearest one
+  for (var i=0; i<lightsPos.length; i++) {
+    if (!lightsSelected[i]) {
+      // ok for now its just going to be the nearest selected one
+      var minDist = -1;
+      var minColor = "#000000";
+      for(const j of selected) {
+        var dist = Math.hypot(lightsPos[j][0]-lightsPos[i][0], lightsPos[j][1]-lightsPos[i][1]);
+        if (minDist == -1 || dist < minDist) {
+          minDist = dist;
+          minColor = lightsColor[j];
+        }
+      }
+      lightsColor[i] = minColor;
+      // and then apply random
+      var red = Math.floor(Math.random() * Math.floor(255));
+      var green = Math.floor(Math.random() * Math.floor(255));
+      var blue = Math.floor(Math.random() * Math.floor(255));
+      var randomcolor = rgbToHexString(red, green, blue);
+      lightsColor[i] = blendColors([randomcolor, lightsColor[i]], [randomAmount, 100-randomAmount]);
+    }
+  }
+}
 function redrawLights() {
   var canvas = document.getElementById("manyColorCanvas");
 
@@ -294,15 +315,14 @@ function redrawLights() {
   // override spacing if it's too big
   //size = Math.min(size, 30);
 
+  updateColors();
   var ctx = canvas.getContext("2d");
   for(var i=0; i<lightsPos.length; i++) {
     var x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
     var y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
 
-    ctx.beginPath();
-
-    ctx.beginPath();
     ctx.fillStyle = lightsColor[i];
+    ctx.beginPath();
     ctx.lineWidth = 2;
     if (lightsSelected[i]) {
       ctx.strokeStyle = 'white';
@@ -313,29 +333,6 @@ function redrawLights() {
     }
     ctx.fill();
     ctx.stroke();
-
-    //// ctx.strokeStyle="#000000";
-    //if(lightsSelected[i]){
-    //  ctx.strokeStyle = "#FFFFFF";
-    //}
-    //else{
-    //  ctx.strokeStyle="#000000";
-    //}
-    //ctx.lineWidth = 1;
-    //// draw outer rectangle
-    //ctx.strokeRect(x, y, lightSize, lightSize);
-    //var innerRect = lightSize/8;
-    //ctx.strokeRect(x+innerRect, y+innerRect, lightSize-2*innerRect, lightSize-2*innerRect);
-    //ctx.beginPath()
-    //ctx.moveTo(x, y);
-    //ctx.lineTo(x+innerRect, y+innerRect);
-    //ctx.moveTo(x, y+lightSize);
-    //ctx.lineTo(x+innerRect, y+lightSize-innerRect);
-    //ctx.moveTo(x+lightSize, y);
-    //ctx.lineTo(x+lightSize-innerRect, y+innerRect);
-    //ctx.moveTo(x+lightSize, y+lightSize);
-    //ctx.lineTo(x+lightSize-innerRect, y+lightSize-innerRect);
-    //ctx.stroke();
   }
   sendRequest("manyColors", lightsColor);
 }
@@ -436,6 +433,7 @@ function setColorBox(name) {
 }
 
 
+var randomAmount = 0;
 window.onload = function() {
   // document.getElementById("defaultOpen").click();
   // set brightness slider text
@@ -444,6 +442,7 @@ window.onload = function() {
   $(".slider1").val(currSliderPercent);
   var currSliderPercent = $(".slider2").val();
   $(".sliderPercent2").html(currSliderPercent + "%");
+  randomAmount = currSliderPercent;
   var inverse = 100 - currSliderPercent
   $(".sliderPercent2inverse").html(inverse + "%");
   $(".slider2").val(currSliderPercent);
@@ -496,6 +495,7 @@ function initialSetState(stateInfo) {
       case "randomness":
         $(".sliderPercent2").html(data.randomness + "%");
         $(".slider2").val(data.randomness);
+        randomAmount = data.randomness;
         break;
       case "gradient":
         $(".sliderPercent1").html(data.gradient + "%");
