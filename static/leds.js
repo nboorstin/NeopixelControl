@@ -333,6 +333,7 @@ function redrawLights() {
     //ctx.lineTo(x+lightSize-innerRect, y+lightSize-innerRect);
     //ctx.stroke();
   }
+  sendRequest("manyColors", lightsColor);
 }
 
 function makeGradient() {
