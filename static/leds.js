@@ -222,7 +222,7 @@ function checkLightsMouse(e) {
       if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
         yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
         changed = true;
-        overlayOn(i, x, y);
+        overlayOn(i, event.pageX, event.pageY);
         // lightsColor[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
       }
     }
@@ -742,7 +742,7 @@ var activeOverlay = -1;
 function overlayOn(i, x, y) {
   activeOverlay = i;
   document.getElementById("overlay").style.display = "block";
-  $("#overlay").css({top: y/2, left: x/2});
+  $("#overlay").css({top: y, left: x, position:'absolute'});
   $("#multiColorPicker")[0].jscolor.show();
 }
 
