@@ -2,7 +2,10 @@ var lastRequestName = ""
 var lastSent = 0
 var lastRequest = 0
 var minDelay = 40;
-async function sendRequest(name, value, callback = null) {
+async function sendRequest(name, value, send = true, callback = null) {
+  if(!send) {
+    return;
+  }
   //console.log("sending " + name + ", " + value);
   //console.trace();
   var d = new Date()
@@ -40,7 +43,7 @@ async function sendRequest(name, value, callback = null) {
 }
 function lightsOnOff(input, send=true) {
   $(":checkbox").prop('checked', input.checked);
-  if(send) sendRequest("on", input.checked);
+  sendRequest("on", input.checked, send);
 }
 
 // solid color handlers
@@ -55,7 +58,6 @@ function solidColorChange(input) {
 }
 
 function randomnessChange(input, redraw=true, send=true) {
-  console.log("send: " + send);
   $(".sliderPercent2").html(input.value + "%");
   randomAmount = input.value;
   for(var i=0; i<randomColors.length; i++) {
@@ -65,16 +67,16 @@ function randomnessChange(input, redraw=true, send=true) {
       var randomcolor = rgbToHexString(red, green, blue);
     randomColors[i] = randomcolor;
   }
-  if(send) sendRequest("randomColors", randomColors);
+  sendRequest("randomColors", randomColors, send);
   redrawLights(redraw);
-  if(send) sendRequest("randomness", input.value);
+  sendRequest("randomness", input.value, send);
 }
 
 function patternChange(input, redraw=true, send=true) {
   $(".sliderPercent1").html(input.value + "%");
   var inverse = 100 - input.value;
   $(".sliderPercent2inverse").html(inverse + "%"); //what is this?
-  if(send) sendRequest("gradient", input.value);
+  sendRequest("gradient", input.value, send);
   redrawLights(redraw);
 }
 
@@ -83,7 +85,7 @@ function brightnessChange(input, send=true) {
   //TODO: remove this if you find a way to not have two different brightness sliders
   $(".slider3").val(input.value);
   centerSliders();
-  if(send) sendRequest("brightness", input.value);
+  sendRequest("brightness", input.value, send);
 }
 
 function blendColors(colorlist, percentagelist){
@@ -143,16 +145,16 @@ function activateTab(button, pageId, send=true) {
     setSolidColorpickerSize();
     solidColorHide = document.getElementById("solidColor").jscolor.hide;
     document.getElementById("solidColor").jscolor.hide = function(){};
-    if(send) sendRequest("mode", "solidColor");
+    sendRequest("mode", "solidColor", send);
   } else {
     if(pageId == 'tabManyColorEntry') {
-      if(send) sendRequest("mode", "manyColors");
+      sendRequest("mode", "manyColors", send);
       setMultiColorpickerSize(true, send);
       centerSliders();
     } else if (pageId == 'tabManyColorSelect') {
-      if(send) sendRequest('mode', 'manyColorSelect');
+      sendRequest('mode', 'manyColorSelect', send);
     } else if (pageId == 'tabAnimate') {
-      if(send) sendRequest('mode', 'animate');
+      sendRequest('mode', 'animate', send);
     } else {
       console.log(pageId);
     }
@@ -343,13 +345,13 @@ function redrawLights(doRedraw = true, send = true) {
     ctx.fill();
     ctx.stroke();
   }
-  if(send) sendRequest("manyColors", lightsColor);
+  sendRequest("manyColors", lightsColor, send);
 }
 
 function resetSingleColor(redraw = true, send = true) {
   document.getElementById("solidColor").jscolor.fromString("#FF0000");
   setColorBox("solidColor");
-  if(send) sendRequest("solidColor", "#FF0000");
+  sendRequest("solidColor", "#FF0000", send);
   $(".slider3").val(70);
   brightnessChange($(".slider3")[0], send);
   $(":checkbox").prop('checked', true);
@@ -484,7 +486,7 @@ window.onload = function() {
   ["solidColor"].map(c => setColorBox(c));
 
   // get current state
-  sendRequest("getState", null, initialSetState);
+  sendRequest("getState", null, true, initialSetState);
 }
 
 function initialSetState(stateInfo) {
