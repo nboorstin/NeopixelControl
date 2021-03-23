@@ -3,7 +3,7 @@ var lastSent = 0
 var lastRequest = 0
 var minDelay = 40;
 async function sendRequest(name, value, callback = null) {
-  console.log("sending " + name + ", " + value);
+  //console.log("sending " + name + ", " + value);
   //console.trace();
   var d = new Date()
   var thisRequest = lastRequest = d.getTime();
@@ -83,7 +83,6 @@ function brightnessChange(input, send=true) {
   //TODO: remove this if you find a way to not have two different brightness sliders
   $(".slider3").val(input.value);
   centerSliders();
-  console.log(input.value);
   if(send) sendRequest("brightness", input.value);
 }
 
@@ -124,7 +123,7 @@ var solidColorHide = null;
 
 
 // on tab switch
-function activateTab(button, pageId) {
+function activateTab(button, pageId, send=true) {
   /* thank you stackoverflow https://stackoverflow.com/a/1029252 */
   if(button.className == "topbutton-active") {
     return;
@@ -144,16 +143,16 @@ function activateTab(button, pageId) {
     setSolidColorpickerSize();
     solidColorHide = document.getElementById("solidColor").jscolor.hide;
     document.getElementById("solidColor").jscolor.hide = function(){};
-    sendRequest("mode", "solidColor");
+    if(send) sendRequest("mode", "solidColor");
   } else {
     if(pageId == 'tabManyColorEntry') {
-      sendRequest("mode", "manyColors");
-      setMultiColorpickerSize();
+      if(send) sendRequest("mode", "manyColors");
+      setMultiColorpickerSize(true, send);
       centerSliders();
     } else if (pageId == 'tabManyColorSelect') {
-      sendRequest('mode', 'manyColorSelect');
+      if(send) sendRequest('mode', 'manyColorSelect');
     } else if (pageId == 'tabAnimate') {
-      sendRequest('mode', 'animate');
+      if(send) sendRequest('mode', 'animate');
     } else {
       console.log(pageId);
     }
@@ -255,7 +254,7 @@ function colorBoxChange(input,whichcolor) {
 
 var backgroundColor = "#ccccccff";
 
-function drawMultiLights(redraw=false) {
+function drawMultiLights(redraw=false, send=true) {
   var canvas = document.getElementById("manyColorCanvas");
   canvas.addEventListener('mousemove', function(event) {
     if(event.buttons % 2 == 1) {
@@ -268,7 +267,7 @@ function drawMultiLights(redraw=false) {
   ctx.fillStyle=backgroundColor;
   ctx.fillRect(0,0,canvas.width, canvas.height);
   ctx.fillStyle="#000000";
-  redrawLights(redraw);
+  redrawLights(redraw, send);
 }
 
 function hexToRgb(hex) {
@@ -309,7 +308,7 @@ function updateColors() {
     }
   }
 }
-function redrawLights(doRedraw = true) {
+function redrawLights(doRedraw = true, send = true) {
   if (!doRedraw) {
     return;
   }
@@ -344,7 +343,7 @@ function redrawLights(doRedraw = true) {
     ctx.fill();
     ctx.stroke();
   }
-  sendRequest("manyColors", lightsColor);
+  if(send) sendRequest("manyColors", lightsColor);
 }
 
 function resetSingleColor(redraw = true, send = true) {
@@ -437,7 +436,7 @@ function setSolidColorpickerSize() {
   $("#solidColor")[0].jscolor.show();
 }
 
-function setMultiColorpickerSize(redraw=true) {
+function setMultiColorpickerSize(redraw=true, send=true) {
   //TODO: maybe filling the screen isn't the best idea?
   var width = $("#manyColorEntryCenter").width() * .99;
   var canvas = document.getElementById("manyColorCanvas");
@@ -447,7 +446,7 @@ function setMultiColorpickerSize(redraw=true) {
   height = height + 26;
   canvas.style.height = height + 'px';
   canvas.height = height * window.devicePixelRatio;
-  drawMultiLights(redraw);
+  drawMultiLights(redraw, send);
 }
 
 function setColorBox(name) {
@@ -510,7 +509,6 @@ function initialSetState(stateInfo) {
         $(".sliderPercent2").html(data.randomness + "%");
         $(".slider2").val(data.randomness);
         randomAmount = data.randomness;
-        console.log("randomAmount: " + randomAmount);
         break;
       case "gradient":
         $(".sliderPercent1").html(data.gradient + "%");
@@ -527,12 +525,10 @@ function initialSetState(stateInfo) {
         var loadedTab = '';
         switch(data.mode) {
           case 'solidColor':
-            loadedTab = 'tabSolidColor';
-          activateTab($(".topbutton-active")[0], loadedTab);
+            activateTab($(".topbutton-active")[0], 'tabSolidColor', false);
             break;
           case 'manyColors':
-            loadedTab = 'tabManyColorEntry';
-          activateTab($(".topbutton")[0], loadedTab);
+            activateTab($(".topbutton")[0], 'tabManyColorEntry', false);
             break;
           default:
             console.log(data.mode);
@@ -542,7 +538,7 @@ function initialSetState(stateInfo) {
         console.log(key);
     }
   }
-  redrawLights();
+  redrawLights(true, false);
 }
 
 var activeOverlay = -1;
