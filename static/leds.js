@@ -2,7 +2,7 @@ var lastSent = 0
 var lastRequest = 0
 var minDelay = 40;
 async function sendRequest(name, value, callback = null) {
-  //console.log("sending " + name);
+  console.log("sending " + name + ", " + value);
   //console.trace();
   var d = new Date()
   var thisRequest = lastRequest = d.getTime();
@@ -35,9 +35,9 @@ async function sendRequest(name, value, callback = null) {
   }));
 
 }
-function lightsOnOff(input) {
+function lightsOnOff(input, send=true) {
   $(":checkbox").prop('checked', input.checked);
-  sendRequest("on", input.checked);
+  if(send) sendRequest("on", input.checked);
 }
 
 // solid color handlers
@@ -51,7 +51,7 @@ function solidColorChange(input,whichcolor) {
   setColorBox("solidColor");
 }
 
-function randomnessChange(input) {
+function randomnessChange(input, redraw=true, send=true) {
   $(".sliderPercent2").html(input.value + "%");
   randomAmount = input.value;
   for(var i=0; i<randomColors.length; i++) {
@@ -61,16 +61,17 @@ function randomnessChange(input) {
       var randomcolor = rgbToHexString(red, green, blue);
     randomColors[i] = randomcolor;
   }
-  sendRequest("randomColors", randomColors);
-  redrawLights();
-  sendRequest("randomness", input.value);
+  if(send) sendRequest("randomColors", randomColors);
+  redrawLights(redraw);
+  if(send) sendRequest("randomness", input.value);
 }
 
-function patternChange(input) {
+function patternChange(input, redraw=true, send=true) {
   $(".sliderPercent1").html(input.value + "%");
   var inverse = 100 - input.value;
   $(".sliderPercent2inverse").html(inverse + "%"); //what is this?
-  sendRequest("gradient", input.value);
+  if(send) sendRequest("gradient", input.value);
+  redrawLights(redraw);
 }
 
 function brightnessChange(input) {
@@ -207,8 +208,7 @@ var lightsPos = [
 [2, 0],
 [1, 0],
 ];
-var lightsColor = Array(lightsPos.length).fill("#FF0000");
-var lightsColorSet = Array(lightsPos.length).fill("#FF0000");
+var lightsColor = Array(lightsPos.length);
 var lightsSelected = Array(lightsPos.length).fill(false);
 var randomColors = Array(lightsPos.length).fill("#000000");
 lightsSelected[0] = lightsSelected[14] = lightsSelected[23] = lightsSelected[37] = true;
@@ -264,9 +264,7 @@ function drawMultiLights(redraw=false) {
   ctx.fillStyle=backgroundColor;
   ctx.fillRect(0,0,canvas.width, canvas.height);
   ctx.fillStyle="#000000";
-  if (redraw) {
-    redrawLights();
-  }
+  redrawLights(redraw);
 }
 
 function hexToRgb(hex) {
@@ -307,7 +305,10 @@ function updateColors() {
     }
   }
 }
-function redrawLights() {
+function redrawLights(doRedraw = true) {
+  if (!doRedraw) {
+    return;
+  }
   var canvas = document.getElementById("manyColorCanvas");
 
   var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
@@ -342,6 +343,21 @@ function redrawLights() {
   sendRequest("manyColors", lightsColor);
 }
 
+function resetSingleColor(redraw = true, send = true) {
+  document.getElementById("solidColor").jscolor.fromString("#FF0000");
+  $(":checkbox").prop('checked', true);
+  lightsOnOff($(":checkbox")[0], send);
+}
+function resetMultiColor(redraw = true, send = true) {
+  lightsColor = Array(lightsPos.length).fill("#FF0000");
+  $(".slider1").val(50)
+  patternChange($(".slider1")[0], false, send);
+  $(".slider2").val(0);
+  randomnessChange($(".slider2")[0], false, send);
+  $(":checkbox").prop('checked', true);
+  lightsOnOff($(":checkbox")[0], send);
+  redrawLights(redraw);
+}
 function makeGradient() {
   var unfilledlist = [];
   var filledlist = [];
@@ -376,13 +392,6 @@ function makeGradient() {
     colorstring += greenint.toString(16);
     colorstring += blueint.toString(16);
     lightsColor[unfilledlist[i]] = colorstring;
-  }
-  redrawLights();
-}
-
-function clearLights(){
-  for(var i = 0; i < lightsColor.length; i++){
-    lightsColor[i] = "#FFFFFF";
   }
   redrawLights();
 }
@@ -442,15 +451,10 @@ var randomAmount = 0;
 window.onload = function() {
   // document.getElementById("defaultOpen").click();
   // set brightness slider text
-  var currSliderPercent = $(".slider1").val();
-  $(".sliderPercent1").html(currSliderPercent + "%");
-  $(".slider1").val(currSliderPercent);
-  var currSliderPercent = $(".slider2").val();
-  $(".sliderPercent2").html(currSliderPercent + "%"); //todo? start this at zero?
-  randomAmount = currSliderPercent;
-  var inverse = 100 - currSliderPercent
-  $(".sliderPercent2inverse").html(inverse + "%");
-  $(".slider2").val(currSliderPercent);
+  //var currSliderPercent = $(".slider1").val();
+  //$(".sliderPercent1").html(currSliderPercent + "%");
+  //$(".slider1").val(currSliderPercent);
+  resetMultiColor(false, false);
   var currSliderPercent = $(".slider3").val();
   $(".sliderPercent3").html(currSliderPercent + "%");
   $(".slider3").val(currSliderPercent);
@@ -506,6 +510,7 @@ function initialSetState(stateInfo) {
         randomAmount = data.randomness;
         break;
       case "gradient":
+        console.log(data.gradient);
         $(".sliderPercent1").html(data.gradient + "%");
         $(".slider1").val(data.gradient);
         break;
