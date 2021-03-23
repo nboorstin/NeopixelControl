@@ -1,3 +1,4 @@
+var lastRequestName = ""
 var lastSent = 0
 var lastRequest = 0
 var minDelay = 40;
@@ -6,13 +7,15 @@ async function sendRequest(name, value, callback = null) {
   //console.trace();
   var d = new Date()
   var thisRequest = lastRequest = d.getTime();
-  if(d.getTime() - lastSent < minDelay) {
+  if(lastRequestName == name && d.getTime() - lastSent < minDelay) {
+    lastRequestName = name;
     await new Promise(r => setTimeout(r, minDelay));
     if(lastRequest != thisRequest) {
       return;
     }
     //console.log(d.getTime() - lastSent);
   }
+  lastRequestName = name;
   lastSent = d.getTime()
 
   var xhr = new XMLHttpRequest();
@@ -42,7 +45,7 @@ function lightsOnOff(input, send=true) {
 
 // solid color handlers
 var lastColor = null;
-function solidColorChange(input,whichcolor) {
+function solidColorChange(input) {
   var newColor = input.jscolor.toString("hex");
   if(lastColor != newColor) {
     sendRequest("solidColor", newColor);
@@ -52,6 +55,7 @@ function solidColorChange(input,whichcolor) {
 }
 
 function randomnessChange(input, redraw=true, send=true) {
+  console.log("send: " + send);
   $(".sliderPercent2").html(input.value + "%");
   randomAmount = input.value;
   for(var i=0; i<randomColors.length; i++) {
@@ -74,13 +78,13 @@ function patternChange(input, redraw=true, send=true) {
   redrawLights(redraw);
 }
 
-function brightnessChange(input) {
+function brightnessChange(input, send=true) {
   $(".sliderPercent3").html(input.value + "%");
   //TODO: remove this if you find a way to not have two different brightness sliders
   $(".slider3").val(input.value);
   centerSliders();
   console.log(input.value);
-  sendRequest("brightness", input.value);
+  if(send) sendRequest("brightness", input.value);
 }
 
 function blendColors(colorlist, percentagelist){
@@ -345,6 +349,10 @@ function redrawLights(doRedraw = true) {
 
 function resetSingleColor(redraw = true, send = true) {
   document.getElementById("solidColor").jscolor.fromString("#FF0000");
+  setColorBox("solidColor");
+  if(send) sendRequest("solidColor", "#FF0000");
+  $(".slider3").val(70);
+  brightnessChange($(".slider3")[0], send);
   $(":checkbox").prop('checked', true);
   lightsOnOff($(":checkbox")[0], send);
 }
@@ -354,6 +362,8 @@ function resetMultiColor(redraw = true, send = true) {
   patternChange($(".slider1")[0], false, send);
   $(".slider2").val(0);
   randomnessChange($(".slider2")[0], false, send);
+  $(".slider3").val(70);
+  brightnessChange($(".slider3")[0], send);
   $(":checkbox").prop('checked', true);
   lightsOnOff($(":checkbox")[0], send);
   redrawLights(redraw);
@@ -449,15 +459,7 @@ function setColorBox(name) {
 
 var randomAmount = 0;
 window.onload = function() {
-  // document.getElementById("defaultOpen").click();
-  // set brightness slider text
-  //var currSliderPercent = $(".slider1").val();
-  //$(".sliderPercent1").html(currSliderPercent + "%");
-  //$(".slider1").val(currSliderPercent);
   resetMultiColor(false, false);
-  var currSliderPercent = $(".slider3").val();
-  $(".sliderPercent3").html(currSliderPercent + "%");
-  $(".slider3").val(currSliderPercent);
 
   document.addEventListener('mousedown', onDocumentMouseDown, false);
   //set solid color picker's size
@@ -508,9 +510,9 @@ function initialSetState(stateInfo) {
         $(".sliderPercent2").html(data.randomness + "%");
         $(".slider2").val(data.randomness);
         randomAmount = data.randomness;
+        console.log("randomAmount: " + randomAmount);
         break;
       case "gradient":
-        console.log(data.gradient);
         $(".sliderPercent1").html(data.gradient + "%");
         $(".slider1").val(data.gradient);
         break;
