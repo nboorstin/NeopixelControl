@@ -54,6 +54,14 @@ function solidColorChange(input,whichcolor) {
 function randomnessChange(input) {
   $(".sliderPercent2").html(input.value + "%");
   randomAmount = input.value;
+  for(var i=0; i<randomColors.length; i++) {
+      var red = Math.floor(Math.random() * Math.floor(255));
+      var green = Math.floor(Math.random() * Math.floor(255));
+      var blue = Math.floor(Math.random() * Math.floor(255));
+      var randomcolor = rgbToHexString(red, green, blue);
+    randomColors[i] = randomcolor;
+  }
+  sendRequest("randomColors", randomColors);
   redrawLights();
   sendRequest("randomness", input.value);
 }
@@ -202,6 +210,7 @@ var lightsPos = [
 var lightsColor = Array(lightsPos.length).fill("#FF0000");
 var lightsColorSet = Array(lightsPos.length).fill("#FF0000");
 var lightsSelected = Array(lightsPos.length).fill(false);
+var randomColors = Array(lightsPos.length).fill("#000000");
 lightsSelected[0] = lightsSelected[14] = lightsSelected[23] = lightsSelected[37] = true;
 
 function checkLightsMouse(e) {
@@ -294,11 +303,7 @@ function updateColors() {
       }
       lightsColor[i] = minColor;
       // and then apply random
-      var red = Math.floor(Math.random() * Math.floor(255));
-      var green = Math.floor(Math.random() * Math.floor(255));
-      var blue = Math.floor(Math.random() * Math.floor(255));
-      var randomcolor = rgbToHexString(red, green, blue);
-      lightsColor[i] = blendColors([randomcolor, lightsColor[i]], [randomAmount, 100-randomAmount]);
+      lightsColor[i] = blendColors([randomColors[i], lightsColor[i]], [randomAmount, 100-randomAmount]);
     }
   }
 }
@@ -441,7 +446,7 @@ window.onload = function() {
   $(".sliderPercent1").html(currSliderPercent + "%");
   $(".slider1").val(currSliderPercent);
   var currSliderPercent = $(".slider2").val();
-  $(".sliderPercent2").html(currSliderPercent + "%");
+  $(".sliderPercent2").html(currSliderPercent + "%"); //todo? start this at zero?
   randomAmount = currSliderPercent;
   var inverse = 100 - currSliderPercent
   $(".sliderPercent2inverse").html(inverse + "%");
@@ -492,6 +497,9 @@ function initialSetState(stateInfo) {
         $(".sliderPercent3").html(data.brightness + "%");
         $(".slider3").val(data.brightness);
         break;
+      case "randomColors":
+        randomColors = data.randomColors; //todo: fix if the length is wrong?
+        break;
       case "randomness":
         $(".sliderPercent2").html(data.randomness + "%");
         $(".slider2").val(data.randomness);
@@ -507,7 +515,6 @@ function initialSetState(stateInfo) {
         } else {
           lightsColor = data.manyColors + lightsColor.slice(data.manyColors.length);
         }
-        //redrawLights(); //for some reason this isn't actually necessary here
         break;
       case "mode":
         var loadedTab = '';
@@ -528,6 +535,7 @@ function initialSetState(stateInfo) {
         console.log(key);
     }
   }
+  redrawLights();
 }
 
 var activeOverlay = -1;
