@@ -369,6 +369,16 @@ function resetMultiColor(redraw = true, send = true) {
   lightsOnOff($(":checkbox")[0], send);
   redrawLights(redraw);
 }
+function singleColorFill(button) {
+  rect = button.getBoundingClientRect();
+  console.log($("#overlay"));
+  activeOverlay = -2;
+  $("#overlay").css({position: 'fixed',
+                     display: 'block',
+                     top: rect.y - 155, //todo: do this better?
+                     left: rect.x + (rect.width - $("#overlay").width())/2});
+  $("#multiColorPicker")[0].jscolor.show();
+}
 function makeGradient() {
   var unfilledlist = [];
   var filledlist = [];
@@ -559,11 +569,18 @@ function overlayOff(){
 
 function multiColorPickerChange(input,whichcolor) {
   var newColor = input.jscolor.toString("hex");
-  if(activeOverlay != -1) {
+  if (activeOverlay >= 0) {
     if(newColor != lightsColor[activeOverlay]) {
       lightsColor[activeOverlay] = newColor;
       redrawLights();
     }
+  } else if (activeOverlay == -2) {
+    for(var i=0; i<lightsColor.length; i++) {
+      if(lightsSelected[i]) {
+        lightsColor[i] = newColor;
+      }
+    }
+    redrawLights();
   }
 }
 
