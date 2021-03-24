@@ -556,8 +556,14 @@ function initialSetState(stateInfo) {
 var activeOverlay = -1;
 function overlayOn(i, x, y) {
   activeOverlay = i;
-  document.getElementById("overlay").style.display = "block";
-  $("#overlay").css({top: y, left: x, position:'fixed'});
+  //var canvas = document.getElementById("manyColorCanvas");
+  var canvas = $("#manyColorCanvas");
+  var xCenter = canvas.offset().left + canvas.width() / 2;
+  var yCenter = canvas.offset().top + canvas.height() / 2;
+  $("#overlay").css({position: 'fixed',
+                     display: 'block',
+                     top: y <= yCenter ? y : y - 155,
+                     left: x <= xCenter ? x : x - $("#overlay").width()});
   $("#multiColorPicker")[0].jscolor.fromString(lightsColor[i]);
   $("#multiColorPicker")[0].jscolor.show();
 }
