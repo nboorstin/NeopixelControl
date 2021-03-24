@@ -168,7 +168,7 @@ input:not([type='checkbox']):not([type='range']) {
 
 .sliderText {
   position: fixed;
-  margin-top: 0.29%;
+  margin-top: 1px;
   pointer-events: none;
 }
 /* Style the tab */
