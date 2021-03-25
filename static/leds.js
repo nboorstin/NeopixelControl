@@ -75,6 +75,7 @@ function randomnessChange(input, redraw=true, send=true) {
 function patternChange(input, redraw=true, send=true) {
   $(".sliderPercent1").html(input.value + "%");
   var inverse = 100 - input.value;
+  gradientAmount = inverse;
   $(".sliderPercent2inverse").html(inverse + "%"); //what is this?
   sendRequest("gradient", input.value, send);
   redrawLights(redraw);
@@ -291,20 +292,26 @@ function updateColors() {
       selected.push(i);
     }
   }
+  //Get gradient values
+  var newColors = JSON.parse(JSON.stringify(makeGradient())); //weird javascript way of doing deep copy
   // step 2: for each unselected light, set its color to the nearest one
   for (var i=0; i<lightsPos.length; i++) {
     if (!lightsSelected[i]) {
       // ok for now its just going to be the nearest selected one
-      var minDist = -1;
-      var minColor = "#000000";
-      for(const j of selected) {
-        var dist = Math.hypot(lightsPos[j][0]-lightsPos[i][0], lightsPos[j][1]-lightsPos[i][1]);
-        if (minDist == -1 || dist < minDist) {
-          minDist = dist;
-          minColor = lightsColor[j];
-        }
-      }
-      lightsColor[i] = minColor;
+      // var minDist = -1;
+      // var minColor = "#000000";
+      // for(const j of selected) {
+      //   var dist = Math.hypot(lightsPos[j][0]-lightsPos[i][0], lightsPos[j][1]-lightsPos[i][1]);
+      //   if (minDist == -1 || dist < minDist) {
+      //     minDist = dist;
+      //     minColor = lightsColor[j];
+      //   }
+      // }
+      //Choose random element from selected lights
+      const randomElement = selected[Math.floor(Math.random() * selected.length)];
+      
+      lightsColor[i] = lightsColor[randomElement];
+      lightsColor[i] = blendColors([lightsColor[i], newColors[i]], [100-gradientAmount, gradientAmount]);
       // and then apply random
       lightsColor[i] = blendColors([randomColors[i], lightsColor[i]], [randomAmount, 100-randomAmount]);
     }
@@ -383,13 +390,14 @@ function makeGradient() {
   var unfilledlist = [];
   var filledlist = [];
   for(var i = 0; i < lightsPos.length; i++){
-    if(lightsColor[i] == "#FFFFFF"){
+    if(lightsSelected[i] == false){
       unfilledlist.push(i);
     }
     else{
       filledlist.push(i);
     }
   }
+  var newLightsColor = lightsColor;
   for(var i = 0; i < unfilledlist.length; i++){
     var total = 0;
     for(var j = 0; j < filledlist.length; j++){
@@ -412,9 +420,9 @@ function makeGradient() {
     colorstring += redint.toString(16);
     colorstring += greenint.toString(16);
     colorstring += blueint.toString(16);
-    lightsColor[unfilledlist[i]] = colorstring;
+    newLightsColor[unfilledlist[i]] = colorstring;
   }
-  redrawLights();
+  return newLightsColor;
 }
 
 window.onresize = function(event) {
@@ -469,6 +477,7 @@ function setColorBox(name) {
 
 
 var randomAmount = 0;
+var gradientAmount = 50;
 window.onload = function() {
   resetMultiColor(false, false);
 
@@ -525,6 +534,7 @@ function initialSetState(stateInfo) {
       case "gradient":
         $(".sliderPercent1").html(data.gradient + "%");
         $(".slider1").val(data.gradient);
+        gradientAmount = data.gradient;
         break;
       case "manyColors":
         if(lightsColor.length <= data.manyColors.length) {
