@@ -76,7 +76,7 @@ function patternChange(input, redraw=true, send=true) {
   $(".sliderPercent1").html(input.value + "%");
   var inverse = 100 - input.value;
   gradientAmount = inverse;
-  $(".sliderPercent2inverse").html(inverse + "%"); //what is this?
+  //$(".sliderPercent2inverse").html(inverse + "%"); //what is this?
   sendRequest("gradient", input.value, send);
   redrawLights(redraw);
 }
@@ -126,7 +126,7 @@ var solidColorHide = null;
 
 
 // on tab switch
-function activateTab(button, pageId, send=true) {
+function activateTab(button, pageId, redraw=true, send=true) {
   /* thank you stackoverflow https://stackoverflow.com/a/1029252 */
   if(button.className == "topbutton-active") {
     return;
@@ -150,7 +150,7 @@ function activateTab(button, pageId, send=true) {
   } else {
     if(pageId == 'tabManyColorEntry') {
       sendRequest("mode", "manyColors", send);
-      setMultiColorpickerSize(true, send);
+      setMultiColorpickerSize(redraw, send);
       centerSliders();
     } else if (pageId == 'tabAnimate') {
       sendRequest('mode', 'animate', send);
@@ -353,6 +353,8 @@ function redrawLights(doRedraw = true, send = true) {
   sendRequest("manyColors", lightsColor, send);
 }
 
+function saveSingleColor() {
+}
 function resetSingleColor(redraw = true, send = true) {
   document.getElementById("solidColor").jscolor.fromString("#FF0000");
   setColorBox("solidColor");
@@ -532,7 +534,7 @@ function initialSetState(stateInfo) {
       case "gradient":
         $(".sliderPercent1").html(data.gradient + "%");
         $(".slider1").val(data.gradient);
-        gradientAmount = data.gradient;
+        gradientAmount = 100-data.gradient;
         break;
       case "manyColors":
         if(lightsColor.length <= data.manyColors.length) {
@@ -545,10 +547,10 @@ function initialSetState(stateInfo) {
         var loadedTab = '';
         switch(data.mode) {
           case 'solidColor':
-            activateTab($(".topbutton-active")[0], 'tabSolidColor', false);
+            activateTab($(".topbutton-active")[0], 'tabSolidColor', false, false);
             break;
           case 'manyColors':
-            activateTab($(".topbutton")[0], 'tabManyColorEntry', false);
+            activateTab($(".topbutton")[0], 'tabManyColorEntry', false, false);
             break;
           default:
             console.log(data.mode);
