@@ -51,6 +51,8 @@ var lastColor = null;
 function solidColorChange(input) {
   var newColor = input.jscolor.toString("hex");
   if(lastColor != newColor) {
+    $("#singleColorSave").html('save');
+    $("#singleColorSave")[0].className = 'topbutton';
     sendRequest("solidColor", newColor);
     lastColor = newColor;
   }
@@ -353,15 +355,23 @@ function redrawLights(doRedraw = true, send = true) {
   sendRequest("manyColors", lightsColor, send);
 }
 
-function save(button, tab) {
-  console.log(button);
+savedSingleColors = [];
+function saveSingleColor(button) {
+  if (button.innerHTML != "save") {
+    return;
+  }
   button.className = "topbutton-active";
   button.innerHTML="color saved";
-  setTimeout(function() {
-    button.className = "topbutton";
-    button.innerHTML="save";
-  }, 400);
+  color = $("#solidColor")[0].jscolor.toString("hex");
+  if (savedSingleColors[savedSingleColors.length - 1] != color) {
+    if (savedSingleColors.includes(color)) {
+      savedSingleColors = savedSingleColors.filter(function(e) {return e != color});
+    }
+    savedSingleColors.push(color);
+    sendRequest("savedSingleColors", savedSingleColors);
+  }
 }
+
 function resetSingleColor(redraw = true, send = true) {
   document.getElementById("solidColor").jscolor.fromString("#FF0000");
   setColorBox("solidColor");
@@ -542,6 +552,9 @@ function initialSetState(stateInfo) {
         $(".sliderPercent1").html(data.gradient + "%");
         $(".slider1").val(data.gradient);
         gradientAmount = 100-data.gradient;
+        break;
+      case "savedSingleColors":
+        savedSingleColors = data.savedSingleColors;
         break;
       case "manyColors":
         if(lightsColor.length <= data.manyColors.length) {
