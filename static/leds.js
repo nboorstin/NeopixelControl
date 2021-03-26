@@ -251,10 +251,6 @@ function checkLightsMouse(e) {
   // }
 }
 
-function colorBoxChange(input,whichcolor) {
-  setColorBox(whichcolor);
-}
-
 var backgroundColor = "#ccccccff";
 
 function drawMultiLights(redraw=false, send=true) {
@@ -402,6 +398,7 @@ function singleColorFill(button) {
                      top: rect.y - 155, //todo: do this better?
                      left: rect.x + (rect.width - $("#overlay").width())/2});
   $("#multiColorPicker")[0].jscolor.show();
+  setColorBox("multiColorPicker");
 }
 function makeGradient() {
   var unfilledlist = [];
@@ -519,7 +516,7 @@ window.onload = function() {
   //set the background color of the solid color boxes
   //I don't think this really belongs in this function tbh
   //["solidColor", "multiColorSelect", "gradientFirstColor", "gradientSecondColor"].map(c => setColorBox(c));
-  ["solidColor"].map(c => setColorBox(c));
+  setColorBox("solidColor");
 
   // get current state
   sendRequest("getState", null, true, initialSetState);
@@ -596,6 +593,7 @@ function overlayOn(i, x, y) {
                      left: x <= xCenter ? x : x - $("#overlay").width()});
   $("#multiColorPicker")[0].jscolor.fromString(lightsColor[i]);
   $("#multiColorPicker")[0].jscolor.show();
+  setColorBox("multiColorPicker");
 }
 
 function overlayOff(){
@@ -605,6 +603,7 @@ function overlayOff(){
 
 function multiColorPickerChange(input,whichcolor) {
   var newColor = input.jscolor.toString("hex");
+  setColorBox("multiColorPicker");
   if (activeOverlay >= 0) {
     if(newColor != lightsColor[activeOverlay]) {
       lightsColor[activeOverlay] = newColor;
