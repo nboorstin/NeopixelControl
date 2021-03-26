@@ -368,13 +368,20 @@ function saveSingleColor(button) {
   }
 }
 
+loadSingleOverlayOn = false;
+
 function loadSingleColor(button) {
-  console.log(".");
   rect = button.getBoundingClientRect();
   $("#solidLoadOverlay").css({position: 'fixed',
                               display: 'block',
                               top: rect.y - 540,
                               left: rect.x});
+  loadSingleOverlayOn = true;
+}
+
+function loadSingleOverlayOff() {
+  $("#solidLoadOverlay").css({display: 'none'});
+  loadSingleOverlayOn = false;
 }
 
 function resetSingleColor(redraw = true, send = true) {
@@ -627,13 +634,13 @@ function multiColorPickerChange(input,whichcolor) {
   }
 }
 
-function onDocumentMouseDown(e) {
+function onDocumentMouseDown(e) { //todo: optimzie this to one loop
   var target = e.target || e.srcElement;
   if (activeOverlay !== -1) {
     var t = target;
     var inOverlay = false;
     while (t != null) {
-      if (t.id == "overlaybox" || t.className == "jscolor-picker") {
+      if (t.id == "multiColorPicker" || t.className == "jscolor-picker") {
         inOverlay = true;
         break;
       }
@@ -641,6 +648,20 @@ function onDocumentMouseDown(e) {
     }
     if(!inOverlay) {
       overlayOff();
+    }
+  }
+  if (loadSingleOverlayOn) {
+    var t = target;
+    var inOverlay = false;
+    while (t != null) {
+      if (t.id == "solidLoadOverlay") {
+        inOverlay = true;
+        break;
+      }
+      t = t.parentElement;
+    }
+    if(!inOverlay) {
+      loadSingleOverlayOff();
     }
   }
 }
