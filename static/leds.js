@@ -382,7 +382,11 @@ function loadSingleColor(button) {
   if (savedSingleColors.length == 0) {
     $("#solidLoadOverlay").html("Nothing saved yet");
   } else {
-    $("#solidLoadOverlay").html(savedSingleColors);
+    html = ''
+    for(var i = savedSingleColors.length - 1; i >=0; i--) {
+      html += '<div class="singeColorLoad" onclick=alert("load!") style="background-color: ' + savedSingleColors[i] + ';">&nbsp;</div>';
+    }
+    $("#solidLoadOverlay").html(html);
   }
 }
 
