@@ -353,7 +353,14 @@ function redrawLights(doRedraw = true, send = true) {
   sendRequest("manyColors", lightsColor, send);
 }
 
-function saveSingleColor() {
+function save(button, tab) {
+  console.log(button);
+  button.className = "topbutton-active";
+  button.innerHTML="color saved";
+  setTimeout(function() {
+    button.className = "topbutton";
+    button.innerHTML="save";
+  }, 400);
 }
 function resetSingleColor(redraw = true, send = true) {
   document.getElementById("solidColor").jscolor.fromString("#FF0000");
