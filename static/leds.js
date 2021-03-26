@@ -511,6 +511,7 @@ window.onload = function() {
   resetMultiColor(false, false);
 
   document.addEventListener('mousedown', onDocumentMouseDown, false);
+  document.addEventListener('touchstart', onDocumentMouseDown, false);
   //set solid color picker's size
   setSolidColorpickerSize();
 
@@ -635,6 +636,7 @@ function multiColorPickerChange(input,whichcolor) {
 }
 
 function onDocumentMouseDown(e) { //todo: optimzie this to one loop
+  console.log(".");
   var target = e.target || e.srcElement;
   if (activeOverlay !== -1) {
     var t = target;
