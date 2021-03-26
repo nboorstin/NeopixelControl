@@ -152,8 +152,6 @@ function activateTab(button, pageId, send=true) {
       sendRequest("mode", "manyColors", send);
       setMultiColorpickerSize(true, send);
       centerSliders();
-    } else if (pageId == 'tabManyColorSelect') {
-      sendRequest('mode', 'manyColorSelect', send);
     } else if (pageId == 'tabAnimate') {
       sendRequest('mode', 'animate', send);
     } else {
@@ -309,7 +307,7 @@ function updateColors() {
       // }
       //Choose random element from selected lights
       const randomElement = selected[Math.floor(Math.random() * selected.length)];
-      
+
       lightsColor[i] = lightsColor[randomElement];
       lightsColor[i] = blendColors([lightsColor[i], newColors[i]], [100-gradientAmount, gradientAmount]);
       // and then apply random
