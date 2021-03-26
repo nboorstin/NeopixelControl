@@ -374,9 +374,16 @@ function loadSingleColor(button) {
   rect = button.getBoundingClientRect();
   $("#solidLoadOverlay").css({position: 'fixed',
                               display: 'block',
-                              top: rect.y - 540,
+                              width: rect.width,
+                              height: rect.width * 2.5,
+                              top: rect.y - rect.width * 2.5,
                               left: rect.x});
   loadSingleOverlayOn = true;
+  if (savedSingleColors.length == 0) {
+    $("#solidLoadOverlay").html("Nothing saved yet");
+  } else {
+    $("#solidLoadOverlay").html(savedSingleColors);
+  }
 }
 
 function loadSingleOverlayOff() {
@@ -636,7 +643,6 @@ function multiColorPickerChange(input,whichcolor) {
 }
 
 function onDocumentMouseDown(e) { //todo: optimzie this to one loop
-  console.log(".");
   var target = e.target || e.srcElement;
   if (activeOverlay !== -1) {
     var t = target;
