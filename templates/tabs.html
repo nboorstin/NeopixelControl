@@ -33,7 +33,7 @@
           <table width="100%" style="table-layout: fixed;"><tr>
               <td style="text-align:center"><button class="topbutton" onclick="resetSingleColor()">reset</button></td>
               <td style="text-align:center"><button class="topbutton" onclick="saveSingleColor(this)" id="singleColorSave">save</button></td>
-              <td style="text-align:center"><button class="topbutton">load</button></td>
+              <td style="text-align:center"><button class="topbutton" onclick="loadSingleColor(this)">load</button></td>
             </tr></table>
           <div style="display: flex;">
             <div style="display: block;">
@@ -84,8 +84,11 @@
       </div>
       <div id="tabAnimate" style="display: none;">animate</br>yeah i'm sure this will happen at some point...</div>
     </div>
-    <div id="overlay" style="width: 235px; height: 50%;">
+    <div class="overlay" id="overlay" style="width: 235px; height: 50%;">
       <input data-jscolor="{previewElement:'#pr1', shadow:false}" id="multiColorPicker" onInput="multiColorPickerChange(this,'solidColor')" style="display: block; border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;">
+    </div> 
+    <div class="overlay loadOverlay" id="solidLoadOverlay" style="width: 235px; height: 50%;">
+      test!
     </div> 
   </body>
 </html>

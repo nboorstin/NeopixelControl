@@ -368,6 +368,15 @@ function saveSingleColor(button) {
   }
 }
 
+function loadSingleColor(button) {
+  console.log(".");
+  rect = button.getBoundingClientRect();
+  $("#solidLoadOverlay").css({position: 'fixed',
+                              display: 'block',
+                              top: rect.y - 540,
+                              left: rect.x});
+}
+
 function resetSingleColor(redraw = true, send = true) {
   document.getElementById("solidColor").jscolor.fromString("#FF0000");
   setColorBox("solidColor");
@@ -391,7 +400,6 @@ function resetMultiColor(redraw = true, send = true) {
 }
 function singleColorFill(button) {
   rect = button.getBoundingClientRect();
-  console.log($("#overlay"));
   activeOverlay = -2;
   $("#overlay").css({position: 'fixed',
                      display: 'block',
