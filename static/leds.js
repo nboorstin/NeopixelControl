@@ -49,7 +49,10 @@ function lightsOnOff(input, send=true) {
 // solid color handlers
 var lastColor = null;
 function solidColorChange(input) {
-  var newColor = input.jscolor.toString("hex");
+  solidColorUpdate(input.jscolor.toString("hex"));
+}
+
+function solidColorUpdate(newColor) {
   if(lastColor != newColor) {
     $("#singleColorSave").html('save');
     $("#singleColorSave")[0].className = 'topbutton';
@@ -119,7 +122,7 @@ function rgbToHexString(red, green, blue){
   if(bluestring.length < 2){
     bluestring = "0" + bluestring;
   }
-  var hexstring = "#" + redstring + greenstring + bluestring;
+  var hexstring = ("#" + redstring + greenstring + bluestring).toUpperCase();
   return hexstring;
 }
 
@@ -383,12 +386,21 @@ function loadSingleColor(button) {
     $("#solidLoadOverlay").html("Nothing saved yet");
   } else {
     html = ''
-    for(var i = savedSingleColors.length - 1; i >=0; i--) {
-      html += '<div class="singeColorLoad" onclick=alert("load!") style="background-color: ' + savedSingleColors[i] + ';">&nbsp;</div>';
+    for(var i = savedSingleColors.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
+      html += '<div class="singeColorLoad" onclick="restoreSingleColor(this)" style="background-color: ' + savedSingleColors[i] + ';">&nbsp;</div>';
     }
+    html += '<div class="singeColorLoad" onclick=alert("load!") style="padding-top: 2%; text-align: center;">Clear All</div>';
     $("#solidLoadOverlay").html(html);
   }
 }
+
+function restoreSingleColor(button) {
+  var color = button.style.backgroundColor;
+  color = rgbToHexString(...color.substring(4, color.length-1).split(', ').map(n => parseInt(n)));
+  $("#solidColor")[0].jscolor.fromString(color);
+  solidColorUpdate(color);
+}
+
 
 function loadSingleOverlayOff() {
   $("#solidLoadOverlay").css({display: 'none'});
@@ -397,8 +409,7 @@ function loadSingleOverlayOff() {
 
 function resetSingleColor(redraw = true, send = true) {
   document.getElementById("solidColor").jscolor.fromString("#FF0000");
-  setColorBox("solidColor");
-  sendRequest("solidColor", "#FF0000", send);
+  solidColorUpdate("#FF0000");
   $(".slider3").val(70);
   brightnessChange($(".slider3")[0], send);
   $(":checkbox").prop('checked', true);
