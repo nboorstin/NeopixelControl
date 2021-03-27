@@ -387,16 +387,29 @@ function loadSingleColor(button) {
   } else {
     html = ''
     for(var i = savedSingleColors.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
-      html += '<div class="singeColorLoad" onclick="restoreSingleColor(this)" style="background-color: ' + savedSingleColors[i] + ';">&nbsp;</div>';
+      html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + savedSingleColors[i] + ';"><div class="loadX" onclick="removeSingleColor(event, this)">X</div></div>';
     }
-    html += '<div class="singeColorLoad" onclick=alert("load!") style="padding-top: 2%; text-align: center;">Clear All</div>';
+    html += '<div class="singeColorLoad" onclick="singleColorClearAll()" style="padding-top: 2%; text-align: center;">Clear All</div>';
     $("#solidLoadOverlay").html(html);
   }
 }
 
+function singleColorClearAll() {
+  savedSingleColors = [];
+  loadSingleColor($("#loadSingleColor")[0]);
+  sendRequest("savedSingleColors", savedSingleColors);
+}
+
+function removeSingleColor(event, button) {
+  event.stopPropagation();
+  var index = parseInt(button.parentElement.id.substring(15));
+  savedSingleColors.splice(index, 1);
+  loadSingleColor($("#loadSingleColor")[0]);
+  sendRequest("savedSingleColors", savedSingleColors);
+}
+
 function restoreSingleColor(button) {
-  var color = button.style.backgroundColor;
-  color = rgbToHexString(...color.substring(4, color.length-1).split(', ').map(n => parseInt(n)));
+  var color = savedSingleColors[parseInt(button.id.substring(15))];
   $("#solidColor")[0].jscolor.fromString(color);
   solidColorUpdate(color);
 }
