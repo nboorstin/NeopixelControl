@@ -1,3 +1,9 @@
+'use strict';
+class SingleColor {
+  constructor(color) {
+    this.color = color;
+  }
+}
 var lastRequestName = ""
 var lastSent = 0
 var lastRequest = 0
@@ -354,14 +360,14 @@ function redrawLights(doRedraw = true, send = true) {
   sendRequest("manyColors", lightsColor, send);
 }
 
-savedSingleColors = [];
+var savedSingleColors = [];
 function saveSingleColor(button) {
   if (button.innerHTML != "save") {
     return;
   }
   button.className = "topbutton-active";
   button.innerHTML="color saved";
-  color = $("#solidColor")[0].jscolor.toString("hex");
+  var color = $("#solidColor")[0].jscolor.toString("hex");
   if (savedSingleColors[savedSingleColors.length - 1] != color) {
     if (savedSingleColors.includes(color)) {
       savedSingleColors = savedSingleColors.filter(function(e) {return e != color});
@@ -371,10 +377,10 @@ function saveSingleColor(button) {
   }
 }
 
-loadSingleOverlayOn = false;
+var loadSingleOverlayOn = false;
 
 function loadSingleColor(button) {
-  rect = button.getBoundingClientRect();
+  var rect = button.getBoundingClientRect();
   $("#solidLoadOverlay").css({position: 'fixed',
                               display: 'block',
                               width: rect.width,
@@ -383,9 +389,9 @@ function loadSingleColor(button) {
                               left: rect.x});
   loadSingleOverlayOn = true;
   if (savedSingleColors.length == 0) {
-    $("#solidLoadOverlay").html("Nothing saved yet");
+    $("#solidLoadOverlay").html("&nbsp;Nothing saved yet");
   } else {
-    html = ''
+    var html = ''
     for(var i = savedSingleColors.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
       html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + savedSingleColors[i] + ';"><div class="loadX" onclick="removeSingleColor(event, this)">X</div></div>';
     }
@@ -480,7 +486,7 @@ function makeGradient() {
     var redint = Math.round(red);
     var greenint = Math.round(green);
     var blueint = Math.round(blue);
-    colorstring = "#";
+    var colorstring = "#";
     colorstring += redint.toString(16);
     colorstring += greenint.toString(16);
     colorstring += blueint.toString(16);
@@ -501,10 +507,10 @@ window.onresize = function(event) {
 
 function centerSliders() {
   // eh fuck it just do all the text sliders at once
-  for(slider of $(".sliderText")) {
-    w = slider.getBoundingClientRect().width;
+  for(var slider of $(".sliderText")) {
+    var w = slider.getBoundingClientRect().width;
     if(w != 0) {
-      parentWidth = slider.parentElement.getBoundingClientRect().width;
+      var parentWidth = slider.parentElement.getBoundingClientRect().width;
       slider.style.marginLeft = (parentWidth - w) / 2 + "px";
     }
   }
