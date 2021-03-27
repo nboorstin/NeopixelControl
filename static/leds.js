@@ -1,12 +1,81 @@
 'use strict';
 class SingleColor {
-  constructor(color) {
-    this.color = color;
+  constructor(color = "#FF0000") {
+    if (typeof(color) == "object") {
+      this.color = color.color;
+    } else {
+      this.setColor(color.toUpperCase(), true, false);
+    }
+  }
+
+  equals(other) {return other === undefined ? false : this.color == other.color;}
+
+  setColor(color, updateColorPicker=true, send=true) {
+    if (color != this.color) {
+      this.color = color;
+
+      $("#singleColorSave").html('save'); //reset save button
+      $("#singleColorSave")[0].className = 'topbutton'; //reset save button
+
+      if (updateColorPicker) {$("#solidColor")[0].jscolor.fromString(this.color);}
+
+      setColorBox("solidColor");
+
+      if (send) {sendRequest("solidColor", this.color);}
+    }
   }
 }
-var lastRequestName = ""
-var lastSent = 0
-var lastRequest = 0
+
+class SavedData {
+  constructor(overlay) {
+    this.list = [];
+    this.overlay = overlay;
+    this.active = false;
+  }
+  load(list) {
+    this.list = list;
+    this.redoHTML();
+  }
+  save(element) {
+    if (!element.equals(this.list[this.list.length - 1])) {
+      if (this.list.filter(e => e.equals(singleColor)).length != 0) {
+        this.list = this.list.filter(e => !e.equals(singleColor));
+      }
+      this.list.push(new SingleColor(singleColor));
+      sendRequest("savedSingleColors", this.list);
+    }
+    this.redoHTML();
+  }
+  restore(element) {
+  }
+  redoHTML() {
+    if (this.list.length == 0) {
+      $('#' + this.overlay).html("&nbsp;Nothing saved yet");
+    } else {
+      var html = ''
+      for(var i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
+        html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="removeSingleColor(event, this)">X</div></div>';
+      }
+      html += '<div class="singeColorLoad" onclick="savedSingleColors.removeAll()" style="padding-top: 2%; text-align: center;">Clear All</div>';
+      $('#' + this.overlay).html(html);
+    }
+  }
+  remove(index) {
+    this.list.splice(index, 1);
+    sendRequest("savedSingleColors", this.list);
+    this.redoHTML();
+  }
+  removeAll() {
+    this.list = [];
+    sendRequest("savedSingleColors", this.list);
+    this.redoHTML();
+  }
+}
+var singleColor;
+var savedSingleColors = new SavedData("solidLoadOverlay");
+var lastRequestName = "";
+var lastSent = 0;
+var lastRequest = 0;
 var minDelay = 40;
 async function sendRequest(name, value, send = true, callback = null) {
   if(!send) {
@@ -53,20 +122,10 @@ function lightsOnOff(input, send=true) {
 }
 
 // solid color handlers
-var lastColor = null;
 function solidColorChange(input) {
-  solidColorUpdate(input.jscolor.toString("hex"));
+  singleColor.setColor(input.jscolor.toString("hex"), false);
 }
 
-function solidColorUpdate(newColor) {
-  if(lastColor != newColor) {
-    $("#singleColorSave").html('save');
-    $("#singleColorSave")[0].className = 'topbutton';
-    sendRequest("solidColor", newColor);
-    lastColor = newColor;
-  }
-  setColorBox("solidColor");
-}
 
 function randomnessChange(input, redraw=true, send=true) {
   $(".sliderPercent2").html(input.value + "%");
@@ -360,24 +419,17 @@ function redrawLights(doRedraw = true, send = true) {
   sendRequest("manyColors", lightsColor, send);
 }
 
-var savedSingleColors = [];
-function saveSingleColor(button) {
-  if (button.innerHTML != "save") {
-    return;
-  }
+function saveButton(button) {
   button.className = "topbutton-active";
   button.innerHTML="color saved";
-  var color = $("#solidColor")[0].jscolor.toString("hex");
-  if (savedSingleColors[savedSingleColors.length - 1] != color) {
-    if (savedSingleColors.includes(color)) {
-      savedSingleColors = savedSingleColors.filter(function(e) {return e != color});
-    }
-    savedSingleColors.push(color);
-    sendRequest("savedSingleColors", savedSingleColors);
-  }
 }
 
-var loadSingleOverlayOn = false;
+function saveSingleColor(button) {
+  if (button.innerHTML == "save") { //if we haven't already saved
+    saveButton(button);
+    savedSingleColors.save(singleColor);
+  }
+}
 
 function loadSingleColor(button) {
   var rect = button.getBoundingClientRect();
@@ -387,65 +439,43 @@ function loadSingleColor(button) {
                               height: rect.width * 2.5,
                               top: rect.y - rect.width * 2.5,
                               left: rect.x});
-  loadSingleOverlayOn = true;
-  if (savedSingleColors.length == 0) {
-    $("#solidLoadOverlay").html("&nbsp;Nothing saved yet");
-  } else {
-    var html = ''
-    for(var i = savedSingleColors.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
-      html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + savedSingleColors[i] + ';"><div class="loadX" onclick="removeSingleColor(event, this)">X</div></div>';
-    }
-    html += '<div class="singeColorLoad" onclick="singleColorClearAll()" style="padding-top: 2%; text-align: center;">Clear All</div>';
-    $("#solidLoadOverlay").html(html);
-  }
+  savedSingleColors.active = true;
 }
 
-function singleColorClearAll() {
-  savedSingleColors = [];
-  loadSingleColor($("#loadSingleColor")[0]);
-  sendRequest("savedSingleColors", savedSingleColors);
-}
-
-function removeSingleColor(event, button) {
-  event.stopPropagation();
-  var index = parseInt(button.parentElement.id.substring(15));
-  savedSingleColors.splice(index, 1);
-  loadSingleColor($("#loadSingleColor")[0]);
-  sendRequest("savedSingleColors", savedSingleColors);
-}
 
 function restoreSingleColor(button) {
-  var color = savedSingleColors[parseInt(button.id.substring(15))];
-  $("#solidColor")[0].jscolor.fromString(color);
-  solidColorUpdate(color);
+  var color = savedSingleColors.list[parseInt(button.id.substring(15))].color;
+  singleColor.setColor(color);
 }
 
 
 function loadSingleOverlayOff() {
   $("#solidLoadOverlay").css({display: 'none'});
-  loadSingleOverlayOn = false;
+  savedSingleColors.active = false;
 }
 
-function resetSingleColor(redraw = true, send = true) {
-  document.getElementById("solidColor").jscolor.fromString("#FF0000");
-  solidColorUpdate("#FF0000");
+function resetLightsAndBrightness(send = true) {
   $(".slider3").val(70);
   brightnessChange($(".slider3")[0], send);
   $(":checkbox").prop('checked', true);
   lightsOnOff($(":checkbox")[0], send);
 }
+
+function resetSingleColor() {
+  singleColor.setColor("#FF0000");
+  resetLightsAndBrightness();
+}
+
 function resetMultiColor(redraw = true, send = true) {
   lightsColor = Array(lightsPos.length).fill("#FF0000");
   $(".slider1").val(50)
   patternChange($(".slider1")[0], false, send);
   $(".slider2").val(0);
   randomnessChange($(".slider2")[0], false, send);
-  $(".slider3").val(70);
-  brightnessChange($(".slider3")[0], send);
-  $(":checkbox").prop('checked', true);
-  lightsOnOff($(":checkbox")[0], send);
+  resetLightsAndBrightness(send);
   redrawLights(redraw);
 }
+
 function singleColorFill(button) {
   rect = button.getBoundingClientRect();
   activeOverlay = -2;
@@ -554,6 +584,7 @@ window.onload = function() {
   document.addEventListener('mousedown', onDocumentMouseDown, false);
   document.addEventListener('touchstart', onDocumentMouseDown, false);
   //set solid color picker's size
+  singleColor = new SingleColor();
   setSolidColorpickerSize();
 
   //try to set canvas size
@@ -566,14 +597,7 @@ window.onload = function() {
   solidColorHide = document.getElementById("solidColor").jscolor.hide;
   document.getElementById("solidColor").jscolor.hide = function(){};
 
-  //just for now, set the default to many colors
-  //activateTab($(".topbutton")[0], 'tabManyColorEntry');
   centerSliders();
-
-  //set the background color of the solid color boxes
-  //I don't think this really belongs in this function tbh
-  //["solidColor", "multiColorSelect", "gradientFirstColor", "gradientSecondColor"].map(c => setColorBox(c));
-  setColorBox("solidColor");
 
   // get current state
   sendRequest("getState", null, true, initialSetState);
@@ -587,8 +611,7 @@ function initialSetState(stateInfo) {
         $(":checkbox").prop('checked', data.on);
         break;
       case "solidColor":
-        document.getElementById("solidColor").jscolor.fromString(data.solidColor);
-        setColorBox("solidColor");
+        singleColor.setColor(data.solidColor, true, false);
         break;
       case "brightness":
         $(".sliderPercent3").html(data.brightness + "%");
@@ -608,7 +631,7 @@ function initialSetState(stateInfo) {
         gradientAmount = 100-data.gradient;
         break;
       case "savedSingleColors":
-        savedSingleColors = data.savedSingleColors;
+        savedSingleColors.load(Array.from(data.savedSingleColors, x => new SingleColor(x)));
         break;
       case "manyColors":
         if(lightsColor.length <= data.manyColors.length) {
@@ -692,7 +715,7 @@ function onDocumentMouseDown(e) { //todo: optimzie this to one loop
       overlayOff();
     }
   }
-  if (loadSingleOverlayOn) {
+  if (savedSingleColors.active) {
     var t = target;
     var inOverlay = false;
     while (t != null) {
