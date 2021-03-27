@@ -46,22 +46,7 @@ class SavedData {
     }
     this.redoHTML();
   }
-  restore(element) {
-  }
-  redoHTML() {
-    if (this.list.length == 0) {
-      $('#' + this.overlay).html("&nbsp;Nothing saved yet");
-    } else {
-      var html = ''
-      for(var i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
-        html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="savedSingleColors.remove(event, this)">X</div></div>';
-      }
-      html += '<div class="singeColorLoad" onclick="savedSingleColors.removeAll()" style="padding-top: 2%; text-align: center;">Clear All</div>';
-      $('#' + this.overlay).html(html);
-    }
-  }
-  remove(event, index) {
-    event.stopPropagation();
+  remove(index) {
     this.list.splice(index, 1);
     sendRequest("savedSingleColors", this.list);
     this.redoHTML();
@@ -72,8 +57,26 @@ class SavedData {
     this.redoHTML();
   }
 }
+
+class SavedSingleColors extends SavedData {
+  constructor() {
+    super("solidLoadOverlay");
+  }
+  redoHTML() {
+    if (this.list.length == 0) {
+      $('#' + this.overlay).html("&nbsp;Nothing saved yet");
+    } else {
+      var html = ''
+      for(var i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
+        html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="removeSingleColor(event, this)">X</div></div>';
+      }
+      html += '<div class="singeColorLoad" onclick="savedSingleColors.removeAll()" style="padding-top: 2%; text-align: center;">Clear All</div>';
+      $('#' + this.overlay).html(html);
+    }
+  }
+}
 var singleColor;
-var savedSingleColors = new SavedData("solidLoadOverlay");
+var savedSingleColors = new SavedSingleColors();
 var lastRequestName = "";
 var lastSent = 0;
 var lastRequest = 0;
@@ -447,6 +450,12 @@ function loadSingleColor(button) {
 function restoreSingleColor(button) {
   var color = savedSingleColors.list[parseInt(button.id.substring(15))].color;
   singleColor.setColor(color);
+}
+
+function removeSingleColor(event, button) {
+  event.stopPropagation();
+  var index = parseInt(button.parentElement.id.substring(15));
+  savedSingleColors.remove(index);
 }
 
 
