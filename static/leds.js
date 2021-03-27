@@ -54,13 +54,14 @@ class SavedData {
     } else {
       var html = ''
       for(var i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
-        html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="removeSingleColor(event, this)">X</div></div>';
+        html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="savedSingleColors.remove(event, this)">X</div></div>';
       }
       html += '<div class="singeColorLoad" onclick="savedSingleColors.removeAll()" style="padding-top: 2%; text-align: center;">Clear All</div>';
       $('#' + this.overlay).html(html);
     }
   }
-  remove(index) {
+  remove(event, index) {
+    event.stopPropagation();
     this.list.splice(index, 1);
     sendRequest("savedSingleColors", this.list);
     this.redoHTML();
