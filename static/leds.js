@@ -512,6 +512,7 @@ function loadSingleColor(button) {
   var rect = button.getBoundingClientRect();
   $("#solidLoadOverlay").css({position: 'fixed',
                               display: 'block',
+                              'font-size': rect.width / 14 + 'px',
                               width: rect.width,
                               height: rect.width * 2.5,
                               top: rect.y - rect.width * 2.5,
@@ -636,6 +637,7 @@ function setSolidColorpickerSize() {
     var rect = $("#loadSingleColor")[0].getBoundingClientRect();
     $("#solidLoadOverlay").css({width: rect.width,
                                 height: rect.width * 2.5,
+                                'font-size': rect.width / 14 + 'px',
                                 top: rect.y - rect.width * 2.5,
                                 left: rect.x});
   }
