@@ -61,8 +61,8 @@
           <table width="100%" style="table-layout: fixed;"><tr>
               <td style="text-align:center"><button class="topbutton" onclick="resetMultiColor()">reset</button></td>
               <td style="text-align:center"><button class="topbutton" onclick="singleColorFill(this)">solid color fill</button></td>
-              <td style="text-align:center"><button class="topbutton" onclick="save(this, 'many')">save</button></td>
-              <td style="text-align:center"><button class="topbutton">load</button></td>
+              <td style="text-align:center"><button id="multiColorSave" class="topbutton" onclick="saveMultiColor(this)">save</button></td>
+              <td style="text-align:center"><button id="loadMultiColor" class="topbutton" onclick="loadMultiColor(this)">load</button></td>
             </tr></table>
             <span class="sliderText">Gradient/pattern: <label class="sliderPercent1">0%</label></span>
             <input type="range" name="entry" class="slider1" onInput="patternChange(this)">
@@ -88,6 +88,9 @@
       <input data-jscolor="{previewElement:'#pr1', shadow:false}" id="multiColorPicker" onInput="multiColorPickerChange(this,'solidColor')" style="display: block; border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;">
     </div> 
     <div class="overlay loadOverlay" id="solidLoadOverlay" style="width: 235px; height: 50%;">
+      &nbsp;Nothing saved yet
+    </div> 
+    <div class="overlay loadOverlay" id="manyLoadOverlay" style="width: 235px; height: 50%;">
       &nbsp;Nothing saved yet
     </div> 
   </body>

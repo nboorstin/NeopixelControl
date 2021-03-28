@@ -109,10 +109,13 @@ class MultiColor {
   setPattern(amount, setSlider = false) {
     this.patternAmount = amount;
     this.updatePatternSlider(setSlider);
+    this.redrawLights();
   }
 
   redrawLights(send = true) {
     if(!this.active) {return;}
+    $("#multiColorSave").html('save'); //reset save button
+    $("#multiColorSave")[0].className = 'topbutton'; //reset save button
     // actually do drawing here
     redrawLights(this);
 
@@ -122,7 +125,8 @@ class MultiColor {
   equals(other) {return other === undefined ? false : this.color == other.color;}
 }
 class SavedData {
-  constructor(overlay) {
+  constructor(overlay, name) {
+    this.name = name
     this.list = [];
     this.overlay = overlay;
     this.active = false;
@@ -137,25 +141,43 @@ class SavedData {
         this.list = this.list.filter(e => !e.equals(singleColor));
       }
       this.list.push(new SingleColor(singleColor));
-      sendRequest("savedSingleColors", this.list);
+      sendRequest(this.name, this.list);
     }
     this.redoHTML();
   }
   remove(index) {
     this.list.splice(index, 1);
-    sendRequest("savedSingleColors", this.list);
+    sendRequest(this.name, this.list);
     this.redoHTML();
   }
   removeAll() {
     this.list = [];
-    sendRequest("savedSingleColors", this.list);
+    sendRequest(this.name, this.list);
     this.redoHTML();
   }
 }
 
 class SavedSingleColors extends SavedData {
   constructor() {
-    super("solidLoadOverlay");
+    super("solidLoadOverlay","savedSingleColors");
+  }
+  redoHTML() {
+    if (this.list.length == 0) {
+      $('#' + this.overlay).html("&nbsp;Nothing saved yet");
+    } else {
+      var html = ''
+      for(var i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
+        html += '<div class="singeColorLoad" id="multi_ColorLoad' + i + '" onclick="restoreMultiColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="removeMultiColor(event, this)">X</div></div>';
+      }
+      html += '<div class="singeColorLoad" onclick="savedMultiColors.removeAll()" style="padding-top: 2%; text-align: center;">Clear All</div>';
+      $('#' + this.overlay).html(html);
+    }
+  }
+}
+
+class SavedMultiColors extends SavedData {
+  constructor() {
+    super("manyLoadOverlay","savedMultiColors");
   }
   redoHTML() {
     if (this.list.length == 0) {
@@ -173,6 +195,7 @@ class SavedSingleColors extends SavedData {
 var singleColor;
 var multiColor;
 var savedSingleColors = new SavedSingleColors();
+var savedMultiColors = new SavedMultiColors();
 var lastRequestName = "";
 var lastSent = 0;
 var lastRequest = 0;
@@ -508,6 +531,13 @@ function saveSingleColor(button) {
   }
 }
 
+function saveMultiColor(button) {
+  if (button.innerHTML == "save") { //if we haven't already saved
+    saveButton(button);
+    savedSingleColors.save(singleColor);
+  }
+}
+
 function loadSingleColor(button) {
   var rect = button.getBoundingClientRect();
   $("#solidLoadOverlay").css({position: 'fixed',
@@ -518,6 +548,18 @@ function loadSingleColor(button) {
                               top: rect.y - rect.width * 2.5,
                               left: rect.x});
   savedSingleColors.active = true;
+}
+
+function loadMultiColor(button) {
+  var rect = button.getBoundingClientRect();
+  $("#solidLoadOverlay").css({position: 'fixed',
+                              display: 'block',
+                              'font-size': rect.width / 14 + 'px',
+                              width: rect.width,
+                              height: rect.width * 2.5,
+                              top: rect.y - rect.width * 2.5,
+                              left: rect.x});
+  savedMultiColors.active = true;
 }
 
 
@@ -780,6 +822,20 @@ function onDocumentMouseDown(e) { //todo: optimzie this to one loop
     var inOverlay = false;
     while (t != null) {
       if (t.id == "solidLoadOverlay") {
+        inOverlay = true;
+        break;
+      }
+      t = t.parentElement;
+    }
+    if(!inOverlay) {
+      loadSingleOverlayOff();
+    }
+  }
+  if (savedMultiColors.active) {
+    var t = target;
+    var inOverlay = false;
+    while (t != null) {
+      if (t.id == "manyLoadOverlay") {
         inOverlay = true;
         break;
       }
