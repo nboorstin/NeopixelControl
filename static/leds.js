@@ -632,6 +632,13 @@ function setSolidColorpickerSize() {
   $("#solidColor")[0].jscolor.height = height - 50;
   $("#solidColor").css("margin-bottom", height);
   $("#solidColor")[0].jscolor.show();
+  if(savedSingleColors.active) {
+    var rect = $("#loadSingleColor")[0].getBoundingClientRect();
+    $("#solidLoadOverlay").css({width: rect.width,
+                                height: rect.width * 2.5,
+                                top: rect.y - rect.width * 2.5,
+                                left: rect.x});
+  }
 }
 
 function setMultiColorpickerSize(redraw=true, send=true) {

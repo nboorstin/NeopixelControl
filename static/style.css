@@ -336,6 +336,7 @@ input:checked + .slider .off
 .loadX {
   background-color: #EEEEEE;
   width: 10%;
+  height: 44%;
   border-radius: 50%;
   text-align: center;
   border-color: black;
