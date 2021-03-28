@@ -1,8 +1,11 @@
 'use strict';
 class SingleColor {
-  constructor(color = "#FF0000") {
-    if (typeof(color) == "object") {
-      this.color = color.color;
+  constructor(single) {
+    this.active = false;
+    if (typeof single == 'undefined') {
+      this.reset();
+    } else if (typeof(single) == "object") {
+      this.color = single.color;
     } else {
       this.setColor(color.toUpperCase(), true, false);
     }
@@ -10,7 +13,12 @@ class SingleColor {
 
   equals(other) {return other === undefined ? false : this.color == other.color;}
 
-  setColor(color, updateColorPicker=true, send=true) {
+  reset() {
+    this.active = true;
+    this.setColor("#FF0000");
+  }
+
+  setColor(color, updateColorPicker=true) {
     if (color != this.color) {
       this.color = color;
 
@@ -21,11 +29,98 @@ class SingleColor {
 
       setColorBox("solidColor");
 
-      if (send) {sendRequest("solidColor", this.color);}
+      if (this.active) {sendRequest("solidColor", this.color);}
     }
   }
 }
 
+class MultiColor {
+  constructor(multi, active = false) {
+    this.active = active;
+    if (typeof multi == 'undefined') {
+      this.reset(false);
+    } else if (typeof(multi) == "object") {
+      for (const [key, value] of Object.entries(multi)) {
+        this[key] = value;
+      }
+      if (active) {
+        this.updateRandomSlider();
+        this.updatePatternSlider();
+        this.redrawLights(false);
+      }
+    } else {
+      console.log(multi);
+      //this.setColor(multi.toUpperCase(), true, false);
+    }
+  }
+
+  reset(send = true) {
+    this.setSolidColor("#FF0000");
+    this.setPattern(50, true);
+    this.setRandomness(0, true);
+    this.active = true;
+    this.redrawLights(send);
+  }
+
+  setColor(index, color) {
+    this.colors[index] = color.toUpperCase();
+    this.redrawLights();
+  }
+  setSolidColor(color) {
+    this.colors = Array(lightsPos.length).fill(color.toUpperCase());
+    this.redrawLights();
+  }
+  updateRandomSlider(setSlider = true) {
+    if(!this.active) {return;}
+    if (setSlider) {
+      $(".slider2").val(this.randomAmount);
+    }
+    // update slider text
+    $(".sliderPercent2").html(this.randomAmount + "%");
+    centerSlidersText();
+  }
+  updatePatternSlider(setSlider = true) {
+    if(!this.active) {return;}
+    if (setSlider) {
+      $(".slider1").val(this.patternAmount);
+    }
+    // update slider text
+    $(".sliderPercent1").html(this.patternAmount + "%");
+    centerSlidersText();
+  }
+
+
+  setRandomness(amount, setSlider = false) {
+    this.randomAmount = amount;
+    this.updateRandomSlider(setSlider);
+    // generate new random values
+    this.randomColors = Array(lightsPos.length);
+    for(var i=0; i<this.randomColors.length; i++) {
+      var red = Math.floor(Math.random() * Math.floor(255));
+      var green = Math.floor(Math.random() * Math.floor(255));
+      var blue = Math.floor(Math.random() * Math.floor(255));
+      var randomcolor = rgbToHexString(red, green, blue);
+      this.randomColors[i] = randomcolor;
+    }
+
+    this.redrawLights();
+  }
+
+  setPattern(amount, setSlider = false) {
+    this.patternAmount = amount;
+    this.updatePatternSlider(setSlider);
+  }
+
+  redrawLights(send = true) {
+    if(!this.active) {return;}
+    // actually do drawing here
+    redrawLights(this);
+
+    if(send) {sendRequest('multiColor', this);}
+  }
+
+  equals(other) {return other === undefined ? false : this.color == other.color;}
+}
 class SavedData {
   constructor(overlay) {
     this.list = [];
@@ -76,15 +171,14 @@ class SavedSingleColors extends SavedData {
   }
 }
 var singleColor;
+var multiColor;
 var savedSingleColors = new SavedSingleColors();
 var lastRequestName = "";
 var lastSent = 0;
 var lastRequest = 0;
 var minDelay = 40;
-async function sendRequest(name, value, send = true, callback = null) {
-  if(!send) {
-    return;
-  }
+async function sendRequest(name, value, send=true, callback = null) {
+  if(!send) {return;}
   //console.log("sending " + name + ", " + value);
   //console.trace();
   var d = new Date()
@@ -122,7 +216,7 @@ async function sendRequest(name, value, send = true, callback = null) {
 }
 function lightsOnOff(input, send=true) {
   $(":checkbox").prop('checked', input.checked);
-  sendRequest("on", input.checked, send);
+  if(send) {sendRequest("on", input.checked);}
 }
 
 // solid color handlers
@@ -131,35 +225,19 @@ function solidColorChange(input) {
 }
 
 
-function randomnessChange(input, redraw=true, send=true) {
-  $(".sliderPercent2").html(input.value + "%");
-  randomAmount = input.value;
-  for(var i=0; i<randomColors.length; i++) {
-      var red = Math.floor(Math.random() * Math.floor(255));
-      var green = Math.floor(Math.random() * Math.floor(255));
-      var blue = Math.floor(Math.random() * Math.floor(255));
-      var randomcolor = rgbToHexString(red, green, blue);
-    randomColors[i] = randomcolor;
-  }
-  sendRequest("randomColors", randomColors, send);
-  redrawLights(redraw);
-  sendRequest("randomness", input.value, send);
+function randomnessChange(input) {
+  multiColor.setRandomness(input.value);
 }
 
-function patternChange(input, redraw=true, send=true) {
-  $(".sliderPercent1").html(input.value + "%");
-  var inverse = 100 - input.value;
-  gradientAmount = inverse;
-  //$(".sliderPercent2inverse").html(inverse + "%"); //what is this?
-  sendRequest("gradient", input.value, send);
-  redrawLights(redraw);
+function patternChange(input) {
+  multiColor.setPattern(input.value);
 }
 
 function brightnessChange(input, send=true) {
   $(".sliderPercent3").html(input.value + "%");
   //TODO: remove this if you find a way to not have two different brightness sliders
   $(".slider3").val(input.value);
-  centerSliders();
+  centerSlidersText();
   sendRequest("brightness", input.value, send);
 }
 
@@ -225,7 +303,7 @@ function activateTab(button, pageId, redraw=true, send=true) {
     if(pageId == 'tabManyColorEntry') {
       sendRequest("mode", "manyColors", send);
       setMultiColorpickerSize(redraw, send);
-      centerSliders();
+      centerSlidersText();
     } else if (pageId == 'tabAnimate') {
       sendRequest('mode', 'animate', send);
     } else {
@@ -286,9 +364,7 @@ var lightsPos = [
 [2, 0],
 [1, 0],
 ];
-var lightsColor = Array(lightsPos.length);
 var lightsSelected = Array(lightsPos.length).fill(false);
-var randomColors = Array(lightsPos.length).fill("#000000");
 lightsSelected[0] = lightsSelected[14] = lightsSelected[23] = lightsSelected[37] = true;
 
 function checkLightsMouse(e) {
@@ -313,13 +389,13 @@ function checkLightsMouse(e) {
         yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
         changed = true;
         overlayOn(i, event.pageX, event.pageY);
-        // lightsColor[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
+        // multiColor.colors[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
       }
     }
   }
   // if(changed) {
   //   redrawLights();
-  //   sendRequest("manyColors", lightsColor);
+  //   sendRequest("manyColors", multiColor.colors);
   // }
 }
 
@@ -338,7 +414,7 @@ function drawMultiLights(redraw=false, send=true) {
   ctx.fillStyle=backgroundColor;
   ctx.fillRect(0,0,canvas.width, canvas.height);
   ctx.fillStyle="#000000";
-  redrawLights(redraw, send);
+  multiColor.redrawLights(redraw, send);
 }
 
 function hexToRgb(hex) {
@@ -352,7 +428,7 @@ function rgbToHex(color) {
   return "#" + color.map(x => componentToHex(Math.round(x))).join('');
 }
 
-function updateColors() {
+function updateColors(multiColor) {
   // step 1: search for all selected lights
   var selected = [];
   for (var i=0; i<lightsPos.length; i++) {
@@ -361,7 +437,7 @@ function updateColors() {
     }
   }
   //Get gradient values
-  var newColors = JSON.parse(JSON.stringify(makeGradient())); //weird javascript way of doing deep copy
+  var newColors = JSON.parse(JSON.stringify(makeGradient(multiColor))); //weird javascript way of doing deep copy
   // step 2: for each unselected light, set its color to the nearest one
   for (var i=0; i<lightsPos.length; i++) {
     if (!lightsSelected[i]) {
@@ -372,24 +448,22 @@ function updateColors() {
       //   var dist = Math.hypot(lightsPos[j][0]-lightsPos[i][0], lightsPos[j][1]-lightsPos[i][1]);
       //   if (minDist == -1 || dist < minDist) {
       //     minDist = dist;
-      //     minColor = lightsColor[j];
+      //     minColor = multiColor.colors[j];
       //   }
       // }
       //Choose random element from selected lights
       const randomElement = selected[Math.floor(Math.random() * selected.length)];
 
-      lightsColor[i] = lightsColor[randomElement];
-      lightsColor[i] = blendColors([lightsColor[i], newColors[i]], [100-gradientAmount, gradientAmount]);
+      multiColor.colors[i] = multiColor.colors[randomElement];
+      multiColor.colors[i] = blendColors([multiColor.colors[i], newColors[i]], [multiColor.patternAmount, 100 - multiColor.patternAmount]);
       // and then apply random
-      lightsColor[i] = blendColors([randomColors[i], lightsColor[i]], [randomAmount, 100-randomAmount]);
+      multiColor.colors[i] = blendColors([multiColor.randomColors[i], multiColor.colors[i]], [multiColor.randomAmount, 100-multiColor.randomAmount]);
     }
   }
 }
-function redrawLights(doRedraw = true, send = true) {
-  if (!doRedraw) {
-    return;
-  }
+function redrawLights(multiColor) {
   var canvas = document.getElementById("manyColorCanvas");
+  if(canvas.parentElement.parentElement.style['display'] == 'none') {return;}
 
   var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
   var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
@@ -401,13 +475,13 @@ function redrawLights(doRedraw = true, send = true) {
   // override spacing if it's too big
   //size = Math.min(size, 30);
 
-  updateColors();
+  updateColors(multiColor);
   var ctx = canvas.getContext("2d");
   for(var i=0; i<lightsPos.length; i++) {
     var x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
     var y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
 
-    ctx.fillStyle = lightsColor[i];
+    ctx.fillStyle = multiColor.colors[i];
     ctx.beginPath();
     ctx.lineWidth = 2;
     if (lightsSelected[i]) {
@@ -420,7 +494,6 @@ function redrawLights(doRedraw = true, send = true) {
     ctx.fill();
     ctx.stroke();
   }
-  sendRequest("manyColors", lightsColor, send);
 }
 
 function saveButton(button) {
@@ -464,7 +537,7 @@ function loadSingleOverlayOff() {
   savedSingleColors.active = false;
 }
 
-function resetLightsAndBrightness(send = true) {
+function resetOnAndBrightness(send = true) {
   $(".slider3").val(70);
   brightnessChange($(".slider3")[0], send);
   $(":checkbox").prop('checked', true);
@@ -472,18 +545,13 @@ function resetLightsAndBrightness(send = true) {
 }
 
 function resetSingleColor() {
-  singleColor.setColor("#FF0000");
-  resetLightsAndBrightness();
+  singleColor.reset();
+  resetOnAndBrightness();
 }
 
-function resetMultiColor(redraw = true, send = true) {
-  lightsColor = Array(lightsPos.length).fill("#FF0000");
-  $(".slider1").val(50)
-  patternChange($(".slider1")[0], false, send);
-  $(".slider2").val(0);
-  randomnessChange($(".slider2")[0], false, send);
-  resetLightsAndBrightness(send);
-  redrawLights(redraw);
+function resetMultiColor() {
+  multiColor.reset();
+  resetOnAndBrightness();
 }
 
 function singleColorFill(button) {
@@ -496,7 +564,7 @@ function singleColorFill(button) {
   $("#multiColorPicker")[0].jscolor.show();
   setColorBox("multiColorPicker");
 }
-function makeGradient() {
+function makeGradient(multiColor) {
   var unfilledlist = [];
   var filledlist = [];
   for(var i = 0; i < lightsPos.length; i++){
@@ -507,7 +575,7 @@ function makeGradient() {
       filledlist.push(i);
     }
   }
-  var newLightsColor = lightsColor;
+  var newLightsColor = multiColor.colors;
   for(var i = 0; i < unfilledlist.length; i++){
     var total = 0;
     for(var j = 0; j < filledlist.length; j++){
@@ -519,9 +587,9 @@ function makeGradient() {
     for(var j = 0; j < filledlist.length; j++){
       var thisdist = 1 / Math.sqrt((lightsPos[filledlist[j]][0] - lightsPos[unfilledlist[i]][0])**2 + (lightsPos[filledlist[j]][1] - lightsPos[unfilledlist[i]][1])**2);
       var proportion = thisdist/total;
-      red = red + (proportion * parseInt(lightsColor[filledlist[j]].substring(1,3), 16));
-      green = green + (proportion * parseInt(lightsColor[filledlist[j]].substring(3,5), 16));
-      blue = blue + (proportion * parseInt(lightsColor[filledlist[j]].substring(5,7), 16));
+      red = red + (proportion * parseInt(multiColor.colors[filledlist[j]].substring(1,3), 16));
+      green = green + (proportion * parseInt(multiColor.colors[filledlist[j]].substring(3,5), 16));
+      blue = blue + (proportion * parseInt(multiColor.colors[filledlist[j]].substring(5,7), 16));
     }
     var redint = Math.round(red);
     var greenint = Math.round(green);
@@ -542,10 +610,10 @@ window.onresize = function(event) {
   } else {
     setMultiColorpickerSize();
   }
-  centerSliders();
+  centerSlidersText();
 }
 
-function centerSliders() {
+function centerSlidersText() {
   // eh fuck it just do all the text sliders at once
   for(var slider of $(".sliderText")) {
     var w = slider.getBoundingClientRect().width;
@@ -586,28 +654,27 @@ function setColorBox(name) {
 }
 
 
-var randomAmount = 0;
-var gradientAmount = 50;
 window.onload = function() {
-  resetMultiColor(false, false);
-
+  // add click listeners
   document.addEventListener('mousedown', onDocumentMouseDown, false);
   document.addEventListener('touchstart', onDocumentMouseDown, false);
-  //set solid color picker's size
-  singleColor = new SingleColor();
-  setSolidColorpickerSize();
 
-  //try to set canvas size
-  setMultiColorpickerSize(false);
-
-  //*shrug*
-  centerSliders();
-
-  //hackishly keep the solid color open
+  // hackishly keep the solid color open
   solidColorHide = document.getElementById("solidColor").jscolor.hide;
   document.getElementById("solidColor").jscolor.hide = function(){};
 
-  centerSliders();
+  // initialize color objects
+  singleColor = new SingleColor();
+  multiColor = new MultiColor();
+  resetOnAndBrightness(false);
+
+
+  // try to set canvas size
+  setSolidColorpickerSize();
+  setMultiColorpickerSize(false);
+
+  // and center text labels
+  centerSlidersText();
 
   // get current state
   sendRequest("getState", null, true, initialSetState);
@@ -627,28 +694,11 @@ function initialSetState(stateInfo) {
         $(".sliderPercent3").html(data.brightness + "%");
         $(".slider3").val(data.brightness);
         break;
-      case "randomColors":
-        randomColors = data.randomColors; //todo: fix if the length is wrong?
-        break;
-      case "randomness":
-        $(".sliderPercent2").html(data.randomness + "%");
-        $(".slider2").val(data.randomness);
-        randomAmount = data.randomness;
-        break;
-      case "gradient":
-        $(".sliderPercent1").html(data.gradient + "%");
-        $(".slider1").val(data.gradient);
-        gradientAmount = 100-data.gradient;
+      case "multiColor":
+        multiColor = new MultiColor(data.multiColor, true);
         break;
       case "savedSingleColors":
         savedSingleColors.load(Array.from(data.savedSingleColors, x => new SingleColor(x)));
-        break;
-      case "manyColors":
-        if(lightsColor.length <= data.manyColors.length) {
-          lightsColor = data.manyColors;
-        } else {
-          lightsColor = data.manyColors + lightsColor.slice(data.manyColors.length);
-        }
         break;
       case "mode":
         var loadedTab = '';
@@ -667,7 +717,6 @@ function initialSetState(stateInfo) {
         console.log(key);
     }
   }
-  redrawLights(true, false);
 }
 
 var activeOverlay = -1;
@@ -681,7 +730,7 @@ function overlayOn(i, x, y) {
                      display: 'block',
                      top: y <= yCenter ? y : y - 155,
                      left: x <= xCenter ? x : x - $("#overlay").width()});
-  $("#multiColorPicker")[0].jscolor.fromString(lightsColor[i]);
+  $("#multiColorPicker")[0].jscolor.fromString(multiColor.colors[i]);
   $("#multiColorPicker")[0].jscolor.show();
   setColorBox("multiColorPicker");
 }
@@ -695,17 +744,9 @@ function multiColorPickerChange(input,whichcolor) {
   var newColor = input.jscolor.toString("hex");
   setColorBox("multiColorPicker");
   if (activeOverlay >= 0) {
-    if(newColor != lightsColor[activeOverlay]) {
-      lightsColor[activeOverlay] = newColor;
-      redrawLights();
-    }
+    multiColor.setColor(activeOverlay, newColor);
   } else if (activeOverlay == -2) {
-    for(var i=0; i<lightsColor.length; i++) {
-      if(lightsSelected[i]) {
-        lightsColor[i] = newColor;
-      }
-    }
-    redrawLights();
+    multiColor.setSingleColor(newColor);
   }
 }
 
