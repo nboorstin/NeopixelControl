@@ -1,7 +1,8 @@
 'use strict';
 class SingleColor {
+  static init = false;
   constructor(single) {
-    this.active = false;
+    SingleColor.init = true;
     if (typeof single == 'undefined') {
       this.reset();
     } else if (typeof(single) == "object") {
@@ -9,13 +10,13 @@ class SingleColor {
     } else {
       this.setColor(color.toUpperCase(), true, false);
     }
+    SingleColor.init = false;
   }
 
   equals(other) {return other === undefined ? false : this.color == other.color;}
 
   reset() {
     this.setColor("#FF0000");
-    this.active = true;
   }
 
   setColor(color, updateColorPicker=true) {
@@ -29,28 +30,30 @@ class SingleColor {
 
       setColorBox("solidColor");
 
-      if (this.active) {sendRequest("solidColor", this.color);}
+      if (!SingleColor.init) {sendRequest("solidColor", this.color);}
     }
   }
 }
 
 class MultiColor {
+  static init = false;
+  static copy = false;
   constructor(multi, active = false) {
-    this.active = active;
+    MultiColor.init = true;
     if (typeof multi == 'undefined') {
       this.reset(false);
     } else if (typeof(multi) == "object") {
+      MultiColor.copy = true;
       for (const [key, value] of Object.entries(multi)) {
         this[key] = value;
       }
+      MultiColor.copy = false;
+      MultiColor.init = false;
       if (active) {
         this.updateRandomSlider();
         this.updatePatternSlider();
         this.redrawLights(false);
       }
-    } else {
-      console.log(multi);
-      //this.setColor(multi.toUpperCase(), true, false);
     }
   }
 
@@ -58,7 +61,7 @@ class MultiColor {
     this.setSolidColor("#FF0000");
     this.setPattern(50, true);
     this.setRandomness(0, true);
-    this.active = true;
+    MultiColor.init = false;
     this.redrawLights(send);
   }
 
@@ -71,7 +74,7 @@ class MultiColor {
     this.redrawLights();
   }
   updateRandomSlider(setSlider = true) {
-    if(!this.active) {return;}
+    if(MultiColor.copy) {return;}
     if (setSlider) {
       $(".slider2").val(this.randomAmount);
     }
@@ -80,7 +83,7 @@ class MultiColor {
     centerSlidersText();
   }
   updatePatternSlider(setSlider = true) {
-    if(!this.active) {return;}
+    if(MultiColor.copy) {return;}
     if (setSlider) {
       $(".slider1").val(this.patternAmount);
     }
@@ -116,7 +119,7 @@ class MultiColor {
     redrawLights(this);
   }
   redrawLights(send = true) {
-    if(!this.active) {return;}
+    if(MultiColor.init) {return;}
     $("#multiColorSave").html('save'); //reset save button
     $("#multiColorSave")[0].className = 'topbutton'; //reset save button
     // actually do drawing here
@@ -132,7 +135,6 @@ class SavedData {
     this.name = name
     this.list = [];
     this.overlay = overlay;
-    this.active = false;
   }
   load(list) {
     this.list = list;
@@ -162,7 +164,7 @@ class SavedSingleColors extends SavedData {
       for(var i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
         html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="removeSingleColor(event, this)">X</div></div>';
       }
-      html += '<div class="singeColorLoad" onclick="savedSingleColors.removeAll()" style="padding-top: 2%; text-align: center;">Clear All</div>';
+      html += '<div class="singeColorLoad" onclick="removeAllSingleColors()" style="padding-top: 2%; text-align: center;">Clear All</div>';
       $('#' + this.overlay).html(html);
     }
   }
@@ -585,7 +587,17 @@ function restoreSingleColor(button) {
 function removeSingleColor(event, button) {
   event.stopPropagation();
   var index = parseInt(button.parentElement.id.substring(15));
+  if (singleColor.equals(savedSingleColors.list[index])) {
+    $("#singleColorSave").html('save'); //reset save button
+    $("#singleColorSave")[0].className = 'topbutton'; //reset save button
+  }
   savedSingleColors.remove(index);
+}
+
+function removeAllSingleColors() {
+  $("#singleColorSave").html('save'); //reset save button
+  $("#singleColorSave")[0].className = 'topbutton'; //reset save button
+  savedSingleColors.removeAll();
 }
 
 
@@ -777,6 +789,9 @@ function initialSetState(stateInfo) {
         break;
       case "savedSingleColors":
         savedSingleColors.load(Array.from(data.savedSingleColors, x => new SingleColor(x)));
+        break;
+      case "savedMultiColors":
+        savedMultiColors.load(Array.from(data.savedMultiColors, x => new MultiColor(x)));
         break;
       case "mode":
         var loadedTab = '';
