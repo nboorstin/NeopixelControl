@@ -14,8 +14,8 @@ class SingleColor {
   equals(other) {return other === undefined ? false : this.color == other.color;}
 
   reset() {
-    this.active = true;
     this.setColor("#FF0000");
+    this.active = true;
   }
 
   setColor(color, updateColorPicker=true) {
@@ -534,7 +534,7 @@ function saveSingleColor(button) {
 function saveMultiColor(button) {
   if (button.innerHTML == "save") { //if we haven't already saved
     saveButton(button);
-    savedSingleColors.save(singleColor);
+    savedMultiColors.save(multiColor);
   }
 }
 
@@ -598,7 +598,7 @@ function resetMultiColor() {
 }
 
 function singleColorFill(button) {
-  rect = button.getBoundingClientRect();
+  var rect = button.getBoundingClientRect();
   activeOverlay = -2;
   $("#overlay").css({position: 'fixed',
                      display: 'block',
@@ -797,7 +797,7 @@ function multiColorPickerChange(input,whichcolor) {
   if (activeOverlay >= 0) {
     multiColor.setColor(activeOverlay, newColor);
   } else if (activeOverlay == -2) {
-    multiColor.setSingleColor(newColor);
+    multiColor.setSolidColor(newColor);
   }
 }
 
