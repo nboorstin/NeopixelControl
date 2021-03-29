@@ -181,6 +181,7 @@ class SavedSingleColors extends SavedData {
 }
 
 class SavedMultiColors extends SavedData {
+  static drawn = false;
   constructor() {
     super("manyLoadOverlay","savedMultiColors");
   }
@@ -202,6 +203,7 @@ class SavedMultiColors extends SavedData {
       if (this.list.filter(e => e.equals(multiColor)).length != 0) {
         this.list = this.list.filter(e => !e.equals(multiColor));
       }
+      this.list.push(new MultiColor(multiColor));
       this.list.push(new MultiColor(multiColor));
       sendRequest(this.name, this.list);
     }
@@ -568,14 +570,39 @@ function loadSingleColor(button) {
 
 function loadMultiColor(button) {
   var rect = button.getBoundingClientRect();
+  var mult = 0.5;
   $("#manyLoadOverlay").css({position: 'fixed',
                               display: 'block',
-                              'font-size': rect.width / 14 + 'px',
-                              width: rect.width,
+                              'font-size': rect.width / 10 + 'px',
+                              width: rect.width * (1 + mult),
                               height: rect.width * 2.5,
                               top: rect.y - rect.width * 2.5,
-                              left: rect.x});
+                              left: rect.x - (rect.width * mult)});
   savedMultiColors.active = true;
+  // add canvas
+  drawMultiLoad();
+}
+
+function drawMultiLoad() {
+  if (!SavedMultiColors.drawn) {
+    SavedMultiColors.drawn = true;
+    var rect = $("#multi_ColorLoad0")[0].getBoundingClientRect();
+    for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
+      $('#multi_ColorLoad' + i).prepend('<canvas style="position: absolute; top: 0px;" id="multiLoad' + i + '" width=' + rect.width + ' height=' + rect.height + '></canvas>');
+    }
+  } else {
+    //for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
+    //  $("
+  }
+  for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
+    console.log(i);
+    var ctx = $("#multiLoad" + i)[0].getContext('2d');
+    console.log(ctx);
+    ctx.beginPath();
+    ctx.rect(20, 20, 150, 100);
+    ctx.stroke();
+  }
+
 }
 
 
@@ -729,11 +756,12 @@ function setMultiColorpickerSize(redraw=true, send=true) {
   drawMultiLights(redraw, send);
   if(savedMultiColors.active) {
     var rect = $("#loadMultiColor")[0].getBoundingClientRect();
-    $("#manyLoadOverlay").css({width: rect.width,
+    var mult = 0.5;
+    $("#manyLoadOverlay").css({width: rect.width * (1 + mult),
                                 height: rect.width * 2.5,
-                                'font-size': rect.width / 14 + 'px',
+                                'font-size': rect.width / 10 + 'px',
                                 top: rect.y - rect.width * 2.5,
-                                left: rect.x});
+                                left: rect.x - rect.width * mult});
   }
 }
 

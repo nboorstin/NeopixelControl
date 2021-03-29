@@ -317,7 +317,8 @@ input:checked + .slider .off
   border-color: black;
   border-style: solid;
   border-width: 1px;  
-  overflow-x: auto;
+  overflow-x: -moz-hidden-unscrollable;
+  overflow-y: auto;
   z-index: 6000;
 }
 
