@@ -286,6 +286,7 @@ function blendColors(colorlist, percentagelist){
   var blue = 0;
   var green = 0;
   for(var i = 0; i < colorlist.length; i++){
+    console.log(colorlist[i]);
     red = red + (parseInt(colorlist[i].substring(1,3),16) * percentagelist[i]/100);
     green = green + (parseInt(colorlist[i].substring(3,5),16) * percentagelist[i]/100);
     blue = blue + (parseInt(colorlist[i].substring(5,7),16) * percentagelist[i]/100);
@@ -713,10 +714,7 @@ function makeGradient(multiColor) {
     var redint = Math.round(red);
     var greenint = Math.round(green);
     var blueint = Math.round(blue);
-    var colorstring = "#";
-    colorstring += redint.toString(16);
-    colorstring += greenint.toString(16);
-    colorstring += blueint.toString(16);
+    var colorstring = rgbToHexString(redint, greenint, blueint);
     newLightsColor[unfilledlist[i]] = colorstring;
   }
   console.log(newLightsColor);
