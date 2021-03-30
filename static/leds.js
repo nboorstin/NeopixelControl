@@ -195,7 +195,6 @@ class SavedMultiColors extends SavedData {
       }
       html += '<div class="singeColorLoad" onclick="savedMultiColors.removeAll()" style="padding-top: 2%; text-align: center;">Clear All</div>';
       $('#' + this.overlay).html(html);
-      console.log($("#multi_ColorLoad0").width())
     }
   }
   save(element) {
@@ -203,7 +202,6 @@ class SavedMultiColors extends SavedData {
       if (this.list.filter(e => e.equals(multiColor)).length != 0) {
         this.list = this.list.filter(e => !e.equals(multiColor));
       }
-      this.list.push(new MultiColor(multiColor));
       this.list.push(new MultiColor(multiColor));
       sendRequest(this.name, this.list);
     }
@@ -583,17 +581,7 @@ function loadMultiColor(button) {
   drawMultiLoad();
 }
 
-function drawMultiLoad() {
-  if (!SavedMultiColors.drawn) {
-    SavedMultiColors.drawn = true;
-    var rect = $("#multi_ColorLoad0")[0].getBoundingClientRect();
-    for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
-      $('#multi_ColorLoad' + i).prepend('<canvas style="position: absolute; top: 0px;" id="multiLoad' + i + '" width=' + rect.width + ' height=' + rect.height + '></canvas>');
-    }
-  } else {
-    //for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
-    //  $("
-  }
+function redrawMultiLoad() {
   for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
     console.log(i);
     var ctx = $("#multiLoad" + i)[0].getContext('2d');
@@ -602,7 +590,18 @@ function drawMultiLoad() {
     ctx.rect(20, 20, 150, 100);
     ctx.stroke();
   }
+}
 
+function drawMultiLoad() {
+  if (!SavedMultiColors.drawn && savedMultiColors.list.length > 0) {
+    console.trace();
+    SavedMultiColors.drawn = true;
+    var rect = $("#multi_ColorLoad0")[0].getBoundingClientRect();
+    for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
+      $('#multi_ColorLoad' + i).prepend('<canvas style="position: absolute; top: 0px;" id="multiLoad' + i + '" width=' + rect.width + ' height=' + rect.height + '></canvas>');
+    }
+    redrawMultiLoad();
+  }
 }
 
 
@@ -762,6 +761,13 @@ function setMultiColorpickerSize(redraw=true, send=true) {
                                 'font-size': rect.width / 10 + 'px',
                                 top: rect.y - rect.width * 2.5,
                                 left: rect.x - rect.width * mult});
+    rect = $("#multi_ColorLoad0")[0].getBoundingClientRect();
+    console.log(rect);
+    for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
+      $("#multiLoad" + i).width(rect.width);
+      $("#multiLoad" + i).height(rect.height);
+    }
+    redrawMultiLoad();
   }
 }
 
