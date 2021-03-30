@@ -305,7 +305,6 @@ function blendColors(colorlist, percentagelist){
   var blue = 0;
   var green = 0;
   for(var i = 0; i < colorlist.length; i++){
-    console.log(colorlist[i]);
     red = red + (parseInt(colorlist[i].substring(1,3),16) * percentagelist[i]/100);
     green = green + (parseInt(colorlist[i].substring(3,5),16) * percentagelist[i]/100);
     blue = blue + (parseInt(colorlist[i].substring(5,7),16) * percentagelist[i]/100);
@@ -834,7 +833,7 @@ window.onload = function() {
   centerSlidersText();
 
   // get current state
-  //sendRequest("getState", null, true, initialSetState);
+  sendRequest("getState", null, true, initialSetState);
 }
 
 function initialSetState(stateInfo) {
