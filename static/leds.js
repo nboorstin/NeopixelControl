@@ -45,7 +45,11 @@ class MultiColor {
     } else if (typeof(multi) == "object") {
       MultiColor.copy = true;
       for (const [key, value] of Object.entries(multi)) {
-        this[key] = value;
+        if (Array.isArray(value)) {
+          this[key] = value.slice();
+        } else {
+          this[key] = value;
+        }
       }
       MultiColor.copy = false;
       MultiColor.init = false;
@@ -58,6 +62,7 @@ class MultiColor {
   }
 
   reset(send = true) {
+    MultiColor.init = true;
     this.setSolidColor("#FF0000");
     this.setPattern(50, true);
     this.setRandomness(0, true);
@@ -120,15 +125,29 @@ class MultiColor {
   }
   redrawLights(send = true) {
     if(MultiColor.init) {return;}
-    $("#multiColorSave").html('save'); //reset save button
-    $("#multiColorSave")[0].className = 'topbutton'; //reset save button
+    if(!this.equals(savedMultiColors.list[savedMultiColors.list.length - 1])) {
+      $("#multiColorSave").html('save'); //reset save button
+      $("#multiColorSave")[0].className = 'topbutton'; //reset save button
+    }
     // actually do drawing here
     redrawLights(this);
 
     if(send) {sendRequest('multiColor', this);}
   }
 
-  equals(other) {return other === undefined ? false : this.color == other.color;}
+  equals(other) {
+    if (other === undefined) {return false;}
+    var entries = Object.entries(this);
+    if (this.randomAmount == 0) {
+      entries = entries.filter(e => e[0] != "randomColors");
+    }
+    for (const [key, value] of entries) {
+      if (JSON.stringify(this[key]) != JSON.stringify(other[key])) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 class SavedData {
   constructor(overlay, name) {
@@ -194,7 +213,7 @@ class SavedMultiColors extends SavedData {
       for(var i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
         html += '<div class="multiColorLoad" id="multi_ColorLoad' + i + '" onclick="restoreMultiColor(this)"><div class="loadX2" onclick="removeMultiColor(event, this)">X</div></div>';
       }
-      html += '<div class="singeColorLoad" onclick="savedMultiColors.removeAll()" style="padding-top: 2%; text-align: center;">Clear All</div>';
+      html += '<div class="singeColorLoad" onclick="removeAllMultiColors()" style="padding-top: 2%; text-align: center;">Clear All</div>';
       $('#' + this.overlay).html(html);
     }
   }
@@ -501,10 +520,6 @@ function updateColors(multiColor) {
       multiColor.colors[i] = blendColors([multiColor.randomColors[i], multiColor.colors[i]], [multiColor.randomAmount, 100-multiColor.randomAmount]);
     }
   }
-    console.log(".")
-  console.log(multiColor.randomColors);
-  console.log(multiColor.colors[2]);
-  console.log(multiColor.randomAmount);
 }
 function redrawLights(multiColor) {
   var canvas = document.getElementById("manyColorCanvas");
@@ -589,9 +604,7 @@ function loadMultiColor(button) {
 
 function redrawMultiLoad() {
   for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
-    console.log(i);
     var ctx = $("#multiLoad" + i)[0].getContext('2d');
-    console.log(ctx);
     ctx.beginPath();
     ctx.rect(20, 20, 150, 100);
     ctx.stroke();
@@ -600,7 +613,6 @@ function redrawMultiLoad() {
 
 function drawMultiLoad() {
   if (!SavedMultiColors.drawn && savedMultiColors.list.length > 0) {
-    console.trace();
     SavedMultiColors.drawn = true;
     var rect = $("#multi_ColorLoad0")[0].getBoundingClientRect();
     for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
@@ -627,7 +639,7 @@ function removeSingleColor(event, button) {
 }
 
 function restoreMultiColor(button) {
-  var color = savedMultiColors.list[parseInt(button.id.substring(15))].color;
+  var color = savedMultiColors.list[parseInt(button.id.substring(15))];
   multiColor = new MultiColor(color, true);
 }
 
@@ -646,6 +658,11 @@ function removeAllSingleColors() {
   savedSingleColors.removeAll();
 }
 
+function removeAllMultiColors() {
+  $("#multiColorSave").html('save'); //reset save button
+  $("#multiColorSave")[0].className = 'topbutton'; //reset save button
+  savedMultiColors.removeAll();
+}
 
 function loadSingleOverlayOff() {
   $("#solidLoadOverlay").css({display: 'none'});
@@ -717,7 +734,6 @@ function makeGradient(multiColor) {
     var colorstring = rgbToHexString(redint, greenint, blueint);
     newLightsColor[unfilledlist[i]] = colorstring;
   }
-  console.log(newLightsColor);
   return newLightsColor;
 }
 
@@ -780,7 +796,6 @@ function setMultiColorpickerSize(redraw=true, send=true) {
                                 top: rect.y - rect.width * 2.5,
                                 left: rect.x - rect.width * mult});
     rect = $("#multi_ColorLoad0")[0].getBoundingClientRect();
-    console.log(rect);
     for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
       $("#multiLoad" + i).width(rect.width);
       $("#multiLoad" + i).height(rect.height);
