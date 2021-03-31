@@ -369,6 +369,8 @@ function activateTab(button, pageId, redraw=true, send=true) {
       centerSlidersText();
     } else if (pageId == 'tabAnimate') {
       sendRequest('mode', 'animate', send);
+    } else if (pageId == 'tabSaved') {
+      sendRequest('mode', 'saved', send);
     } else {
       console.log(pageId);
     }
