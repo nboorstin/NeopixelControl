@@ -337,6 +337,7 @@ input:checked + .slider .off
   width: 90%;
   margin: auto;
   border-radius: 6px;
+  background-color: #ccccccff;
   border-color: black;
   border-style: solid;
   border-width: 1px;  

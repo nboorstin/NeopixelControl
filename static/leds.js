@@ -204,6 +204,10 @@ class SavedMultiColors extends SavedData {
   constructor() {
     super("manyLoadOverlay","savedMultiColors");
   }
+  remove(index) {
+    super.remove(index);
+    drawMultiLoad();
+  }
   redoHTML() {
     SavedMultiColors.drawn = false;
     if (this.list.length == 0) {
@@ -602,11 +606,32 @@ function loadMultiColor(button) {
 }
 
 function redrawMultiLoad() {
-  for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
-    var ctx = $("#multiLoad" + i)[0].getContext('2d');
-    ctx.beginPath();
-    ctx.rect(20, 20, 150, 100);
-    ctx.stroke();
+  for(var j = savedMultiColors.list.length - 1; j >=0; j--) {
+    var canvas = $("#multiLoad" + j)[0];
+    var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
+    var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
+    var spacing = 0;
+    spacing += 1;
+    var sizeX = canvas.width / (spacing * countX);
+    var sizeY = canvas.height / (spacing * countY);
+    var size = Math.min(sizeX, sizeY);
+    // override spacing if it's too big
+    //size = Math.min(size, 30);
+
+    var ctx = canvas.getContext("2d");
+    for(var i=0; i<lightsPos.length; i++) {
+      var x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size - 5;
+      var y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size - 5;
+
+      ctx.fillStyle = savedMultiColors.list[j].colors[i];
+      ctx.fillRect(x, y, size/(spacing), size/(spacing));
+      //ctx.beginPath();
+      ////ctx.lineWidth = 2;
+      ////ctx.strokeStyle = 'black';
+      //ctx.arc(x, y, size / (spacing+1), 0, 2 * Math.PI, false);
+      ctx.fill();
+      //ctx.stroke();
+    }
   }
 }
 
