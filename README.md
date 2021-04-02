@@ -10,6 +10,10 @@ First, make sure `pipenv` is installed:
 
     pip3 install --user pipenv
 
-Then, run the following command:
+Then, install the dependencies:
+
+    pipenv install
+
+Finally, run the following command:
 
     pipenv run python first.py
