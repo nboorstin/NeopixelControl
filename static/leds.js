@@ -1,8 +1,8 @@
 'use strict';
+var SingleColorInit = false;
 class SingleColor {
-  static init = false;
   constructor(single) {
-    SingleColor.init = true;
+    SingleColorInit = true;
     if (typeof single == 'undefined') {
       this.reset();
     } else if (typeof(single) == "object") {
@@ -10,7 +10,7 @@ class SingleColor {
     } else {
       this.setColor(color.toUpperCase(), true, false);
     }
-    SingleColor.init = false;
+    SingleColorInit = false;
   }
 
   equals(other) {return other === undefined ? false : this.color == other.color;}
@@ -30,20 +30,20 @@ class SingleColor {
 
       setColorBox("solidColor");
 
-      if (!SingleColor.init) {sendRequest("solidColor", this.color);}
+      if (!SingleColorInit) {sendRequest("solidColor", this.color);}
     }
   }
 }
 
+var MultiColorInit = false;
+var MultiColorCopy = false;
 class MultiColor {
-  static init = false;
-  static copy = false;
   constructor(multi, active = false) {
-    MultiColor.init = true;
+    MultiColorInit = true;
     if (typeof multi == 'undefined') {
       this.reset(false);
     } else if (typeof(multi) == "object") {
-      MultiColor.copy = true;
+      MultiColorCopy = true;
       for (const [key, value] of Object.entries(multi)) {
         if (Array.isArray(value)) {
           this[key] = value.slice();
@@ -51,8 +51,8 @@ class MultiColor {
           this[key] = value;
         }
       }
-      MultiColor.copy = false;
-      MultiColor.init = false;
+      MultiColorCopy = false;
+      MultiColorInit = false;
       if (active) {
         this.updateRandomSlider();
         this.updatePatternSlider();
@@ -62,11 +62,11 @@ class MultiColor {
   }
 
   reset(send = true) {
-    MultiColor.init = true;
+    MultiColorInit = true;
     this.setSolidColor("#FF0000");
     this.setPattern(50, true);
     this.setRandomness(0, true);
-    MultiColor.init = false;
+    MultiColorInit = false;
     this.redrawLights(send);
   }
 
@@ -79,7 +79,7 @@ class MultiColor {
     this.redrawLights();
   }
   updateRandomSlider(setSlider = true) {
-    if(MultiColor.copy) {return;}
+    if(MultiColorCopy) {return;}
     if (setSlider) {
       $(".slider2").val(this.randomAmount);
     }
@@ -88,7 +88,7 @@ class MultiColor {
     centerSlidersText();
   }
   updatePatternSlider(setSlider = true) {
-    if(MultiColor.copy) {return;}
+    if(MultiColorCopy) {return;}
     if (setSlider) {
       $(".slider1").val(this.patternAmount);
     }
@@ -128,7 +128,7 @@ class MultiColor {
     redrawLights(this);
   }
   redrawLights(send = true) {
-    if(MultiColor.init) {return;}
+    if(MultiColorInit) {return;}
     if(!this.equals(savedMultiColors.list[savedMultiColors.list.length - 1])) {
       $("#multiColorSave").html('save'); //reset save button
       $("#multiColorSave")[0].className = 'topbutton'; //reset save button
