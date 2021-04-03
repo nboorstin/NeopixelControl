@@ -107,6 +107,10 @@ class MultiColor {
       var red = Math.floor(Math.random() * Math.floor(255));
       var green = Math.floor(Math.random() * Math.floor(255));
       var blue = Math.floor(Math.random() * Math.floor(255));
+      var max = Math.max(red,green,blue);
+      red = Math.floor(red*255/max);
+      green = Math.floor(green*255/max);
+      blue = Math.floor(blue*255/max);
       var randomcolor = rgbToHexString(red, green, blue);
       this.randomColors[i] = randomcolor;
     }
@@ -521,6 +525,12 @@ function updateColors(multiColor) {
 
       multiColor.colors[i] = multiColor.colors[randomElement];
       multiColor.colors[i] = blendColors([multiColor.colors[i], newColors[i]], [multiColor.patternAmount, 100 - multiColor.patternAmount]);
+      var red = 0;
+      var green = 0;
+      var blue = 0;
+      [red,green,blue] = hexToRgb(multiColor.colors[i]);
+      var max = Math.max(red,green,blue);
+      // console.log(max);
       // and then apply random
       multiColor.colors[i] = blendColors([multiColor.randomColors[i], multiColor.colors[i]], [multiColor.randomAmount, 100-multiColor.randomAmount]);
     }
