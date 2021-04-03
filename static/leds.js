@@ -203,8 +203,8 @@ class SavedSingleColors extends SavedData {
   }
 }
 
+var SavedMultiColorsDrawn = false;
 class SavedMultiColors extends SavedData {
-  static drawn = false;
   constructor() {
     super("manyLoadOverlay","savedMultiColors");
   }
@@ -213,7 +213,7 @@ class SavedMultiColors extends SavedData {
     drawMultiLoad();
   }
   redoHTML() {
-    SavedMultiColors.drawn = false;
+    SavedMultiColorsDrawn = false;
     if (this.list.length == 0) {
       $('#' + this.overlay).html("&nbsp;Nothing saved yet");
     } else {
@@ -525,11 +525,11 @@ function updateColors(multiColor) {
 
       multiColor.colors[i] = multiColor.colors[randomElement];
       multiColor.colors[i] = blendColors([multiColor.colors[i], newColors[i]], [multiColor.patternAmount, 100 - multiColor.patternAmount]);
-      var red = 0;
-      var green = 0;
-      var blue = 0;
-      [red,green,blue] = hexToRgb(multiColor.colors[i]);
-      var max = Math.max(red,green,blue);
+      //var red = 0;
+      //var green = 0;
+      //var blue = 0;
+      //[red,green,blue] = hexToRgb(multiColor.colors[i]);
+      //var max = Math.max(red,green,blue);
       // console.log(max);
       // and then apply random
       multiColor.colors[i] = blendColors([multiColor.randomColors[i], multiColor.colors[i]], [multiColor.randomAmount, 100-multiColor.randomAmount]);
@@ -648,8 +648,8 @@ function redrawMultiLoad() {
 }
 
 function drawMultiLoad() {
-  if (!SavedMultiColors.drawn && savedMultiColors.list.length > 0) {
-    SavedMultiColors.drawn = true;
+  if (!SavedMultiColorsDrawn && savedMultiColors.list.length > 0) {
+    SavedMultiColorsDrawn = true;
     var rect = $("#multi_ColorLoad0")[0].getBoundingClientRect();
     for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
       $('#multi_ColorLoad' + i).prepend('<canvas style="position: absolute; top: 0px;" id="multiLoad' + i + '" width=' + rect.width + ' height=' + rect.height + '></canvas>');
