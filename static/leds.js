@@ -437,12 +437,40 @@ var lightsSelected = Array(lightsPos.length).fill(false);
 lightsSelected[0] = lightsSelected[14] = lightsSelected[23] = lightsSelected[37] = true;
 
 var holdTimeout = null;
+var heldLight = -1;
+var lastMouseX, lastMouseY;
 function multiColorMove(e) {
+  if (holdTimeout !== null) {
+    var canvas = document.getElementById("manyColorCanvas");
+    var canvasLeft = canvas.offsetLeft + canvas.clientLeft;
+    var canvasTop = canvas.offsetTop + canvas.clientTop;
+    var x = (event.pageX - canvasLeft) * window.devicePixelRatio,
+      y = (event.pageY - canvasTop) * window.devicePixelRatio;
+    var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
+    var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
+    var spacing = 0.75;
+    spacing += 1;
+    var sizeX = canvas.width / (spacing * countX);
+    var sizeY = canvas.height / (spacing * countY);
+    var size = Math.min(sizeX, sizeY);
+    var i = heldLight;
+    var xPos = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
+    var yPos = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
+    if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
+      yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
+      lastMouseX = event.pageX;
+      lastMouseY = event.pageY;
+    } else {
+      clearTimeout(holdTimeout);
+      holdTimeout = null;
+    }
+  }
 }
 function multiColorRelease(e) {
   if (holdTimeout !== null) {
     clearTimeout(holdTimeout);
     holdTimeout = null;
+    heldLight = -1;
   }
 }
 
@@ -466,18 +494,23 @@ function multiColorPress(e) {
     var yPos = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
     if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
       yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
-      holdTimeout = setTimeout(toggleSelect.bind(null, i, event), 1000);
+      holdTimeout = setTimeout(toggleSelect, 1000);
+      heldLight = i;
+      lastMouseX = event.pageX;
+      lastMouseY = event.pageY;
     }
   }
 }
 
-function toggleSelect(light, event) {
+function toggleSelect() {
   cancelClick = true;
-  console.log(light);
-  lightsSelected[light] ^= true;
-  console.log(lightsSelected[light]);
+  var newState = !lightsSelected[heldLight];
+  lightsSelected[heldLight] = newState;
   multiColor.redrawLights();
   holdTimeout = null;
+  if (newState) {
+    overlayOn(heldLight, lastMouseX, lastMouseY);
+  }
 }
 
 function checkLightsMouse(e) {
@@ -501,7 +534,6 @@ function checkLightsMouse(e) {
       if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
         yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
         overlayOn(i, event.pageX, event.pageY);
-        // multiColor.colors[i] = document.getElementById("multiColorSelect").jscolor.toString("hex");
       }
     }
   }
