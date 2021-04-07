@@ -55,7 +55,15 @@
         <!-- many color tab -->
         <br>
         <div class="background-rect" id="manyColorEntryCenter" style="padding:0.6%">
-          <canvas id="manyColorCanvas" onclick="checkLightsMouse()" onmousemove="multiColorMove()" onmousedown="multiColorPress()" onmouseup="multiColorRelease()" height="200"></canvas>
+          <canvas id="manyColorCanvas" 
+            onclick="checkLightsMouse()"
+            onmousemove="multiColorMove()"
+            ontouchmove="multiColorMove()"
+            onmousedown="multiColorPress()"
+            ontouchdown="multiColorPress()"
+            onmouseup="multiColorRelease()"
+            ontouchup="multiColorRelease()"
+            height="200"></canvas>
         </div>
         </br> 
         <div class="background-rect" id="manyColorEntrySliders">
