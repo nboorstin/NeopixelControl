@@ -57,12 +57,12 @@
         <div class="background-rect" id="manyColorEntryCenter" style="padding:0.6%">
           <canvas id="manyColorCanvas" 
             onclick="checkLightsMouse()"
+            onmousedown="multiColorPress()"
+            ontouchstart="multiColorPress()"
+            onmouseup="multiColorRelease()"
+            ontouchend="multiColorRelease()"
             onmousemove="multiColorMove()"
             ontouchmove="multiColorMove()"
-            onmousedown="multiColorPress()"
-            ontouchdown="multiColorPress()"
-            onmouseup="multiColorRelease()"
-            ontouchup="multiColorRelease()"
             height="200"></canvas>
         </div>
         </br> 

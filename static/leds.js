@@ -440,6 +440,8 @@ var holdTimeout = null;
 var heldLight = -1;
 var lastMouseX, lastMouseY;
 function multiColorMove(e) {
+  console.log('multicolormove');
+  console.log(event.pageX, event.pageY);
   if (holdTimeout !== null) {
     var canvas = document.getElementById("manyColorCanvas");
     var canvasLeft = canvas.offsetLeft + canvas.clientLeft;
@@ -467,6 +469,9 @@ function multiColorMove(e) {
   }
 }
 function multiColorRelease(e) {
+  console.log("multicolorrelease");
+  console.log(event.pageX, event.pageY);
+  console.log(holdTimeout);
   if (holdTimeout !== null) {
     clearTimeout(holdTimeout);
     holdTimeout = null;
@@ -476,6 +481,11 @@ function multiColorRelease(e) {
 
 var cancelClick = false;
 function multiColorPress(e) {
+  if ("changedTouches" in event) {
+    event = event.changedTouches[0];
+  }
+  console.log("multicolorpress");
+  console.log(event.pageX, event.pageY);
   cancelClick = false;
   var canvas = document.getElementById("manyColorCanvas");
   var canvasLeft = canvas.offsetLeft + canvas.clientLeft;
