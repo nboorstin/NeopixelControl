@@ -187,7 +187,7 @@ class SavedSingleColors extends SavedData {
       for(var i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
         html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="removeSingleColor(event, this)">X</div></div>';
       }
-      html += '<div class="singeColorLoad" onclick="removeAllSingleColors()" style="padding-top: 2%; text-align: center;">Clear All</div>';
+      html += '<div class="singeColorLoad clearAllButton" onclick="removeAllSingleColors()">Clear All</div>';
       $('#' + this.overlay).html(html);
     }
   }
@@ -221,7 +221,7 @@ class SavedMultiColors extends SavedData {
       for(var i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
         html += '<div class="multiColorLoad" id="multi_ColorLoad' + i + '" onclick="restoreMultiColor(this)"><div class="loadX2" onclick="removeMultiColor(event, this)">X</div></div>';
       }
-      html += '<div class="singeColorLoad" onclick="removeAllMultiColors()" style="padding-top: 2%; text-align: center;">Clear All</div>';
+      html += '<div class="singeColorLoad clearAllButton" onclick="removeAllMultiColors()">Clear All</div>';
       $('#' + this.overlay).html(html);
     }
   }

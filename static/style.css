@@ -312,7 +312,7 @@ input:checked + .slider .off
 }
 
 .loadOverlay {
-  background-color: white;
+  background-color: #f3f3f3ff;
   border-radius: 12px;
   border-color: black;
   border-style: solid;
@@ -372,4 +372,11 @@ input:checked + .slider .off
   position: absolute;
   top: -3%;
   right: -5%;
+}
+
+.clearAllButton {
+  background-color: white;
+  padding-top: 0;
+  margin-bottom: 5%;
+  text-align: center;
 }
