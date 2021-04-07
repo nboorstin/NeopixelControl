@@ -503,8 +503,21 @@ function multiColorPress(e) {
 }
 
 function toggleSelect() {
-  cancelClick = true;
   var newState = !lightsSelected[heldLight];
+  if (!newState) {
+    var found = false;
+    for(var i=0; i<lightsPos.length; i++) {
+      if (i == heldLight) {continue;}
+      if (lightsSelected[i]) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      return;
+    }
+  }
+  cancelClick = true;
   lightsSelected[heldLight] = newState;
   holdTimeout = null;
   if (newState) {
