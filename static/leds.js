@@ -439,15 +439,22 @@ lightsSelected[0] = lightsSelected[14] = lightsSelected[23] = lightsSelected[37]
 var holdTimeout = null;
 var heldLight = -1;
 var lastMouseX, lastMouseY;
+function multiColorTouchMove(e) {
+  bothMultiColorMove(event.changedTouches[0].pageX, event.changedTouches[0].pageY);
+}
 function multiColorMove(e) {
-  console.log('multicolormove');
-  console.log(event.pageX, event.pageY);
+  if (navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) {
+    return;
+  }
+  bothMultiColorMove(event.pageX, event.pageY);
+}
+function bothMultiColorMove(pageX, pageY) {
   if (holdTimeout !== null) {
     var canvas = document.getElementById("manyColorCanvas");
     var canvasLeft = canvas.offsetLeft + canvas.clientLeft;
     var canvasTop = canvas.offsetTop + canvas.clientTop;
-    var x = (event.pageX - canvasLeft) * window.devicePixelRatio,
-      y = (event.pageY - canvasTop) * window.devicePixelRatio;
+    var x = (pageX - canvasLeft) * window.devicePixelRatio,
+      y = (pageY - canvasTop) * window.devicePixelRatio;
     var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
     var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
     var spacing = 0.75;
@@ -460,8 +467,8 @@ function multiColorMove(e) {
     var yPos = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
     if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
       yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
-      lastMouseX = event.pageX;
-      lastMouseY = event.pageY;
+      lastMouseX = pageX;
+      lastMouseY = pageY;
     } else {
       clearTimeout(holdTimeout);
       holdTimeout = null;
@@ -469,9 +476,6 @@ function multiColorMove(e) {
   }
 }
 function multiColorRelease(e) {
-  console.log("multicolorrelease");
-  console.log(event.pageX, event.pageY);
-  console.log(holdTimeout);
   if (holdTimeout !== null) {
     clearTimeout(holdTimeout);
     holdTimeout = null;
@@ -481,17 +485,21 @@ function multiColorRelease(e) {
 
 var cancelClick = false;
 function multiColorPress(e) {
-  if ("changedTouches" in event) {
-    event = event.changedTouches[0];
+  if (navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) {
+    return;
   }
-  console.log("multicolorpress");
-  console.log(event.pageX, event.pageY);
+  bothMultiColorPress(event.pageX, event.pageY);
+}
+function multiColorTouch(e) {
+  bothMultiColorPress(event.changedTouches[0].pageX, event.changedTouches[0].pageY);
+}
+function bothMultiColorPress(pageX, pageY) {
   cancelClick = false;
   var canvas = document.getElementById("manyColorCanvas");
   var canvasLeft = canvas.offsetLeft + canvas.clientLeft;
   var canvasTop = canvas.offsetTop + canvas.clientTop;
-  var x = (event.pageX - canvasLeft) * window.devicePixelRatio,
-    y = (event.pageY - canvasTop) * window.devicePixelRatio;
+  var x = (pageX - canvasLeft) * window.devicePixelRatio,
+    y = (pageY - canvasTop) * window.devicePixelRatio;
   var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
   var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
   var spacing = 0.75;
@@ -504,10 +512,13 @@ function multiColorPress(e) {
     var yPos = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
     if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
       yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
+      if (holdTimeout !== null) {
+        clearTimeout(holdTimeout);
+      }
       holdTimeout = setTimeout(toggleSelect, 1000);
       heldLight = i;
-      lastMouseX = event.pageX;
-      lastMouseY = event.pageY;
+      lastMouseX = pageX;
+      lastMouseY = pageY;
     }
   }
 }
@@ -1037,6 +1048,7 @@ function overlayOn(i, x, y) {
 function overlayOff(){
   activeOverlay = -1;
   document.getElementById("overlay").style.display = "none";
+  $("#multiColorPicker")[0].jscolor.hide();
 }
 
 function multiColorPickerChange(input,whichcolor) {
