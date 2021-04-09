@@ -2,6 +2,7 @@ body{
   background-color: #f3f3f3ff;
   padding-left:30%;
   padding-right:30%;
+  overflow: hidden;
 }
 @media (max-width:700px){
   body{
@@ -379,4 +380,10 @@ input:checked + .slider .off
   padding-top: 0;
   margin-bottom: 5%;
   text-align: center;
+}
+
+#saved > div
+{
+ float: left;
+ width: 150px;
 }
