@@ -551,29 +551,6 @@ function toggleSelect() {
     multiColor.redrawLights();
     overlayOn(heldLight, lastMouseX, lastMouseY);
   } else {
-    var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
-    var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
-    var canvas = document.getElementById("manyColorCanvas");
-    var spacing = 0.75;
-    spacing += 1;
-    var sizeX = canvas.width / (spacing * countX);
-    var sizeY = canvas.height / (spacing * countY);
-    var size = Math.min(sizeX, sizeY);
-    // override spacing if it's too big
-    //size = Math.min(size, 30);
-
-    var ctx = canvas.getContext("2d");
-    var i = heldLight;
-    var x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
-    var y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
-
-    ctx.fillStyle = backgroundColor;
-    ctx.strokeStyle = backgroundColor;
-    ctx.beginPath();
-    ctx.lineWidth = 3;
-    ctx.arc(x, y, 1.5*size / (spacing+1), 0, 2 * Math.PI, false); //this 1.6 isn't great
-    ctx.fill();
-    ctx.stroke();
     multiColor.redrawLights();
     if(!multiColor.equals(savedMultiColors.list[savedMultiColors.list.length - 1])) {
       $("#multiColorSave").html('save'); //reset save button
@@ -676,6 +653,7 @@ function redrawLights(multiColor) {
 
   updateColors(multiColor);
   var ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   for(var i=0; i<lightsPos.length; i++) {
     var x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
     var y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
