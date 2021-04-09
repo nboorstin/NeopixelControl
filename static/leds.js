@@ -570,6 +570,10 @@ function toggleSelect() {
     ctx.fill();
     ctx.stroke();
     multiColor.redrawLights();
+    if(!multiColor.equals(savedMultiColors.list[savedMultiColors.list.length - 1])) {
+      $("#multiColorSave").html('save'); //reset save button
+      $("#multiColorSave")[0].className = 'topbutton'; //reset save button
+    }
   }
 }
 
