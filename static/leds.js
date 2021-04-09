@@ -625,7 +625,7 @@ function updateColors(multiColor) {
     }
   }
   //Get gradient values
-  var newColors = JSON.parse(JSON.stringify(makeGradient(multiColor))); //weird javascript way of doing deep copy
+  var newColors = makeGradient(multiColor).slice();
   // step 2: for each unselected light, set its color to the nearest one
   for (var i=0; i<lightsPos.length; i++) {
     if (!lightsSelected[i]) {
