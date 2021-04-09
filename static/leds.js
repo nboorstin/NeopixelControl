@@ -1136,3 +1136,5 @@ function onDocumentMouseDown(e) { //todo: optimzie this to one loop
 //     window.scrollTo(0, scrollPosition);
 //   }
 // };
+
+document.ontouchmove = function(e){ e.preventDefault(); }
