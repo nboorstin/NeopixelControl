@@ -145,12 +145,13 @@ class MultiColor {
     if (this.randomAmount == 0) {
       entries = entries.filter(e => e[0] != "randomColors");
     }
-    for (const [key, value] of entries) {
-      if (JSON.stringify(this[key]) != JSON.stringify(other[key])) {
-        return false;
-      }
-    }
-    return true;
+    return JSON.stringify(this.colors) == JSON.stringify(other.colors);
+    //for (const [key, value] of entries) {
+    //  if (JSON.stringify(this[key]) != JSON.stringify(other[key])) {
+    //    return false;
+    //  }
+    //}
+    //return true;
   }
 }
 class SavedData {
