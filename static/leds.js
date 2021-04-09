@@ -38,11 +38,12 @@ class SingleColor {
 var MultiColorInit = false;
 var MultiColorCopy = false;
 class MultiColor {
-  constructor(multi, active = false) {
+  constructor(multi, active = false, send = false) {
     MultiColorInit = true;
     if (typeof multi == 'undefined') {
       this.reset(false);
     } else if (typeof(multi) == "object") {
+      this.setInitialState();
       MultiColorCopy = true;
       for (const [key, value] of Object.entries(multi)) {
         if (Array.isArray(value)) {
@@ -56,16 +57,20 @@ class MultiColor {
       if (active) {
         this.updateRandomSlider();
         this.updatePatternSlider();
-        this.redrawLights(false);
+        this.redrawLights(send);
       }
     }
   }
 
-  reset(send = true) {
-    MultiColorInit = true;
+  setInitialState() {
     this.setSolidColor("#FF0000");
     this.setPattern(50, true);
     this.setRandomness(0, true);
+    this.selected = lightsSelected.slice();
+  }
+  reset(send = true) {
+    MultiColorInit = true;
+    this.setInitialState();
     MultiColorInit = false;
     this.redrawLights(send);
   }
@@ -525,12 +530,12 @@ function bothMultiColorPress(pageX, pageY) {
 }
 
 function toggleSelect() {
-  var newState = !lightsSelected[heldLight];
+  var newState = !multiColor.selected[heldLight];
   if (!newState) {
     var found = false;
     for(var i=0; i<lightsPos.length; i++) {
       if (i == heldLight) {continue;}
-      if (lightsSelected[i]) {
+      if (multiColor.selected[i]) {
         found = true;
         break;
       }
@@ -540,7 +545,7 @@ function toggleSelect() {
     }
   }
   cancelClick = true;
-  lightsSelected[heldLight] = newState;
+  multiColor.selected[heldLight] = newState;
   holdTimeout = null;
   if (newState) {
     multiColor.redrawLights();
@@ -592,7 +597,7 @@ function checkLightsMouse(e) {
   var sizeY = canvas.height / (spacing * countY);
   var size = Math.min(sizeX, sizeY);
   for(var i=0; i<lightsPos.length; i++) {
-    if(lightsSelected[i]){
+    if(multiColor.selected[i]){
       var xPos = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
       var yPos = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
       if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
@@ -620,7 +625,7 @@ function updateColors(multiColor) {
   // step 1: search for all selected lights
   var selected = [];
   for (var i=0; i<lightsPos.length; i++) {
-    if (lightsSelected[i]) {
+    if (multiColor.selected[i]) {
       selected.push(i);
     }
   }
@@ -628,7 +633,7 @@ function updateColors(multiColor) {
   var newColors = makeGradient(multiColor).slice();
   // step 2: for each unselected light, set its color to the nearest one
   for (var i=0; i<lightsPos.length; i++) {
-    if (!lightsSelected[i]) {
+    if (!multiColor.selected[i]) {
       // ok for now its just going to be the nearest selected one
       // var minDist = -1;
       // var minColor = "#000000";
@@ -678,7 +683,7 @@ function redrawLights(multiColor) {
     ctx.fillStyle = multiColor.colors[i];
     ctx.beginPath();
     ctx.lineWidth = 2;
-    if (lightsSelected[i]) {
+    if (multiColor.selected[i]) {
       ctx.strokeStyle = 'white';
       ctx.arc(x, y, 1.5*size / (spacing+1), 0, 2 * Math.PI, false);
     } else {
@@ -795,7 +800,7 @@ function removeSingleColor(event, button) {
 
 function restoreMultiColor(button) {
   var color = savedMultiColors.list[parseInt(button.id.substring(15))];
-  multiColor = new MultiColor(color, true);
+  multiColor = new MultiColor(color, true, true);
 }
 
 function removeMultiColor(event, button) {
@@ -860,7 +865,7 @@ function makeGradient(multiColor) {
   var unfilledlist = [];
   var filledlist = [];
   for(var i = 0; i < lightsPos.length; i++){
-    if(lightsSelected[i] == false){
+    if(multiColor.selected[i] == false){
       unfilledlist.push(i);
     }
     else{
