@@ -58,11 +58,22 @@ def sendToESP():
 
 @socketio.on('message')
 def handle_message(data):
+    with open('test3.txt', 'w') as f:
+        f.write('recieved: ' + data)
+    print('recieved message: ' + data)
+    send(data)
+
+@socketio.on('json')
+def handle_json(data):
+    with open('test2.txt', 'w') as f:
+        f.write('recieved: ' + data)
     print('recieved message: ' + data)
     send(data)
 
 @socketio.on('connect')
 def socketConnect():
+    with open('test1.txt', 'w') as f:
+        f.write("test")
     print("connect")
 
 @app.route("/")
