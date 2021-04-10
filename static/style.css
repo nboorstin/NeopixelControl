@@ -3,6 +3,7 @@ body{
   padding-left:30%;
   padding-right:30%;
   overflow: hidden;
+  -webkit-user-select: none;
 }
 @media (max-width:700px){
   body{
