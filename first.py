@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 from flask import Flask, send_from_directory, redirect, url_for, request, render_template, make_response, json
+from flask_socketio import SocketIO, send
 from threading import Timer, Lock, Thread, Condition
 from os import path, environ
 from math import ceil
 from multiprocessing import Process
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 import logging
 log = logging.getLogger('werkzeug')
@@ -16,18 +18,18 @@ log.setLevel(logging.ERROR)
 
 cond = Condition()
 
-async def socket_handler(websocket, path):
-    name = await websocket.recv()
-    print(f"< {name}")
-
-    greeting = f"Hello {name}!"
-
-    await websocket.send(greeting)
-    print(f"> {greeting}")
-    while(True):
-        cond.acquire()
-        cond.wait()
-        await websocket.send(sendToESP())
+#async def socket_handler(websocket, path):
+#    name = await websocket.recv()
+#    print(f"< {name}")
+#
+#    greeting = f"Hello {name}!"
+#
+#    await websocket.send(greeting)
+#    print(f"> {greeting}")
+#    while(True):
+#        cond.acquire()
+#        cond.wait()
+#        await websocket.send(sendToESP())
 
 
 
@@ -53,6 +55,15 @@ def sendToESP():
                 ret += hexToBytes(c, i)
             return ret
     return bytes()
+
+@socketio.on('message')
+def handle_message(data):
+    print('recieved message: ' + data)
+    send(data)
+
+@socketio.on('connect')
+def socketConnect():
+    print("connect")
 
 @app.route("/")
 def root():
@@ -113,7 +124,7 @@ def response():
 
 if __name__ == "__main__":
     port = int(environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    socketio.run(app, host='0.0.0.0', port=port)
 #if __name__ == "__main__":
 #    Process(target=app.run, kwargs={'host': "0.0.0.0"}).start()
 #    start_server = websockets.serve(socket_handler, "0.0.0.0", 8765)
