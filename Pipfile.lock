@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c41ae6b74847d853a35e259302f0c9ebf94efd5f29c34f9df5ca26338ba661ac"
+            "sha256": "4df2d2e8e81d4803d69a9322a9469f46ee1daf8e16c2b4fb5d699e3f649fce9e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -47,6 +47,13 @@
             ],
             "index": "pypi",
             "version": "==5.0.1"
+        },
+        "flask-uwsgi-websocket": {
+            "hashes": [
+                "sha256:d4a0030cafb0fede1418d900a3746e176f8c2ddaf4d71cd657df230323f32491"
+            ],
+            "index": "pypi",
+            "version": "==0.6.1"
         },
         "itsdangerous": {
             "hashes": [

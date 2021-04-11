@@ -7,6 +7,7 @@ name = "pypi"
 flask = "*"
 flask_socketio = "*"
 uwsgi = "*"
+flask-uwsgi-websocket = "*"
 
 [dev-packages]
 
