@@ -4,10 +4,10 @@ from threading import Timer, Lock, Thread, Condition
 from os import path, environ
 from math import ceil
 from multiprocessing import Process
-from flask_uwsgi_websocket import GeventWebSocket
+from flask_uwsgi_websocket import WebSocket
 
 app = Flask(__name__)
-ws = GeventWebSocket(app)
+ws = WebSocket(app)
 
 @ws.route('/echo')
 def echo(ws):
