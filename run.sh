@@ -1,1 +1,1 @@
-pipenv run python first.py
+pipenv run uwsgi uwsgi-config.ini

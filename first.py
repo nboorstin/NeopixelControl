@@ -18,9 +18,9 @@ def echo(ws):
         print(msg)
         ws.send('connected!')
 
-import logging
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
+#import logging
+#log = logging.getLogger('uwsgi')
+#log.setLevel(logging.ERROR)
 
 #import asyncio
 #import websockets
