@@ -34,6 +34,7 @@ WebSocketsClient webSocket;
 CRGB leds[NUM_LEDS];
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
+  Serial.println(type);
 	switch(type) {
 		case WStype_DISCONNECTED:
 			USE_SERIAL.printf("[WSc] Disconnected!\n");
@@ -129,7 +130,7 @@ void setup() {
    USE_SERIAL.printf("Connected\n");
 
 	// server address, port and URL
-	webSocket.begin("70.176.119.77", 8765, "/");
+	webSocket.beginSSL("led.boj.cc", 443, "/echo");
 
 	// event handler
 	webSocket.onEvent(webSocketEvent);
@@ -149,5 +150,10 @@ void setup() {
 }
 
 void loop() {
-	webSocket.loop();
+	if(WiFi.status() == WL_CONNECTED) {
+    webSocket.loop();
+  } else {
+    webSocket.disconnect();
+  }
+  
 }
