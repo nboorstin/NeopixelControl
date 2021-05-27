@@ -6,6 +6,14 @@ set :bind, '0.0.0.0'
 set :public_folder, __dir__ + '/static'
 set :sockets, []
 
+["/test"].each do |path|
+  get path do
+    instance = request.path_info[1..-1] + ".json"
+    puts instance
+    erb :tabs, :locals => {:instance => instance}
+  end
+end
+
 get '/' do
   if !request.websocket?
     redirect to('/tabs.html')

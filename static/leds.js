@@ -947,32 +947,6 @@ function setColorBox(name) {
 }
 
 
-window.onload = function() {
-  // load previous state
-  $.getJSON("data.json", initialSetState);
-  // add click listeners
-  document.addEventListener('mousedown', onDocumentMouseDown, false);
-  document.addEventListener('touchstart', onDocumentMouseDown, false);
-
-  // hackishly keep the solid color open
-  solidColorHide = document.getElementById("solidColor").jscolor.hide;
-  document.getElementById("solidColor").jscolor.hide = function(){};
-
-  // initialize color objects
-  //singleColor = new SingleColor();
-  //multiColor = new MultiColor();
-  resetOnAndBrightness(false);
-
-
-  // try to set canvas size
-  setSolidColorpickerSize();
-
-  // and center text labels
-  centerSlidersText();
-
-  // get current state
-  //sendRequest("getState", null, true, initialSetState);
-}
 
 function initialSetState(data) {
   for(let key in data) {
