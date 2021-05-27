@@ -1,16 +1,13 @@
 'use strict';
-var SingleColorInit = false;
 class SingleColor {
   constructor(single) {
-    SingleColorInit = true;
     if (typeof single == 'undefined') {
       this.reset();
     } else if (typeof(single) == "object") {
       this.color = single.color;
     } else {
-      this.setColor(color.toUpperCase(), true, false);
+      this.setColor(single.toUpperCase(), true, false);
     }
-    SingleColorInit = false;
   }
 
   equals(other) {return other === undefined ? false : this.color == other.color;}
@@ -19,7 +16,7 @@ class SingleColor {
     this.setColor("#FF0000");
   }
 
-  setColor(color, updateColorPicker=true) {
+  setColor(color, updateColorPicker=true, send = true) {
     if (color != this.color) {
       this.color = color;
 
@@ -30,13 +27,13 @@ class SingleColor {
 
       setColorBox("solidColor");
 
-      if (!SingleColorInit) {sendRequest("solidColor", this.color);}
+      if (send) {sendRequest("solidColor", this.color);}
     }
   }
 }
 
-var MultiColorInit = false;
-var MultiColorCopy = false;
+let MultiColorInit = false;
+let MultiColorCopy = false;
 class MultiColor {
   constructor(multi, active = false, send = false) {
     MultiColorInit = true;
@@ -108,15 +105,15 @@ class MultiColor {
     this.updateRandomSlider(setSlider);
     // generate new random values
     this.randomColors = Array(lightsPos.length);
-    for(var i=0; i<this.randomColors.length; i++) {
-      var red = Math.floor(Math.random() * Math.floor(255));
-      var green = Math.floor(Math.random() * Math.floor(255));
-      var blue = Math.floor(Math.random() * Math.floor(255));
-      var max = Math.max(red,green,blue);
+    for(let i=0; i<this.randomColors.length; i++) {
+      let red = Math.floor(Math.random() * Math.floor(255));
+      let green = Math.floor(Math.random() * Math.floor(255));
+      let blue = Math.floor(Math.random() * Math.floor(255));
+      let max = Math.max(red,green,blue);
       red = Math.floor(red*255/max);
       green = Math.floor(green*255/max);
       blue = Math.floor(blue*255/max);
-      var randomcolor = rgbToHexString(red, green, blue);
+      let randomcolor = rgbToHexString(red, green, blue);
       this.randomColors[i] = randomcolor;
     }
 
@@ -146,7 +143,7 @@ class MultiColor {
 
   equals(other) {
     if (other === undefined) {return false;}
-    var entries = Object.entries(this);
+    let entries = Object.entries(this);
     if (this.randomAmount == 0) {
       entries = entries.filter(e => e[0] != "randomColors");
     }
@@ -189,8 +186,8 @@ class SavedSingleColors extends SavedData {
     if (this.list.length == 0) {
       $('#' + this.overlay).html("&nbsp;Nothing saved yet");
     } else {
-      var html = ''
-      for(var i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
+      let html = ''
+      for(let i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
         html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="removeSingleColor(event, this)">X</div></div>';
       }
       html += '<div class="singeColorLoad clearAllButton" onclick="removeAllSingleColors()">Clear All</div>';
@@ -209,7 +206,7 @@ class SavedSingleColors extends SavedData {
   }
 }
 
-var SavedMultiColorsDrawn = false;
+let SavedMultiColorsDrawn = false;
 class SavedMultiColors extends SavedData {
   constructor() {
     super("manyLoadOverlay","savedMultiColors");
@@ -223,8 +220,8 @@ class SavedMultiColors extends SavedData {
     if (this.list.length == 0) {
       $('#' + this.overlay).html("&nbsp;Nothing saved yet");
     } else {
-      var html = ''
-      for(var i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
+      let html = ''
+      for(let i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
         html += '<div class="multiColorLoad" id="multi_ColorLoad' + i + '" onclick="restoreMultiColor(this)"><div class="loadX2" onclick="removeMultiColor(event, this)">X</div></div>';
       }
       html += '<div class="singeColorLoad clearAllButton" onclick="removeAllMultiColors()">Clear All</div>';
@@ -242,20 +239,21 @@ class SavedMultiColors extends SavedData {
     this.redoHTML();
   }
 }
-var singleColor;
-var multiColor;
-var savedSingleColors = new SavedSingleColors();
-var savedMultiColors = new SavedMultiColors();
-var lastRequestName = "";
-var lastSent = 0;
-var lastRequest = 0;
-var minDelay = 40;
+let singleColor;
+let multiColor;
+let savedSingleColors = new SavedSingleColors();
+let savedMultiColors = new SavedMultiColors();
+let lastRequestName = "";
+let lastSent = 0;
+let lastRequest = 0;
+let minDelay = 40;
 async function sendRequest(name, value, send=true, callback = null) {
   if(!send) {return;}
-  //console.log("sending " + name + ", " + value);
-  //console.trace();
-  var d = new Date()
-  var thisRequest = lastRequest = d.getTime();
+  console.log("sending " + name + ", " + value);
+  console.trace();
+  return;
+  let d = new Date()
+  let thisRequest = lastRequest = d.getTime();
   if(lastRequestName == name && d.getTime() - lastSent < minDelay) {
     lastRequestName = name;
     await new Promise(r => setTimeout(r, minDelay));
@@ -267,9 +265,9 @@ async function sendRequest(name, value, send=true, callback = null) {
   lastRequestName = name;
   lastSent = d.getTime()
 
-  var xhr = new XMLHttpRequest();
+  let xhr = new XMLHttpRequest();
 
-  var url = window.location.href;
+  let url = window.location.href;
   url = url.substring(0, url.lastIndexOf('/')) + "/response";
 
 
@@ -315,10 +313,10 @@ function brightnessChange(input, send=true) {
 }
 
 function blendColors(colorlist, percentagelist){
-  var red = 0;
-  var blue = 0;
-  var green = 0;
-  for(var i = 0; i < colorlist.length; i++){
+  let red = 0;
+  let blue = 0;
+  let green = 0;
+  for(let i = 0; i < colorlist.length; i++){
     red = red + (parseInt(colorlist[i].substring(1,3),16) * percentagelist[i]/100);
     green = green + (parseInt(colorlist[i].substring(3,5),16) * percentagelist[i]/100);
     blue = blue + (parseInt(colorlist[i].substring(5,7),16) * percentagelist[i]/100);
@@ -330,23 +328,23 @@ function blendColors(colorlist, percentagelist){
 }
 
 function rgbToHexString(red, green, blue){
-  var redstring = red.toString(16);
+  let redstring = red.toString(16);
   if(redstring.length < 2){
     redstring = "0" + redstring;
   }
-  var greenstring = green.toString(16);
+  let greenstring = green.toString(16);
   if(greenstring.length < 2){
     greenstring = "0" + greenstring;
   }
-  var bluestring = blue.toString(16);
+  let bluestring = blue.toString(16);
   if(bluestring.length < 2){
     bluestring = "0" + bluestring;
   }
-  var hexstring = ("#" + redstring + greenstring + bluestring).toUpperCase();
+  let hexstring = ("#" + redstring + greenstring + bluestring).toUpperCase();
   return hexstring;
 }
 
-var solidColorHide = null;
+let solidColorHide = null;
 
 
 
@@ -359,10 +357,10 @@ function activateTab(button, pageId, redraw=true, send=true) {
   $(".topbutton-active")[0].className = "topbutton";
   button.className = "topbutton-active";
 
-  var tabCtrl = document.getElementById('tabCtrl');
-  var pageToActivate = document.getElementById(pageId);
-  for (var i = 0; i < tabCtrl.childNodes.length; i++) {
-    var node = tabCtrl.childNodes[i];
+  let tabCtrl = document.getElementById('tabCtrl');
+  let pageToActivate = document.getElementById(pageId);
+  for (let i = 0; i < tabCtrl.childNodes.length; i++) {
+    let node = tabCtrl.childNodes[i];
     if (node.nodeType == 1) { /* Element */
       node.style.display = (node == pageToActivate) ? 'block' : 'none';
     }
@@ -391,7 +389,7 @@ function activateTab(button, pageId, redraw=true, send=true) {
 
 
 
-var lightsPos = [
+let lightsPos = [
 [0, 0],
 [0, 1],
 [0, 2],
@@ -439,12 +437,12 @@ var lightsPos = [
 [2, 0],
 [1, 0],
 ];
-var lightsSelected = Array(lightsPos.length).fill(false);
+let lightsSelected = Array(lightsPos.length).fill(false);
 lightsSelected[0] = lightsSelected[14] = lightsSelected[23] = lightsSelected[37] = true;
 
-var holdTimeout = null;
-var heldLight = -1;
-var lastMouseX, lastMouseY;
+let holdTimeout = null;
+let heldLight = -1;
+let lastMouseX, lastMouseY;
 function multiColorTouchMove(e) {
   bothMultiColorMove(event.changedTouches[0].pageX, event.changedTouches[0].pageY);
 }
@@ -456,21 +454,21 @@ function multiColorMove(e) {
 }
 function bothMultiColorMove(pageX, pageY) {
   if (holdTimeout !== null) {
-    var canvas = document.getElementById("manyColorCanvas");
-    var canvasLeft = canvas.offsetLeft + canvas.clientLeft;
-    var canvasTop = canvas.offsetTop + canvas.clientTop;
-    var x = (pageX - canvasLeft) * window.devicePixelRatio,
+    let canvas = document.getElementById("manyColorCanvas");
+    let canvasLeft = canvas.offsetLeft + canvas.clientLeft;
+    let canvasTop = canvas.offsetTop + canvas.clientTop;
+    let x = (pageX - canvasLeft) * window.devicePixelRatio,
       y = (pageY - canvasTop) * window.devicePixelRatio;
-    var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
-    var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
-    var spacing = 0.75;
+    let countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
+    let countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
+    let spacing = 0.75;
     spacing += 1;
-    var sizeX = canvas.width / (spacing * countX);
-    var sizeY = canvas.height / (spacing * countY);
-    var size = Math.min(sizeX, sizeY);
-    var i = heldLight;
-    var xPos = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
-    var yPos = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
+    let sizeX = canvas.width / (spacing * countX);
+    let sizeY = canvas.height / (spacing * countY);
+    let size = Math.min(sizeX, sizeY);
+    let i = heldLight;
+    let xPos = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
+    let yPos = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
     if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
       yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
       lastMouseX = pageX;
@@ -489,7 +487,7 @@ function multiColorRelease(e) {
   }
 }
 
-var cancelClick = false;
+let cancelClick = false;
 function multiColorPress(e) {
   if (navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) {
     return;
@@ -501,21 +499,21 @@ function multiColorTouch(e) {
 }
 function bothMultiColorPress(pageX, pageY) {
   cancelClick = false;
-  var canvas = document.getElementById("manyColorCanvas");
-  var canvasLeft = canvas.offsetLeft + canvas.clientLeft;
-  var canvasTop = canvas.offsetTop + canvas.clientTop;
-  var x = (pageX - canvasLeft) * window.devicePixelRatio,
+  let canvas = document.getElementById("manyColorCanvas");
+  let canvasLeft = canvas.offsetLeft + canvas.clientLeft;
+  let canvasTop = canvas.offsetTop + canvas.clientTop;
+  let x = (pageX - canvasLeft) * window.devicePixelRatio,
     y = (pageY - canvasTop) * window.devicePixelRatio;
-  var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
-  var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
-  var spacing = 0.75;
+  let countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
+  let countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
+  let spacing = 0.75;
   spacing += 1;
-  var sizeX = canvas.width / (spacing * countX);
-  var sizeY = canvas.height / (spacing * countY);
-  var size = Math.min(sizeX, sizeY);
-  for(var i=0; i<lightsPos.length; i++) {
-    var xPos = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
-    var yPos = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
+  let sizeX = canvas.width / (spacing * countX);
+  let sizeY = canvas.height / (spacing * countY);
+  let size = Math.min(sizeX, sizeY);
+  for(let i=0; i<lightsPos.length; i++) {
+    let xPos = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
+    let yPos = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
     if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
       yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
       if (holdTimeout !== null) {
@@ -530,10 +528,10 @@ function bothMultiColorPress(pageX, pageY) {
 }
 
 function toggleSelect() {
-  var newState = !multiColor.selected[heldLight];
+  let newState = !multiColor.selected[heldLight];
   if (!newState) {
-    var found = false;
-    for(var i=0; i<lightsPos.length; i++) {
+    let found = false;
+    for(let i=0; i<lightsPos.length; i++) {
       if (i == heldLight) {continue;}
       if (multiColor.selected[i]) {
         found = true;
@@ -561,22 +559,22 @@ function toggleSelect() {
 
 function checkLightsMouse(e) {
   if (cancelClick) {return;}
-  var canvas = document.getElementById("manyColorCanvas");
-  var canvasLeft = canvas.offsetLeft + canvas.clientLeft;
-  var canvasTop = canvas.offsetTop + canvas.clientTop;
-  var x = (event.pageX - canvasLeft) * window.devicePixelRatio,
+  let canvas = document.getElementById("manyColorCanvas");
+  let canvasLeft = canvas.offsetLeft + canvas.clientLeft;
+  let canvasTop = canvas.offsetTop + canvas.clientTop;
+  let x = (event.pageX - canvasLeft) * window.devicePixelRatio,
     y = (event.pageY - canvasTop) * window.devicePixelRatio;
-  var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
-  var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
-  var spacing = 0.75;
+  let countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
+  let countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
+  let spacing = 0.75;
   spacing += 1;
-  var sizeX = canvas.width / (spacing * countX);
-  var sizeY = canvas.height / (spacing * countY);
-  var size = Math.min(sizeX, sizeY);
-  for(var i=0; i<lightsPos.length; i++) {
+  let sizeX = canvas.width / (spacing * countX);
+  let sizeY = canvas.height / (spacing * countY);
+  let size = Math.min(sizeX, sizeY);
+  for(let i=0; i<lightsPos.length; i++) {
     if(multiColor.selected[i]){
-      var xPos = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
-      var yPos = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
+      let xPos = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
+      let yPos = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
       if(xPos - (1.5*size / (spacing+1)) <= x && xPos + (1.5*size / (spacing+1)) >= x &&
         yPos - (1.5*size / (spacing+1)) <= y && yPos + (1.5*size / (spacing+1)) >= y) {
         overlayOn(i, event.pageX, event.pageY);
@@ -585,13 +583,13 @@ function checkLightsMouse(e) {
   }
 }
 
-var backgroundColor = "#ccccccff";
+let backgroundColor = "#ccccccff";
 
 function hexToRgb(hex) {
   return /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex).slice(1).map(x => parseInt(x, 16));
 }
 function componentToHex(c) {
-    var hex = Math.min(255, Math.max(0, c)).toString(16);
+    let hex = Math.min(255, Math.max(0, c)).toString(16);
     return hex.length == 1 ? "0" + hex : hex;
 }
 function rgbToHex(color) {
@@ -600,22 +598,22 @@ function rgbToHex(color) {
 
 function updateColors(multiColor) {
   // step 1: search for all selected lights
-  var selected = [];
-  for (var i=0; i<lightsPos.length; i++) {
+  let selected = [];
+  for (let i=0; i<lightsPos.length; i++) {
     if (multiColor.selected[i]) {
       selected.push(i);
     }
   }
   //Get gradient values
-  var newColors = makeGradient(multiColor).slice();
+  let newColors = makeGradient(multiColor).slice();
   // step 2: for each unselected light, set its color to the nearest one
-  for (var i=0; i<lightsPos.length; i++) {
+  for (let i=0; i<lightsPos.length; i++) {
     if (!multiColor.selected[i]) {
       // ok for now its just going to be the nearest selected one
-      // var minDist = -1;
-      // var minColor = "#000000";
+      // let minDist = -1;
+      // let minColor = "#000000";
       // for(const j of selected) {
-      //   var dist = Math.hypot(lightsPos[j][0]-lightsPos[i][0], lightsPos[j][1]-lightsPos[i][1]);
+      //   let dist = Math.hypot(lightsPos[j][0]-lightsPos[i][0], lightsPos[j][1]-lightsPos[i][1]);
       //   if (minDist == -1 || dist < minDist) {
       //     minDist = dist;
       //     minColor = multiColor.colors[j];
@@ -626,11 +624,11 @@ function updateColors(multiColor) {
 
       multiColor.colors[i] = multiColor.colors[randomElement];
       multiColor.colors[i] = blendColors([multiColor.colors[i], newColors[i]], [multiColor.patternAmount, 100 - multiColor.patternAmount]);
-      //var red = 0;
-      //var green = 0;
-      //var blue = 0;
+      //let red = 0;
+      //let green = 0;
+      //let blue = 0;
       //[red,green,blue] = hexToRgb(multiColor.colors[i]);
-      //var max = Math.max(red,green,blue);
+      //let max = Math.max(red,green,blue);
       // console.log(max);
       // and then apply random
       multiColor.colors[i] = blendColors([multiColor.randomColors[i], multiColor.colors[i]], [multiColor.randomAmount, 100-multiColor.randomAmount]);
@@ -638,25 +636,25 @@ function updateColors(multiColor) {
   }
 }
 function redrawLights(multiColor) {
-  var canvas = document.getElementById("manyColorCanvas");
+  let canvas = document.getElementById("manyColorCanvas");
   if(canvas.parentElement.parentElement.style['display'] == 'none') {return;}
 
-  var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
-  var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
-  var spacing = 0.75;
+  let countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
+  let countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
+  let spacing = 0.75;
   spacing += 1;
-  var sizeX = canvas.width / (spacing * countX);
-  var sizeY = canvas.height / (spacing * countY);
-  var size = Math.min(sizeX, sizeY);
+  let sizeX = canvas.width / (spacing * countX);
+  let sizeY = canvas.height / (spacing * countY);
+  let size = Math.min(sizeX, sizeY);
   // override spacing if it's too big
   //size = Math.min(size, 30);
 
   updateColors(multiColor);
-  var ctx = canvas.getContext("2d");
+  let ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for(var i=0; i<lightsPos.length; i++) {
-    var x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
-    var y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
+  for(let i=0; i<lightsPos.length; i++) {
+    let x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size;
+    let y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size;
 
     ctx.fillStyle = multiColor.colors[i];
     ctx.beginPath();
@@ -693,7 +691,7 @@ function saveMultiColor(button) {
 }
 
 function loadSingleColor(button) {
-  var rect = button.getBoundingClientRect();
+  let rect = button.getBoundingClientRect();
   $("#solidLoadOverlay").css({position: 'fixed',
                               display: 'block',
                               'font-size': rect.width / 14 + 'px',
@@ -705,8 +703,8 @@ function loadSingleColor(button) {
 }
 
 function loadMultiColor(button) {
-  var rect = button.getBoundingClientRect();
-  var mult = 0.5;
+  let rect = button.getBoundingClientRect();
+  let mult = 0.5;
   $("#manyLoadOverlay").css({position: 'fixed',
                               display: 'block',
                               'font-size': rect.width / 10 + 'px',
@@ -720,22 +718,22 @@ function loadMultiColor(button) {
 }
 
 function redrawMultiLoad() {
-  for(var j = savedMultiColors.list.length - 1; j >=0; j--) {
-    var canvas = $("#multiLoad" + j)[0];
-    var countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
-    var countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
-    var spacing = 0;
+  for(let j = savedMultiColors.list.length - 1; j >=0; j--) {
+    let canvas = $("#multiLoad" + j)[0];
+    let countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
+    let countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
+    let spacing = 0;
     spacing += 1;
-    var sizeX = canvas.width / (spacing * countX);
-    var sizeY = canvas.height / (spacing * countY);
-    var size = Math.min(sizeX, sizeY);
+    let sizeX = canvas.width / (spacing * countX);
+    let sizeY = canvas.height / (spacing * countY);
+    let size = Math.min(sizeX, sizeY);
     // override spacing if it's too big
     //size = Math.min(size, 30);
 
-    var ctx = canvas.getContext("2d");
-    for(var i=0; i<lightsPos.length; i++) {
-      var x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size - 5;
-      var y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size - 5;
+    let ctx = canvas.getContext("2d");
+    for(let i=0; i<lightsPos.length; i++) {
+      let x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size - 5;
+      let y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size - 5;
 
       ctx.fillStyle = savedMultiColors.list[j].colors[i];
       ctx.fillRect(x, y, size/(spacing), size/(spacing));
@@ -752,8 +750,8 @@ function redrawMultiLoad() {
 function drawMultiLoad() {
   if (!SavedMultiColorsDrawn && savedMultiColors.list.length > 0) {
     SavedMultiColorsDrawn = true;
-    var rect = $("#multi_ColorLoad0")[0].getBoundingClientRect();
-    for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
+    let rect = $("#multi_ColorLoad0")[0].getBoundingClientRect();
+    for(let i = savedMultiColors.list.length - 1; i >=0; i--) {
       $('#multi_ColorLoad' + i).prepend('<canvas style="position: absolute; top: 0px;" id="multiLoad' + i + '" width=' + rect.width + ' height=' + rect.height + '></canvas>');
     }
     redrawMultiLoad();
@@ -762,13 +760,13 @@ function drawMultiLoad() {
 
 
 function restoreSingleColor(button) {
-  var color = savedSingleColors.list[parseInt(button.id.substring(15))].color;
+  let color = savedSingleColors.list[parseInt(button.id.substring(15))].color;
   singleColor.setColor(color);
 }
 
 function removeSingleColor(event, button) {
   event.stopPropagation();
-  var index = parseInt(button.parentElement.id.substring(15));
+  let index = parseInt(button.parentElement.id.substring(15));
   if (singleColor.equals(savedSingleColors.list[index])) {
     $("#singleColorSave").html('save'); //reset save button
     $("#singleColorSave")[0].className = 'topbutton'; //reset save button
@@ -777,13 +775,13 @@ function removeSingleColor(event, button) {
 }
 
 function restoreMultiColor(button) {
-  var color = savedMultiColors.list[parseInt(button.id.substring(15))];
+  let color = savedMultiColors.list[parseInt(button.id.substring(15))];
   multiColor = new MultiColor(color, true, true);
 }
 
 function removeMultiColor(event, button) {
   event.stopPropagation();
-  var index = parseInt(button.parentElement.id.substring(15));
+  let index = parseInt(button.parentElement.id.substring(15));
   if (multiColor.equals(savedMultiColors.list[index])) {
     $("#multiColorSave").html('save'); //reset save button
     $("#multiColorSave")[0].className = 'topbutton'; //reset save button
@@ -830,7 +828,7 @@ function resetMultiColor() {
 }
 
 function singleColorFill(button) {
-  var rect = button.getBoundingClientRect();
+  let rect = button.getBoundingClientRect();
   activeOverlay = -2;
   $("#overlay").css({position: 'fixed',
                      display: 'block',
@@ -840,9 +838,9 @@ function singleColorFill(button) {
   setColorBox("multiColorPicker");
 }
 function makeGradient(multiColor) {
-  var unfilledlist = [];
-  var filledlist = [];
-  for(var i = 0; i < lightsPos.length; i++){
+  let unfilledlist = [];
+  let filledlist = [];
+  for(let i = 0; i < lightsPos.length; i++){
     if(multiColor.selected[i] == false){
       unfilledlist.push(i);
     }
@@ -850,33 +848,33 @@ function makeGradient(multiColor) {
       filledlist.push(i);
     }
   }
-  var newLightsColor = multiColor.colors;
-  for(var i = 0; i < unfilledlist.length; i++){
-    var total = 0;
-    for(var j = 0; j < filledlist.length; j++){
+  let newLightsColor = multiColor.colors;
+  for(let i = 0; i < unfilledlist.length; i++){
+    let total = 0;
+    for(let j = 0; j < filledlist.length; j++){
       total = total + (1 / Math.sqrt((lightsPos[filledlist[j]][0] - lightsPos[unfilledlist[i]][0])**2 + (lightsPos[filledlist[j]][1] - lightsPos[unfilledlist[i]][1])**2));
     }
-    var red = 0;
-    var green = 0;
-    var blue = 0;
-    for(var j = 0; j < filledlist.length; j++){
-      var thisdist = 1 / Math.sqrt((lightsPos[filledlist[j]][0] - lightsPos[unfilledlist[i]][0])**2 + (lightsPos[filledlist[j]][1] - lightsPos[unfilledlist[i]][1])**2);
-      var proportion = thisdist/total;
+    let red = 0;
+    let green = 0;
+    let blue = 0;
+    for(let j = 0; j < filledlist.length; j++){
+      let thisdist = 1 / Math.sqrt((lightsPos[filledlist[j]][0] - lightsPos[unfilledlist[i]][0])**2 + (lightsPos[filledlist[j]][1] - lightsPos[unfilledlist[i]][1])**2);
+      let proportion = thisdist/total;
       red = red + (proportion * parseInt(multiColor.colors[filledlist[j]].substring(1,3), 16));
       green = green + (proportion * parseInt(multiColor.colors[filledlist[j]].substring(3,5), 16));
       blue = blue + (proportion * parseInt(multiColor.colors[filledlist[j]].substring(5,7), 16));
     }
-    var redint = Math.round(red);
-    var greenint = Math.round(green);
-    var blueint = Math.round(blue);
-    var colorstring = rgbToHexString(redint, greenint, blueint);
+    let redint = Math.round(red);
+    let greenint = Math.round(green);
+    let blueint = Math.round(blue);
+    let colorstring = rgbToHexString(redint, greenint, blueint);
     newLightsColor[unfilledlist[i]] = colorstring;
   }
   return newLightsColor;
 }
 
 window.onresize = function(event) {
-  //TODO: wow ok this should just be a variable for what tab we're in
+  //TODO: wow ok this should just be a letiable for what tab we're in
   if($("#solidColor")[0].jscolor.hide.toString().length < 13) {
     setSolidColorpickerSize();
   } else {
@@ -887,25 +885,25 @@ window.onresize = function(event) {
 
 function centerSlidersText() {
   // eh fuck it just do all the text sliders at once
-  for(var slider of $(".sliderText")) {
-    var w = slider.getBoundingClientRect().width;
+  for(let slider of $(".sliderText")) {
+    let w = slider.getBoundingClientRect().width;
     if(w != 0) {
-      var parentWidth = slider.parentElement.getBoundingClientRect().width;
+      let parentWidth = slider.parentElement.getBoundingClientRect().width;
       slider.style.marginLeft = (parentWidth - w) / 2 + "px";
     }
   }
 }
 
 function setSolidColorpickerSize() {
-  var width = $("#solidColor").width();
+  let width = $("#solidColor").width();
   $("#solidColor")[0].jscolor.width = width - 52;
   // idk why this is wrong but the extra 53 makes it almost ok so....
-  var height = $(window).height() - $("#solidColorCenter").offset().top - $("#solidColorSliders").height() - 73;
+  let height = $(window).height() - $("#solidColorCenter").offset().top - $("#solidColorSliders").height() - 73;
   $("#solidColor")[0].jscolor.height = height - 50;
   $("#solidColor").css("margin-bottom", height);
   $("#solidColor")[0].jscolor.show();
   if(savedSingleColors.active) {
-    var rect = $("#loadSingleColor")[0].getBoundingClientRect();
+    let rect = $("#loadSingleColor")[0].getBoundingClientRect();
     $("#solidLoadOverlay").css({width: rect.width,
                                 height: rect.width * 2.5,
                                 'font-size': rect.width / 14 + 'px',
@@ -916,25 +914,25 @@ function setSolidColorpickerSize() {
 
 function setMultiColorpickerSize(redraw=true, send=true) {
   //TODO: maybe filling the screen isn't the best idea?
-  var width = $("#manyColorEntryCenter").width() * .99;
-  var canvas = document.getElementById("manyColorCanvas");
+  let width = $("#manyColorEntryCenter").width() * .99;
+  let canvas = document.getElementById("manyColorCanvas");
   canvas.style.width = width + 'px';
   canvas.width = width * window.devicePixelRatio;
-  var height = $(window).height() - $("#manyColorEntryCenter").offset().top - $("#manyColorEntrySliders").height() - 73;
+  let height = $(window).height() - $("#manyColorEntryCenter").offset().top - $("#manyColorEntrySliders").height() - 73;
   height = height + 26;
   canvas.style.height = height + 'px';
   canvas.height = height * window.devicePixelRatio;
   multiColor.redrawLightsPreserve();
   if(savedMultiColors.active) {
-    var rect = $("#loadMultiColor")[0].getBoundingClientRect();
-    var mult = 0.5;
+    let rect = $("#loadMultiColor")[0].getBoundingClientRect();
+    let mult = 0.5;
     $("#manyLoadOverlay").css({width: rect.width * (1 + mult),
                                 height: rect.width * 2.5,
                                 'font-size': rect.width / 10 + 'px',
                                 top: rect.y - rect.width * 2.5,
                                 left: rect.x - rect.width * mult});
     rect = $("#multi_ColorLoad0")[0].getBoundingClientRect();
-    for(var i = savedMultiColors.list.length - 1; i >=0; i--) {
+    for(let i = savedMultiColors.list.length - 1; i >=0; i--) {
       $("#multiLoad" + i).width(rect.width);
       $("#multiLoad" + i).height(rect.height);
     }
@@ -943,13 +941,15 @@ function setMultiColorpickerSize(redraw=true, send=true) {
 }
 
 function setColorBox(name) {
-  var color = $("#"+name)[0].jscolor.toString("hex");
+  let color = $("#"+name)[0].jscolor.toString("hex");
   $("#"+name).css("backgroundColor", color);
   $("#"+name).css("color", hexToRgb(color).reduce((a,b) => a+b)/3 > 128 ? "#000000" : "#FFFFFF");
 }
 
 
 window.onload = function() {
+  // load previous state
+  $.getJSON("data.json", initialSetState);
   // add click listeners
   document.addEventListener('mousedown', onDocumentMouseDown, false);
   document.addEventListener('touchstart', onDocumentMouseDown, false);
@@ -959,31 +959,29 @@ window.onload = function() {
   document.getElementById("solidColor").jscolor.hide = function(){};
 
   // initialize color objects
-  singleColor = new SingleColor();
-  multiColor = new MultiColor();
+  //singleColor = new SingleColor();
+  //multiColor = new MultiColor();
   resetOnAndBrightness(false);
 
 
   // try to set canvas size
   setSolidColorpickerSize();
-  setMultiColorpickerSize(false);
 
   // and center text labels
   centerSlidersText();
 
   // get current state
-  sendRequest("getState", null, true, initialSetState);
+  //sendRequest("getState", null, true, initialSetState);
 }
 
-function initialSetState(stateInfo) {
-  var data = JSON.parse(stateInfo);
-  for(var key in data) {
+function initialSetState(data) {
+  for(let key in data) {
     switch(key) {
       case "on":
         $(":checkbox").prop('checked', data.on);
         break;
       case "solidColor":
-        singleColor.setColor(data.solidColor, true, false);
+        singleColor = new SingleColor(data.solidColor);
         break;
       case "brightness":
         $(".sliderPercent3").html(data.brightness + "%");
@@ -991,6 +989,7 @@ function initialSetState(stateInfo) {
         break;
       case "multiColor":
         multiColor = new MultiColor(data.multiColor, true);
+        setMultiColorpickerSize(false);
         break;
       case "savedSingleColors":
         savedSingleColors.load(Array.from(data.savedSingleColors, x => new SingleColor(x)));
@@ -998,32 +997,34 @@ function initialSetState(stateInfo) {
       case "savedMultiColors":
         savedMultiColors.load(Array.from(data.savedMultiColors, x => new MultiColor(x)));
         break;
-      case "mode":
-        var loadedTab = '';
-        switch(data.mode) {
-          case 'solidColor':
-            activateTab($(".topbutton-active")[0], 'tabSolidColor', false, false);
-            break;
-          case 'manyColors':
-            activateTab($(".topbutton")[0], 'tabManyColorEntry', false, false);
-            break;
-          default:
-            console.log(data.mode);
-        }
+      case "mode": //need to set mode last
         break;
       default:
         console.log(key);
     }
   }
+  if ("mode" in data) {
+    let loadedTab = '';
+    switch(data.mode) {
+      case 'solidColor':
+        activateTab($(".topbutton-active")[0], 'tabSolidColor', false, false);
+        break;
+      case 'manyColors':
+        activateTab($(".topbutton")[0], 'tabManyColorEntry', false, false);
+        break;
+      default:
+        console.log(data.mode);
+    }
+  }
 }
 
-var activeOverlay = -1;
+let activeOverlay = -1;
 function overlayOn(i, x, y) {
   activeOverlay = i;
-  //var canvas = document.getElementById("manyColorCanvas");
-  var canvas = $("#manyColorCanvas");
-  var xCenter = canvas.offset().left + canvas.width() / 2;
-  var yCenter = canvas.offset().top + canvas.height() / 2;
+  //let canvas = document.getElementById("manyColorCanvas");
+  let canvas = $("#manyColorCanvas");
+  let xCenter = canvas.offset().left + canvas.width() / 2;
+  let yCenter = canvas.offset().top + canvas.height() / 2;
   $("#overlay").css({position: 'fixed',
                      display: 'block',
                      top: y <= yCenter ? y : y - 155,
@@ -1040,7 +1041,7 @@ function overlayOff(){
 }
 
 function multiColorPickerChange(input,whichcolor) {
-  var newColor = input.jscolor.toString("hex");
+  let newColor = input.jscolor.toString("hex");
   setColorBox("multiColorPicker");
   if (activeOverlay >= 0) {
     multiColor.setColor(activeOverlay, newColor);
@@ -1050,10 +1051,10 @@ function multiColorPickerChange(input,whichcolor) {
 }
 
 function onDocumentMouseDown(e) { //todo: optimzie this to one loop
-  var target = e.target || e.srcElement;
+  let target = e.target || e.srcElement;
   if (activeOverlay !== -1) {
-    var t = target;
-    var inOverlay = false;
+    let t = target;
+    let inOverlay = false;
     while (t != null) {
       if (t.id == "multiColorPicker" || t.className == "jscolor-picker") {
         inOverlay = true;
@@ -1066,8 +1067,8 @@ function onDocumentMouseDown(e) { //todo: optimzie this to one loop
     }
   }
   if (savedSingleColors.active) {
-    var t = target;
-    var inOverlay = false;
+    let t = target;
+    let inOverlay = false;
     while (t != null) {
       if (t.id == "solidLoadOverlay") {
         inOverlay = true;
@@ -1080,8 +1081,8 @@ function onDocumentMouseDown(e) { //todo: optimzie this to one loop
     }
   }
   if (savedMultiColors.active) {
-    var t = target;
-    var inOverlay = false;
+    let t = target;
+    let inOverlay = false;
     while (t != null) {
       if (t.id == "manyLoadOverlay") {
         inOverlay = true;
