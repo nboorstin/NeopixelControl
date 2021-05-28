@@ -247,12 +247,12 @@ let lastRequestName = "";
 let lastSent = 0;
 let lastRequest = 0;
 let minDelay = 40;
+let socket = new WebSocket(socketURL);
 async function sendRequest(name, value, send=true, callback = null) {
   if(!send) {return;}
   console.log("sending " + name + ", " + value);
   console.trace();
-  return;
-  let d = new Date()
+  let d = new Date() //TODO: should probably review this sometime
   let thisRequest = lastRequest = d.getTime();
   if(lastRequestName == name && d.getTime() - lastSent < minDelay) {
     lastRequestName = name;
@@ -265,26 +265,40 @@ async function sendRequest(name, value, send=true, callback = null) {
   lastRequestName = name;
   lastSent = d.getTime()
 
-  let xhr = new XMLHttpRequest();
+  //let xhr = new XMLHttpRequest();
 
-  let url = window.location.href;
-  url = url.substring(0, url.lastIndexOf('/')) + "/response";
+  //let url = window.location.href;
+  //url = url.substring(0, url.lastIndexOf('/')) + "/response";
 
 
-  xhr.open("POST", url, true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  if(callback != null) {
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4 && xhr.status == 200) {
-        callback(xhr.response);
-      }
-    }
+  //xhr.open("POST", url, true);
+  //xhr.setRequestHeader('Content-Type', 'application/json');
+  //if(callback != null) {
+  //  xhr.onreadystatechange = function() {
+  //    if (xhr.readyState == 4 && xhr.status == 200) {
+  //      callback(xhr.response);
+  //    }
+  //  }
+  //}
+  //xhr.send(JSON.stringify({
+  //      [name]: value
+  //}));
+  //
+  if (socket.readyState > 1) {
+    console.log("reloading socket...");
+    socket = new WebSocket(socketURL);
   }
-  xhr.send(JSON.stringify({
-        [name]: value
-  }));
-
+  if (socket.readyState == 0) {
+    socket.onopen = function() {
+      console.log("socket loaded!");
+      socket.send(JSON.stringify({[name]: value}));
+    };
+  }
+  else {
+    socket.send(JSON.stringify({[name]: value}));
+  }
 }
+
 function lightsOnOff(input, send=true) {
   $(":checkbox").prop('checked', input.checked);
   if(send) {sendRequest("on", input.checked);}
@@ -294,7 +308,6 @@ function lightsOnOff(input, send=true) {
 function solidColorChange(input) {
   singleColor.setColor(input.jscolor.toString("hex"), false);
 }
-
 
 function randomnessChange(input) {
   multiColor.setRandomness(input.value);
