@@ -16,6 +16,14 @@ end
 $sites = []
 $esps = []
 $thread = nil
+$data = {}
+def get(path)
+  if $data[path].nil?
+    $data[path] = JSON.parse File.read "static/#{path}.json"
+  end
+  return $data[path]
+end
+
 def message(msg, ws, path)
   puts msg
   unless $thread.nil? || !$thread.status
@@ -24,7 +32,7 @@ def message(msg, ws, path)
   $thread = Thread.new(msg) {|msg|
     sleep 5
     puts "thread done"
-    hash = JSON.parse File.read "static/#{path}.json"
+    hash = get path
     hash = hash.merge JSON.parse msg
     File.open("static/#{path}.json","w") do |f|
       f.write hash.to_json
@@ -61,6 +69,8 @@ instances.each do |path|
       ws.onopen do
         #ws.send("Hello World!")
         $esps.append(ws)
+        puts (get path)['solidColor']
+        EM.next_tick { ws.send("{\"solidColor\":\"#{(get path)['solidColor']}\"}")}
       end
       ws.onmessage do |msg|
         message msg, ws, path
