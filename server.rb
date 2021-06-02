@@ -21,7 +21,6 @@ def get(path)
   if $data[path].nil?
     $data[path] = JSON.parse File.read "static/#{path}.json"
   end
-  return $data[path]
 end
 
 def message(msg, ws, path)
@@ -32,15 +31,18 @@ def message(msg, ws, path)
   $thread = Thread.new(msg) {|msg|
     sleep 5
     puts "thread done"
-    hash = get path
-    hash = hash.merge JSON.parse msg
+    get path
+    $data[path].update JSON.parse msg
     File.open("static/#{path}.json","w") do |f|
-      f.write hash.to_json
+      f.write $data[path].to_json
     end
   }
   puts settings.sockets
-  EM.next_tick { $esps.select{|s| s != ws}.each{|s| s.send(msg) } }
   EM.next_tick { $sites.select{|s| s != ws}.each{|s| s.send(msg) } }
+  if (msg.include? '"solidColor"') 
+    color = msg.split('"')[-2][1..-1]
+    EM.next_tick { $esps.select{|s| s != ws}.each{|s| s.send("solidColor:#{color}") } }
+  end
 end
 
 instances.each do |path|
@@ -69,11 +71,12 @@ instances.each do |path|
       ws.onopen do
         #ws.send("Hello World!")
         $esps.append(ws)
-        puts (get path)['solidColor']
-        EM.next_tick { ws.send("{\"solidColor\":\"#{(get path)['solidColor']}\"}")}
+        get path
+        puts $data[path]['solidColor'][1..-1]
+        EM.next_tick { ws.send("solidColor:#{$data[path]['solidColor'][1..-1]}")}
       end
       ws.onmessage do |msg|
-        message msg, ws, path
+        message "{\"on\":#{msg == "on" ? "true" : "false"}}", ws, path
       end
       ws.onclose do
         warn("websocket closed")

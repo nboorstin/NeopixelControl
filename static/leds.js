@@ -248,6 +248,12 @@ let lastSent = 0;
 let lastRequest = 0;
 let minDelay = 40;
 let socket = new WebSocket(socketURL);
+
+function echo(e) {
+  console.log(e);
+  initialSetState(JSON.parse(e.data));
+}
+socket.onmessage = echo;
 async function sendRequest(name, value, send=true, callback = null) {
   if(!send) {return;}
   console.log("sending " + name + ", " + value);
@@ -287,6 +293,7 @@ async function sendRequest(name, value, send=true, callback = null) {
   if (socket.readyState > 1) {
     console.log("reloading socket...");
     socket = new WebSocket(socketURL);
+    socket.onmessage = echo;
   }
   if (socket.readyState == 0) {
     socket.onopen = function() {
