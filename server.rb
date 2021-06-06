@@ -3,6 +3,7 @@ require 'sinatra'
 require 'sinatra-websocket'
 require 'json'
 
+set :logging, false
 set :bind, '0.0.0.0'
 set :public_folder, __dir__ + '/static'
 set :sockets, []
@@ -29,15 +30,15 @@ def message(msg, ws, path)
     Thread.kill($thread)
   end
   $thread = Thread.new(msg) {|msg|
-    sleep 5
-    puts "thread done"
     get path
     $data[path].update JSON.parse msg
+    sleep 5
+    puts "thread done"
     File.open("static/#{path}.json","w") do |f|
       f.write $data[path].to_json
     end
   }
-  puts settings.sockets
+  #puts settings.sockets
   EM.next_tick { $sites.select{|s| s != ws}.each{|s| s.send(msg) } }
   if (msg.include? '"solidColor"') 
     color = msg.split('"')[-2][1..-1]
@@ -47,11 +48,20 @@ end
 
 instances.each do |path|
   get "/#{path}" do
+    #puts instance
+    unless $thread.nil? || !$thread.status
+      Thread.kill($thread)
+      get path
+      puts "thread done"
+      File.open("static/#{path}.json","w") do |f|
+        f.write $data[path].to_json
+      end
+    end
     instance = request.path_info[1..-1]
-    puts instance
     erb :tabs, :locals => {:instance => instance}
   end
   get "/#{path}/site" do
+    pp request
     request.websocket do |ws|
       ws.onopen do
         #ws.send("Hello World!")
