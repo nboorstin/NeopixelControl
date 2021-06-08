@@ -2,6 +2,7 @@
 data.json
 static/*.json
 password.h
+sinatra.log
 
 # lots of altium files:
 **/History/*
