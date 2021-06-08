@@ -1,5 +1,6 @@
 /__pycache__/*
 data.json
+static/*.json
 password.h
 
 # lots of altium files:
