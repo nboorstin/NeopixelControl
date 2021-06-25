@@ -43,10 +43,10 @@ def message(msg, ws, path)
   #puts settings.sockets
   EM.next_tick { $sites.select{|s| s != ws}.each{|s| s.send(msg) } }
   to_esp = JSON.parse(msg).slice(*$keys)
-  if $data[path].key?("brightness") and $data[path].key?("solidColor") and (to_esp.key?("brightness") or to_esp.key?("solidColor"))
-    to_esp['solidColor'] = '#'+(1..5).step(2).map{|i| (($data[path]["solidColor"][i..i+1]).to_i(16)*($data[path]["brightness"].to_i/100.0)).round.to_s.rjust(2,"0")}.join("")
-  end
-  to_esp.delete("brightness")
+  #if $data[path].key?("brightness") and $data[path].key?("solidColor") and (to_esp.key?("brightness") or to_esp.key?("solidColor"))
+  #  to_esp['solidColor'] = '#'+(1..5).step(2).map{|i| (($data[path]["solidColor"][i..i+1]).to_i(16)*($data[path]["brightness"].to_i/100.0)).round.to_s.rjust(2,"0")}.join("")
+  #end
+  #to_esp.delete("brightness")
   unless to_esp.empty?
     puts to_esp
     EM.next_tick { $esps.select{|s| s != ws}.each{|s| s.send(to_esp.to_json[1..-2]) } }
@@ -90,9 +90,9 @@ instances.each do |path|
         $esps.append(ws)
         get path
         to_esp = $data[path].slice(*$keys)
-        if $data[path].key?("brightness") and to_esp.key?("solidColor")
-          to_esp['solidColor'] = '#'+(1..5).step(2).map{|i| ((to_esp["solidColor"][i..i+1]).to_i(16)*($data[path]["brightness"].to_i/100.0)).round.to_s.rjust(2,"0")}.join("")
-        end
+        #if $data[path].key?("brightness") and to_esp.key?("solidColor")
+        #  to_esp['solidColor'] = '#'+(1..5).step(2).map{|i| ((to_esp["solidColor"][i..i+1]).to_i(16)*($data[path]["brightness"].to_i/100.0)).round.to_s.rjust(2,"0")}.join("")
+        #end
         EM.next_tick { ws.send(to_esp.to_json[1..-2])}
       end
       ws.onmessage do |msg|
