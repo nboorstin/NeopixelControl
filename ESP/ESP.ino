@@ -28,15 +28,24 @@
 ESP8266WiFiMulti WiFiMulti;
 WebSocketsClient webSocket;
 
-#define USE_SERIAL Serial
-
 #define LED_PIN 2
 #define NUM_LEDS 30
 #define BUTTON_THRESHOLD 100
 
 CRGB leds[NUM_LEDS];
-bool ledsOn = true;
-void handleText(uint8_t * payload, size_t length) {
+
+struct LEDData {
+  CRGB solidColor = CRGB(0xFF, 0, 0);
+  bool ledsOn = true;
+  int brightness = 70;
+};
+
+LEDData data;
+
+CRGB& calcBrightness(CRGB& color, int brightness) {
+  return color;
+}
+void handleText(uint8_t * payload) {
     int n = 0;
     String s = String((char*)payload);
     do {
@@ -50,75 +59,64 @@ void handleText(uint8_t * payload, size_t length) {
       Serial.println(key);
       if (key == "solidColor") {
         Serial.println(value.substring(2,8)); 
-        int color = strtol(value.substring(2,8).c_str(), NULL, 16);
-        int r = color >> 16;
-        int g = color >> 8 & 0xff;
-        int b = color & 0xff;
+        unsigned color = strtol(value.substring(2,8).c_str(), NULL, 16);
+        // int r = color >> 16;
+        // int g = color >> 8 & 0xff;
+        // int b = color & 0xff;
+        // LEDData.solidColor = CRGB(r, g, b);
+        data.solidColor = CRGB(color);
         for(int i=0; i<NUM_LEDS; i++) {
-          leds[i] = CRGB(r, g, b);
+          leds[i] = calcBrightness(data.solidColor, data.brightness);
         }
       } else if (key == "on") {
         Serial.println(value == "true");
-        ledsOn = (value == "true");
+        data.ledsOn = (value == "true");
+      } else if (key == "brightness") {
+        Serial.println(value);
+        data.brightness = 80;
       }
       n = nextN + 1;
     } while (n != 0);
     Serial.print("leds on: ");
-    Serial.println(ledsOn? "yes" : "no");
-    if (ledsOn) {
+    Serial.println(data.ledsOn ? "yes" : "no");
+    if (data.ledsOn) {
       FastLED.show();
     } else {
       FastLED.showColor(CRGB(0,0,0));
     }
-//    Serial.println("....");
-//    if (s.indexOf("solidColor:") != -1) {
-//      Serial.println("!!!");
-//      Serial.println(s.substring(11));
-//      n = strtol(s.substring(11).c_str(), NULL, 16);
-//      int r = n >> 16;
-//      int g = n >> 8 & 0xff;
-//      b = n & 0xff;
-//      for(int i=0; i<NUM_LEDS; i++) {
-//        leds[i] = CRGB(r, g, b);
-//      }
-//      if(ledsOn) {
-//        FastLED.show();
-//      }
-//    }
 }
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
-  Serial.println(type);
 	switch(type) {
 		case WStype_DISCONNECTED:
-			USE_SERIAL.printf("[WSc] Disconnected!\n");
+			Serial.printf("[WSc] Disconnected!\n");
 			break;
-		case WStype_CONNECTED: {
-			USE_SERIAL.printf("[WSc] Connected to url: %s\n", payload);
-
+		case WStype_CONNECTED:
+			Serial.printf("[WSc] Connected to url: %s\n", payload);
 			// send message to server when Connected
 			//webSocket.sendTXT("Connected");
-		}
 			break;
 		case WStype_TEXT:
-			USE_SERIAL.printf("[WSc] get text: %s\n", payload);
-      handleText(payload, length);
+			Serial.printf("[WSc] get text: %s\n", payload);
+      handleText(payload);
 			// send message to server
 			// webSocket.sendTXT("message here");
 			break;
 		case WStype_BIN:
-        USE_SERIAL.printf("[WSc] get binary length: %u\n", length);
+        Serial.printf("[WSc] get binary length: %u\n", length);
         hexdump(payload, length);
-			// send data to server
-			// webSocket.sendBIN(payload, length);
-			break;
+        // send data to server
+        // webSocket.sendBIN(payload, length);
+        break;
     case WStype_PING:
         // pong will be send automatically
-        USE_SERIAL.printf("[WSc] get ping\n");
+        Serial.printf("[WSc] get ping\n");
         break;
     case WStype_PONG:
         // answer to a ping we send
-        USE_SERIAL.printf("[WSc] get pong\n");
+        Serial.printf("[WSc] get pong\n");
         break;
+    default:
+        Serial.println(type);
     }
 }
 long lastPress = 0;
@@ -126,44 +124,44 @@ ICACHE_RAM_ATTR void test() {
   if (millis() - lastPress > BUTTON_THRESHOLD) {
     Serial.println("button");
     lastPress = millis();
-    ledsOn = !ledsOn;
-    if (ledsOn) {
+    data.ledsOn = !data.ledsOn;
+    if (data.ledsOn) {
       FastLED.show();
     } else {
       FastLED.showColor(CRGB(0,0,0));
     }
-    webSocket.sendTXT(ledsOn? "on" : "off");
+    webSocket.sendTXT(data.ledsOn? "on" : "off");
   }
 }
 void setup() {
-	// USE_SERIAL.begin(921600);
-	USE_SERIAL.begin(9600);
- //delay(100);
- pinMode(LED_PIN, OUTPUT);
-   FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
-   for(int i=0; i<NUM_LEDS; i++) {
-          leds[i] = CRGB(0,255,0);
+	// Serial.begin(921600);
+	Serial.begin(9600);
+  //delay(100);
+  pinMode(LED_PIN, OUTPUT);
+    FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
+    for(int i=0; i<NUM_LEDS; i++) {
+          leds[i] = CRGB(0,0,0);
         }
-   //FastLED.show();
-   
- //USE_SERIAL.print("...");
- delay(2);
- FastLED.show();
- USE_SERIAL.print("...");
- 
+  FastLED.show();
+    
+  //Serial.print("...");
+  delay(2);
+  FastLED.show();
+  Serial.print("...");
+
 
 	//Serial.setDebugOutput(true);
-	USE_SERIAL.setDebugOutput(true);
+	Serial.setDebugOutput(true);
 
-	USE_SERIAL.println();
-	USE_SERIAL.println();
-	USE_SERIAL.println();
+	Serial.println();
+	Serial.println();
+	Serial.println();
 
  pinMode(0, INPUT_PULLUP);
  attachInterrupt(digitalPinToInterrupt(0), test, FALLING);
 	for(uint8_t t = 2; t > 0; t--) {
-		USE_SERIAL.printf("[SETUP] BOOT WAIT %d...\n", t);
-		USE_SERIAL.flush();
+		Serial.printf("[SETUP] BOOT WAIT %d...\n", t);
+		Serial.flush();
 		delay(1200);
 	}
 
@@ -172,9 +170,9 @@ void setup() {
 	//WiFi.disconnect();
 	while(WiFiMulti.run() != WL_CONNECTED) {
 		delay(100);
-   USE_SERIAL.printf(".");
+   Serial.printf(".");
 	}
-   USE_SERIAL.printf("Connected\n");
+   Serial.printf("Connected\n");
 
 	// server address, port and URL
 	webSocket.beginSSL("led.boj.cc", 443, "/test/esp");
@@ -203,5 +201,4 @@ void loop() {
   } else {
     webSocket.disconnect();
   }
-  
 }
