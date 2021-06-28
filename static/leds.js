@@ -299,10 +299,12 @@ async function sendRequest(name, value, send=true, callback = null) {
     socket.onopen = function() {
       console.log("socket loaded!");
       socket.send(JSON.stringify({[name]: value}));
+      console.log(JSON.stringify({[name]: value}));
     };
   }
   else {
     socket.send(JSON.stringify({[name]: value}));
+    console.log(JSON.stringify({[name]: value}));
   }
 }
 
@@ -329,7 +331,7 @@ function brightnessChange(input, send=true) {
   //TODO: remove this if you find a way to not have two different brightness sliders
   $(".slider3").val(input.value);
   centerSlidersText();
-  sendRequest("brightness", input.value, send);
+  sendRequest("brightness", parseInt(input.value), send);
 }
 
 function blendColors(colorlist, percentagelist){
