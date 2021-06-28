@@ -36,14 +36,32 @@ CRGB leds[NUM_LEDS];
 
 struct LEDData {
   CRGB solidColor = CRGB(0xFF, 0, 0);
+  CRGB solidColorDimmed = CRGB(0xB2, 0, 0);
   bool ledsOn = true;
   int brightness = 70;
 };
 
 LEDData data;
 
-CRGB& calcBrightness(CRGB& color, int brightness) {
-  return color;
+void calcBrightness(CRGB& in, CRGB& out) {
+  out = in;
+  Serial.println(in);
+  for(int i=0; i<3; i++) {
+    out[i] = (in[i] * data.brightness) / 100;
+    Serial.print(in[i]);
+    Serial.print(", ");
+    Serial.println(out[i]);
+  }
+}
+void showLEDs() {
+  Serial.print("leds on: ");
+  Serial.println(data.ledsOn ? "yes" : "no");
+  if (data.ledsOn) {
+    FastLED.showColor(data.solidColorDimmed);
+    //FastLED.show();
+  } else {
+    FastLED.showColor(CRGB(0,0,0));
+  }
 }
 void handleText(uint8_t * payload) {
     int n = 0;
@@ -65,25 +83,21 @@ void handleText(uint8_t * payload) {
         // int b = color & 0xff;
         // LEDData.solidColor = CRGB(r, g, b);
         data.solidColor = CRGB(color);
-        for(int i=0; i<NUM_LEDS; i++) {
-          leds[i] = calcBrightness(data.solidColor, data.brightness);
-        }
+        calcBrightness(data.solidColor, data.solidColorDimmed);
+        //for(int i=0; i<NUM_LEDS; i++) {
+        //  leds[i] = calcBrightness(data.solidColor);
+        //}
       } else if (key == "on") {
         Serial.println(value == "true");
         data.ledsOn = (value == "true");
       } else if (key == "brightness") {
-        Serial.println(value);
-        data.brightness = 80;
+        data.brightness = value.toInt();
+        Serial.println(data.brightness);
+        calcBrightness(data.solidColor, data.solidColorDimmed);
       }
       n = nextN + 1;
     } while (n != 0);
-    Serial.print("leds on: ");
-    Serial.println(data.ledsOn ? "yes" : "no");
-    if (data.ledsOn) {
-      FastLED.show();
-    } else {
-      FastLED.showColor(CRGB(0,0,0));
-    }
+    showLEDs();
 }
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 	switch(type) {
@@ -125,11 +139,7 @@ ICACHE_RAM_ATTR void test() {
     Serial.println("button");
     lastPress = millis();
     data.ledsOn = !data.ledsOn;
-    if (data.ledsOn) {
-      FastLED.show();
-    } else {
-      FastLED.showColor(CRGB(0,0,0));
-    }
+    showLEDs();
     webSocket.sendTXT(data.ledsOn? "on" : "off");
   }
 }
@@ -149,12 +159,8 @@ void setup() {
   FastLED.show();
   Serial.print("...");
 
-
-	//Serial.setDebugOutput(true);
 	Serial.setDebugOutput(true);
-
-	Serial.println();
-	Serial.println();
+  
 	Serial.println();
 
  pinMode(0, INPUT_PULLUP);
