@@ -49,10 +49,10 @@
     <div id="tabCtrl">
       <div id="tabSolidColor" style="display: block;">
         <!-- solid color tab -->
-        <br>
+        <br id="solidColorBr">
         <div class="background-rect" id="solidColorCenter">
           <br>
-          <input data-jscolor="{previewElement:'#pr1', shadow:false}" id="solidColor" onInput="solidColorChange(this)" style="border: 2px solid #444444; margin-bottom: 5px; border-radius: 5px;">
+          <input data-jscolor="{previewElement:'#pr1', shadow:false}" id="solidColor" onInput="solidColorChange(this)" style="border: 2px solid #444444; border-radius: 5px;">
         </div>
         <br>
         <div class="background-rect" id="solidColorSliders">
@@ -66,7 +66,7 @@
               <label class="switch">
                 <input type="checkbox" onClick="lightsOnOff(this)">
                 <span class="slider round"><span class="on">ON</span><span class="off">OFF</span></span>
-              </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </label>
             </div>
             <div style="flex-grow: 1;">
               <span class="sliderText">Brightness: <label class="sliderPercent3">0%</label></span>
@@ -78,8 +78,8 @@
 
       <div id="tabManyColorEntry" style="display: none;">
         <!-- many color tab -->
-        <br>
-        <div class="background-rect" id="manyColorEntryCenter" style="padding:0.6%">
+        <br id="manyColorBr">
+        <div class="background-rect" id="manyColorEntryCenter"> 
           <canvas id="manyColorCanvas" 
             onclick="checkLightsMouse()"
             onmousedown="multiColorPress()"
@@ -107,7 +107,7 @@
                 <label class="switch">
                   <input type="checkbox" onClick="lightsOnOff(this)">
                   <span class="slider round"><span class="on">ON</span><span class="off">OFF</span></span>
-                </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </label>
               </div>
               <div style="flex-grow: 1;">
                 <span class="sliderText">Brightness: <label class="sliderPercent3">0%</label></span>

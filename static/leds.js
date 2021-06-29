@@ -920,9 +920,18 @@ function setSolidColorpickerSize() {
   let width = $("#solidColor").width();
   $("#solidColor")[0].jscolor.width = width - 52;
   // idk why this is wrong but the extra 53 makes it almost ok so....
-  let height = $(window).height() - $("#solidColorCenter").offset().top - $("#solidColorSliders").height() - 73;
-  $("#solidColor")[0].jscolor.height = height - 50;
-  $("#solidColor").css("margin-bottom", height);
+  console.log($("solidColorBr"));
+  console.log($("solidColorBr").outerHeight());
+  console.log(document.getElementById("solidColorBr").offsetHeight);
+  console.log($(window).height());
+  console.log($("#solidColorCenter").offset().top);
+  console.log($("#solidColorSliders").height());
+  console.log($("#solidColorSliders").outerHeight());
+  console.log($("#solidColor").height());
+  let br = document.getElementById("solidColorBr").offsetHeight;
+  let height = $(window).height() - $("#solidColorCenter").offset().top - $("#solidColorSliders").outerHeight() - (1.2 * br) - 3;
+  $("#solidColor")[0].jscolor.height = height - $("#solidColor").height() - (3.3 * br);
+  $("#solidColorCenter").css("height", height);
   $("#solidColor")[0].jscolor.show();
   if(savedSingleColors.active) {
     let rect = $("#loadSingleColor")[0].getBoundingClientRect();
@@ -940,9 +949,9 @@ function setMultiColorpickerSize(redraw=true, send=true) {
   let canvas = document.getElementById("manyColorCanvas");
   canvas.style.width = width + 'px';
   canvas.width = width * window.devicePixelRatio;
-  let height = $(window).height() - $("#manyColorEntryCenter").offset().top - $("#manyColorEntrySliders").height() - 73;
-  height = height + 26;
-  canvas.style.height = height + 'px';
+  let height = $(window).height() - $("#manyColorEntryCenter").offset().top - $("#manyColorEntrySliders").outerHeight() - (1.2 * $("#manyColorBr").outerHeight()) - 3;
+  //canvas.style.height = height + 'px';
+  $("#manyColorEntryCenter").css("height", height);
   canvas.height = height * window.devicePixelRatio;
   multiColor.redrawLightsPreserve();
   if(savedMultiColors.active) {
