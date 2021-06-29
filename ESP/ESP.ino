@@ -29,36 +29,44 @@ ESP8266WiFiMulti WiFiMulti;
 WebSocketsClient webSocket;
 
 #define LED_PIN 2
-#define NUM_LEDS 30
+#define NUM_LEDS 100
 #define BUTTON_THRESHOLD 100
 
 CRGB leds[NUM_LEDS];
+enum class Mode { Single, Multi};
 
 struct LEDData {
   CRGB solidColor = CRGB(0xFF, 0, 0);
   CRGB solidColorDimmed = CRGB(0xB2, 0, 0);
+  CRGB multiColors[NUM_LEDS];
   bool ledsOn = true;
   int brightness = 70;
+  Mode mode = Mode::Single;
 };
 
 LEDData data;
 
 void calcBrightness(CRGB& in, CRGB& out) {
   out = in;
-  Serial.println(in);
+  //Serial.println(in);
   for(int i=0; i<3; i++) {
     out[i] = (in[i] * data.brightness) / 100;
-    Serial.print(in[i]);
-    Serial.print(", ");
-    Serial.println(out[i]);
+    //Serial.print(in[i]);
+    //Serial.print(", ");
+    //Serial.println(out[i]);
   }
 }
 void showLEDs() {
   Serial.print("leds on: ");
   Serial.println(data.ledsOn ? "yes" : "no");
+  Serial.print("mode: ");
+  Serial.println(data.mode == Mode::Single ? "single" : "multi");
   if (data.ledsOn) {
-    FastLED.showColor(data.solidColorDimmed);
-    //FastLED.show();
+    if (data.mode == Mode::Single) {
+      FastLED.showColor(data.solidColorDimmed);
+    } else if (data.mode == Mode::Multi) {
+      FastLED.show();
+    }
   } else {
     FastLED.showColor(CRGB(0,0,0));
   }
@@ -77,7 +85,7 @@ void handleText(uint8_t * payload) {
       Serial.println(key);
       if (key == "solidColor") {
         Serial.println(value.substring(2,8)); 
-        unsigned color = strtol(value.substring(2,8).c_str(), NULL, 16);
+        unsigned color = strtol(value.substring(2,8).c_str(), 0, 16);
         // int r = color >> 16;
         // int g = color >> 8 & 0xff;
         // int b = color & 0xff;
@@ -93,7 +101,40 @@ void handleText(uint8_t * payload) {
       } else if (key == "brightness") {
         data.brightness = value.toInt();
         Serial.println(data.brightness);
-        calcBrightness(data.solidColor, data.solidColorDimmed);
+        if (data.mode == Mode::Single) {
+          calcBrightness(data.solidColor, data.solidColorDimmed);
+        } else if (data.mode == Mode::Multi) {
+           for (int i=0; i<NUM_LEDS; i++) {
+            calcBrightness(data.multiColors[i], leds[i]);
+          }
+        }
+      } else if (key == "mode") {
+        Serial.println(value);
+        if (value == "\"solidColor\"") {
+          data.mode = Mode::Single;
+        } else if (value == "\"manyColors\"") {
+          data.mode = Mode::Multi;
+          for (int i=0; i<NUM_LEDS; i++) {
+            calcBrightness(data.multiColors[i], leds[i]);
+          }
+        } else {
+          data.mode = Mode::Single;
+        }
+      } else if (key == "multiColor") {
+        //Serial.println("...");
+        //Serial.println(value);
+        int m = 1, count=0;
+        do {
+          int nextM = value.indexOf(";", m);
+          String color = (nextM == -1 ? value.substring(m+1, value.length()-1) : value.substring(m+1, nextM));
+          //Serial.println(color);
+          data.multiColors[count] = CRGB(strtol(color.c_str(), 0, 16));
+          if (data.mode == Mode::Multi) {
+            calcBrightness(data.multiColors[count], leds[count]);
+          }
+          m = nextM + 1;
+        } while (m != 0 && ++count < NUM_LEDS);
+        //Serial.println("...");
       }
       n = nextN + 1;
     } while (n != 0);
@@ -110,7 +151,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 			//webSocket.sendTXT("Connected");
 			break;
 		case WStype_TEXT:
-			Serial.printf("[WSc] get text: %s\n", payload);
+			//Serial.printf("[WSc] get text: %s\n", payload);
       handleText(payload);
 			// send message to server
 			// webSocket.sendTXT("message here");
