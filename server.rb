@@ -18,7 +18,7 @@ $sites = []
 $esps = []
 $thread = nil
 $data = {}
-$keys = ["solidColor", "on", "brightness"]
+$keys = ["solidColor", "on", "brightness", "mode", "multiColor"]
 def get(path)
   if $data[path].nil?
     $data[path] = JSON.parse File.read "static/#{path}.json"
@@ -43,6 +43,9 @@ def message(msg, ws, path)
   #puts settings.sockets
   EM.next_tick { $sites.select{|s| s != ws}.each{|s| s.send(msg) } }
   to_esp = JSON.parse(msg).slice(*$keys)
+  if to_esp.key?("multiColor")
+    to_esp['multiColor'] = to_esp['multiColor']['colors'].join(';')
+  end
   #if $data[path].key?("brightness") and $data[path].key?("solidColor") and (to_esp.key?("brightness") or to_esp.key?("solidColor"))
   #  to_esp['solidColor'] = '#'+(1..5).step(2).map{|i| (($data[path]["solidColor"][i..i+1]).to_i(16)*($data[path]["brightness"].to_i/100.0)).round.to_s.rjust(2,"0")}.join("")
   #end
@@ -90,10 +93,16 @@ instances.each do |path|
         $esps.append(ws)
         get path
         to_esp = $data[path].slice(*$keys)
+        if to_esp.key?("multiColor")
+          to_esp['multiColor'] = to_esp['multiColor']['colors'].join(';')
+        end
         #if $data[path].key?("brightness") and to_esp.key?("solidColor")
         #  to_esp['solidColor'] = '#'+(1..5).step(2).map{|i| ((to_esp["solidColor"][i..i+1]).to_i(16)*($data[path]["brightness"].to_i/100.0)).round.to_s.rjust(2,"0")}.join("")
         #end
-        EM.next_tick { ws.send(to_esp.to_json[1..-2])}
+        unless to_esp.empty?
+          puts to_esp
+          EM.next_tick { ws.send(to_esp.to_json[1..-2])}
+        end
       end
       ws.onmessage do |msg|
         message "{\"on\":#{msg == "on" ? "true" : "false"}}", ws, path
