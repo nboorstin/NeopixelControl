@@ -680,7 +680,7 @@ function redrawLights(multiColor) {
 
     ctx.fillStyle = multiColor.colors[i];
     ctx.beginPath();
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 0.8 * window.devicePixelRatio;
     if (multiColor.selected[i]) {
       ctx.strokeStyle = 'white';
       ctx.arc(x, y, 1.5*size / (spacing+1), 0, 2 * Math.PI, false);
