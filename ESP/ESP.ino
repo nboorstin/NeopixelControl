@@ -133,7 +133,7 @@ void handleText(uint8_t * payload) {
             calcBrightness(data.multiColors[count], leds[count]);
           }
           m = nextM + 1;
-        } while (++count && m != 0 < NUM_LEDS);
+        } while (++count < NUM_LEDS && m != 0 );
         //Serial.println("...");
       }
       n = nextN + 1;
