@@ -116,7 +116,23 @@
             </div>
         </div>
       </div>
-      <div id="tabAnimate" style="display: none;">animate</br>yeah i'm sure this will happen at some point...
+      <div id="tabAnimate" style="display: none;">
+        <!-- many color tab -->
+        <br id="animateBr">
+        <div class="background-rect" id="animateCenter"> 
+          <!-- <canvas id="animateCanvas" 
+            onclick="checkLightsMouse()"
+            onmousedown="multiColorPress()"
+            ontouchstart="multiColorTouch()"
+            onmouseup="multiColorRelease()"
+            ontouchend="multiColorRelease()"
+            onmousemove="multiColorMove()"
+            ontouchmove="multiColorTouchMove()"
+            height="200"></canvas> -->
+          <canvas id="animateCanvas"
+            height="200"></canvas>
+        </div>
+        </br> 
         <div class="background-rect" id="animateSliders">
           <table width="100%" style="table-layout: fixed;"><tr>
               <td style="text-align:center"><button class="topbutton" onclick="resetAnimate()">reset</button></td>

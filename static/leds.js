@@ -127,7 +127,7 @@ class MultiColor {
   }
 
   redrawLightsPreserve() {
-    redrawLights(this);
+    redrawLights(this, false);
   }
   redrawLights(send = true) {
     if(MultiColorInit) {return;}
@@ -405,9 +405,10 @@ function activateTab(button, pageId, redraw=true, send=true) {
   } else {
     if(pageId == 'tabManyColorEntry') {
       sendRequest("mode", "manyColors", send);
-      setMultiColorpickerSize(redraw, send);
+      setMultiColorpickerSize();
     } else if (pageId == 'tabAnimate') {
       sendRequest('mode', 'animate', send);
+      setAnimatedSize();
     } else if (pageId == 'tabSaved') {
       sendRequest('mode', 'saved', send);
     } else {
@@ -667,7 +668,7 @@ function updateColors(multiColor) {
     }
   }
 }
-function redrawLights(multiColor) {
+function redrawLights(multiColor, updateColor = true) {
   let canvas = document.getElementById("manyColorCanvas");
   if(canvas.parentElement.parentElement.style['display'] == 'none') {return;}
 
@@ -681,7 +682,9 @@ function redrawLights(multiColor) {
   // override spacing if it's too big
   //size = Math.min(size, 30);
 
-  updateColors(multiColor);
+  if (updateColor) {
+    updateColors(multiColor);
+  }
   let ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for(let i=0; i<lightsPos.length; i++) {
@@ -906,11 +909,19 @@ function makeGradient(multiColor) {
 }
 
 window.onresize = function(event) {
-  //TODO: wow ok this should just be a variable for what tab we're in
-  if($("#solidColor")[0].jscolor.hide.toString().length < 13) {
-    setSolidColorpickerSize();
-  } else {
-    setMultiColorpickerSize();
+  let activeTab = $(".topbutton-active").html();
+  switch(activeTab) {
+    case "Solid Color":
+      setSolidColorpickerSize();
+      break;
+    case "Many Colors":
+      setMultiColorpickerSize();
+      break;
+    case "Animated":
+      setAnimatedSize();
+      break;
+    default:
+      console.log(activeTab);
   }
   centerSlidersText();
 }
@@ -945,7 +956,7 @@ function setSolidColorpickerSize() {
   }
 }
 
-function setMultiColorpickerSize(redraw=true, send=true) {
+function setMultiColorpickerSize() {
   //TODO: maybe filling the screen isn't the best idea?
   let width = $("#manyColorEntryCenter").width() * .99;
   let canvas = document.getElementById("manyColorCanvas");
@@ -973,6 +984,17 @@ function setMultiColorpickerSize(redraw=true, send=true) {
   }
 }
 
+function setAnimatedSize() {
+  let width = $("#animateCenter").width() * .99;
+  let canvas = document.getElementById("animateCanvas");
+  canvas.style.width = width + 'px';
+  canvas.width = width * window.devicePixelRatio;
+  let height = $(window).height() - $("#animateCenter").offset().top - $("#animateSliders").outerHeight() - (1.6 * $("#animateBr").outerHeight()) - 3;
+  //canvas.style.height = height + 'px';
+  $("#animateCenter").css("height", height);
+  canvas.height = height * window.devicePixelRatio;
+}
+
 function setColorBox(name) {
   let color = $("#"+name)[0].jscolor.toString("hex");
   $("#"+name).css("backgroundColor", color);
@@ -996,7 +1018,6 @@ function initialSetState(data) {
         break;
       case "multiColor":
         multiColor = new MultiColor(data.multiColor, true);
-        setMultiColorpickerSize(false);
         break;
       case "savedSingleColors":
         savedSingleColors.load(Array.from(data.savedSingleColors, x => new SingleColor(x)));
