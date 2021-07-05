@@ -541,7 +541,7 @@ function bothMultiColorPress(pageX, pageY) {
       if (holdTimeout !== null) {
         clearTimeout(holdTimeout);
       }
-      holdTimeout = setTimeout(toggleSelect, 1000);
+      holdTimeout = setTimeout(toggleSelect, 500);
       heldLight = i;
       lastMouseX = pageX;
       lastMouseY = pageY;
