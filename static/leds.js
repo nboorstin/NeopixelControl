@@ -83,19 +83,19 @@ class MultiColor {
   updateRandomSlider(setSlider = true) {
     if(MultiColorCopy) {return;}
     if (setSlider) {
-      $(".slider2").val(this.randomAmount);
+      $("#randomnessSlider").val(this.randomAmount);
     }
     // update slider text
-    $(".sliderPercent2").html(this.randomAmount + "%");
+    $("#randomnessSliderLabel").html(this.randomAmount + "%");
     centerSlidersText();
   }
   updatePatternSlider(setSlider = true) {
     if(MultiColorCopy) {return;}
     if (setSlider) {
-      $(".slider1").val(this.patternAmount);
+      $("#gradientSlider").val(this.patternAmount);
     }
     // update slider text
-    $(".sliderPercent1").html(this.patternAmount + "%");
+    $("#gradientSliderLabel").html(this.patternAmount + "%");
     centerSlidersText();
   }
 
@@ -327,9 +327,9 @@ function patternChange(input) {
 }
 
 function brightnessChange(input, send=true) {
-  $(".sliderPercent3").html(input.value + "%");
+  $(".brightnessSliderLabel").html(input.value + "%");
   //TODO: remove this if you find a way to not have two different brightness sliders
-  $(".slider3").val(input.value);
+  $(".brightnessSlider").val(input.value);
   centerSlidersText();
   sendRequest("brightness", parseInt(input.value), send);
 }
@@ -833,8 +833,8 @@ function loadMultiOverlayOff() {
 }
 
 function resetOnAndBrightness(send = true) {
-  $(".slider3").val(70);
-  brightnessChange($(".slider3")[0], send);
+  $(".brightnessSlider").val(70);
+  brightnessChange($(".brightnessSlider")[0], send);
   $(":checkbox").prop('checked', true);
   lightsOnOff($(":checkbox")[0], send);
 }
@@ -981,8 +981,8 @@ function initialSetState(data) {
         singleColor = new SingleColor(data.solidColor);
         break;
       case "brightness":
-        $(".sliderPercent3").html(data.brightness + "%");
-        $(".slider3").val(data.brightness);
+        $(".brightnessSliderLabel").html(data.brightness + "%");
+        $(".brightnessSlider").val(data.brightness);
         break;
       case "multiColor":
         multiColor = new MultiColor(data.multiColor, true);

@@ -69,8 +69,8 @@
               </label>
             </div>
             <div style="flex-grow: 1;">
-              <span class="sliderText">Brightness: <label class="sliderPercent3">0%</label></span>
-              <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)">
+              <span class="sliderText">Brightness: <label class="brightnessSliderLabel">0%</label></span>
+                <input type="range" class="range brightnessSlider" onInput="brightnessChange(this)">
             </div>
           </div>
         </div>
@@ -98,10 +98,10 @@
               <td style="text-align:center"><button id="multiColorSave" class="topbutton" onclick="saveMultiColor(this)">save</button></td>
               <td style="text-align:center"><button id="loadMultiColor" class="topbutton" onclick="loadMultiColor(this)">load</button></td>
             </tr></table>
-            <span class="sliderText">Gradient/pattern: <label class="sliderPercent1">0%</label></span>
-            <input type="range" name="entry" class="slider1" onInput="patternChange(this)">
-            <span class="sliderText">Randomness: <label class="sliderPercent2">0%</label></span>
-            <input type="range" name="entry" class="slider2" onInput="randomnessChange(this)">
+            <span class="sliderText">Gradient/pattern: <label id="gradientSliderLabel">0%</label></span>
+            <input type="range" id="gradientSlider" class="range" onInput="patternChange(this)">
+            <span class="sliderText">Randomness: <label id="randomnessSliderLabel">0%</label></span>
+            <input type="range" id="randomnessSlider" class="range" onInput="randomnessChange(this)">
             <div style="display: flex;">
               <div style="display: block;">
                 <label class="switch">
@@ -110,8 +110,8 @@
                 </label>
               </div>
               <div style="flex-grow: 1;">
-                <span class="sliderText">Brightness: <label class="sliderPercent3">0%</label></span>
-                <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)">
+                <span class="sliderText">Brightness: <label class="brightnessSliderLabel">0%</label></span>
+                <input type="range" class="range brightnessSlider" onInput="brightnessChange(this)">
               </div>
             </div>
         </div>
@@ -124,15 +124,15 @@
               <td style="text-align:center"><button id="multiColorSave" class="topbutton" onclick="saveAnimation(this)">save</button></td>
               <td style="text-align:center"><button id="loadMultiColor" class="topbutton" onclick="loadAnimation(this)">load</button></td>
             </tr></table>
-            <span class="sliderText">Global slide duration: <label class="sliderPercent4">0%</label></span>
-            <input type="range" name="entry" class="slider4" onInput="globalDurationChange(this)">
+            <span class="sliderText">Global slide duration: <label id="globalDurationSliderLabel">0%</label></span>
+            <input type="range" id="globalDurationSlider" class="range" onInput="globalDurationChange(this)">
             <div style="display: flex;">
               <div style="display: block;">
                 [something here to select transition type]
               </div>
               <div style="flex-grow: 1;">
-                <span class="sliderText">Global transition duration: <label class="sliderPercent5">0%</label></span>
-                <input type="range" name="entry" class="slider5" onInput="globalTransitionDurationChange(this)">
+                <span class="sliderText">Global transition duration: <label id="globalTransitionDurationLabel">0%</label></span>
+                <input type="range" id="globalTransitionDurationSlider" class="range" onInput="globalTransitionDurationChange(this)">
               </div>
             </div>
             <div style="display: flex;">
@@ -143,8 +143,8 @@
                 </label>
               </div>
               <div style="flex-grow: 1;">
-                <span class="sliderText">Brightness: <label class="sliderPercent3">0%</label></span>
-                <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)">
+                <span class="sliderText">Brightness: <label class="brightnessSliderLabel">0%</label></span>
+                <input type="range" class="range brightnessSlider" onInput="brightnessChange(this)">
               </div>
             </div>
         </div>
