@@ -326,6 +326,16 @@ function patternChange(input) {
   multiColor.setPattern(input.value);
 }
 
+function globalDurationChange(input) {
+  $("#globalDurationSliderLabel").html(input.value + "%");
+  centerSlidersText();
+}
+
+function globalTransitionDurationChange(input) {
+  $("#globalTransitionDurationSliderLabel").html(input.value + "%");
+  centerSlidersText();
+}
+
 function brightnessChange(input, send=true) {
   $(".brightnessSliderLabel").html(input.value + "%");
   //TODO: remove this if you find a way to not have two different brightness sliders
@@ -396,7 +406,6 @@ function activateTab(button, pageId, redraw=true, send=true) {
     if(pageId == 'tabManyColorEntry') {
       sendRequest("mode", "manyColors", send);
       setMultiColorpickerSize(redraw, send);
-      centerSlidersText();
     } else if (pageId == 'tabAnimate') {
       sendRequest('mode', 'animate', send);
     } else if (pageId == 'tabSaved') {
@@ -407,6 +416,7 @@ function activateTab(button, pageId, redraw=true, send=true) {
     document.getElementById("solidColor").jscolor.hide = solidColorHide;
     document.getElementById("solidColor").jscolor.hide();
   }
+  centerSlidersText();
 }
 
 
@@ -896,7 +906,7 @@ function makeGradient(multiColor) {
 }
 
 window.onresize = function(event) {
-  //TODO: wow ok this should just be a letiable for what tab we're in
+  //TODO: wow ok this should just be a variable for what tab we're in
   if($("#solidColor")[0].jscolor.hide.toString().length < 13) {
     setSolidColorpickerSize();
   } else {
