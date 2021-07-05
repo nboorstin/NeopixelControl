@@ -1009,6 +1009,9 @@ function initialSetState(data) {
       case 'manyColors':
         activateTab($(".topbutton")[0], 'tabManyColorEntry', false, false);
         break;
+      case 'animate':
+        activateTab($(".topbutton")[1], 'tabAnimate', false, false);
+        break;
       default:
         console.log(data.mode);
     }

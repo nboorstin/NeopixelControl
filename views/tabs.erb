@@ -116,7 +116,39 @@
             </div>
         </div>
       </div>
-      <div id="tabAnimate" style="display: none;">animate</br>yeah i'm sure this will happen at some point...</div>
+      <div id="tabAnimate" style="display: none;">animate</br>yeah i'm sure this will happen at some point...
+        <div class="background-rect" id="animateSliders">
+          <table width="100%" style="table-layout: fixed;"><tr>
+              <td style="text-align:center"><button class="topbutton" onclick="resetAnimate()">reset</button></td>
+              <!-- <td style="text-align:center"><button class="topbutton" onclick="singleColorFill(this)">solid color fill</button></td> -->
+              <td style="text-align:center"><button id="multiColorSave" class="topbutton" onclick="saveAnimation(this)">save</button></td>
+              <td style="text-align:center"><button id="loadMultiColor" class="topbutton" onclick="loadAnimation(this)">load</button></td>
+            </tr></table>
+            <span class="sliderText">Global slide duration: <label class="sliderPercent4">0%</label></span>
+            <input type="range" name="entry" class="slider4" onInput="globalDurationChange(this)">
+            <div style="display: flex;">
+              <div style="display: block;">
+                [something here to select transition type]
+              </div>
+              <div style="flex-grow: 1;">
+                <span class="sliderText">Global transition duration: <label class="sliderPercent5">0%</label></span>
+                <input type="range" name="entry" class="slider5" onInput="globalTransitionDurationChange(this)">
+              </div>
+            </div>
+            <div style="display: flex;">
+              <div style="display: block;">
+                <label class="switch">
+                  <input type="checkbox" onClick="lightsOnOff(this)">
+                  <span class="slider round"><span class="on">ON</span><span class="off">OFF</span></span>
+                </label>
+              </div>
+              <div style="flex-grow: 1;">
+                <span class="sliderText">Brightness: <label class="sliderPercent3">0%</label></span>
+                <input type="range" name="entry" class="slider3" onInput="brightnessChange(this)">
+              </div>
+            </div>
+        </div>
+      </div>
       <div id="tabSaved" style="display: none;">saved designs?</br>yeah i'm sure this will happen at some point...
         <div id="saved">
           <div><span>1</span></div>
