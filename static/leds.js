@@ -131,12 +131,12 @@ class MultiColor {
   }
   redrawLights(send = true) {
     if(MultiColorInit) {return;}
-    if(!this.equals(savedMultiColors.list[savedMultiColors.list.length - 1])) {
+    // actually do drawing here
+    redrawLights(this);
+    if(!this.equals(savedData.list[savedData.list.length - 1])) {
       $("#multiColorSave").html('save'); //reset save button
       $("#multiColorSave")[0].className = 'topbutton'; //reset save button
     }
-    // actually do drawing here
-    redrawLights(this);
 
     if(send) {sendRequest('multiColor', this);}
   }
@@ -144,9 +144,9 @@ class MultiColor {
   equals(other) {
     if (other === undefined) {return false;}
     let entries = Object.entries(this);
-    if (this.randomAmount == 0) {
+    //if (this.randomAmount == 0) {
       entries = entries.filter(e => e[0] != "randomColors");
-    }
+    //}
     return JSON.stringify(this.colors) == JSON.stringify(other.colors);
     //for (const [key, value] of entries) {
     //  if (JSON.stringify(this[key]) != JSON.stringify(other[key])) {
@@ -156,93 +156,137 @@ class MultiColor {
     //return true;
   }
 }
+
+
 class SavedData {
-  constructor(overlay, name) {
-    this.name = name
+  constructor() {
     this.list = [];
-    this.overlay = overlay;
+    this.singleActive = false;
+    this.multiActive = false;
+  }
+  save(element) {
+    if (!element.equals(this.list[this.list.length - 1])) {
+      console.log(this.list);
+      for (const e of this.list) {
+        console.log(e.constructor.name);
+      }
+      if (this.list.filter(e => e.equals(element)).length != 0) {
+        this.list = this.list.filter(e => !e.equals(element));
+      }
+      this.list.push(new element.constructor(element));
+      this.redoHTML(element.constructor.name);
+      sendRequest("savedData", this.list);
+    }
   }
   load(list) {
-    this.list = list;
-    this.redoHTML();
+    this.list = Array.from(list, function(x) {
+      if ("color" in x) {
+        return new SingleColor(x);
+      } else if ("patternAmount" in x) {
+        return new MultiColor(x);
+      } else {
+        return x;
+      }
+    });
+      //  savedSingleColors.load(Array.from(data.savedSingleColors, x => new SingleColor(x)));
+    this.redoAllHTML();
   }
   remove(index) {
+    let type = this.list[index].constructor.name;
     this.list.splice(index, 1);
-    sendRequest(this.name, this.list);
-    this.redoHTML();
+    this.redoHTML(type);
+    sendRequest("savedData", this.list);
   }
-  removeAll() {
-    this.list = [];
-    sendRequest(this.name, this.list);
-    this.redoHTML();
+  removeAll(type) {
+    this.list = this.list.filter(e => e.constructor.name != type);
+    this.redoHTML(type);
+    sendRequest("savedData", this.list);
+  }
+  redoAllHTML() {
+    for (const type of ["SingleColor", "MultiColor"]) {
+      this.redoHTML(type);
+    }
+  }
+
+  redoHTML(type) {
+    let html = '';
+    let found = false;
+    switch(type) {
+      case "SingleColor":
+        for(let i = this.list.length - 1; i >=0; i--) {
+          console.log(this.list[i].constructor.name);
+          if (this.list[i].constructor.name == type) {
+            html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="removeSingleColor(event, this)">X</div></div>';
+            found = true;
+          }
+        }
+        if (found) {
+          html += '<div class="singeColorLoad clearAllButton" onclick="removeAllSingleColors()">Clear All</div>';
+        } else {
+          html = "&nbsp;Nothing saved yet";
+        }
+        $('#solidLoadOverlay').html(html);
+        break;
+      case "MultiColor":
+        savedMultiColorsDrawn = false;
+        for(let i = this.list.length - 1; i >=0; i--) {
+          console.log(this.list[i].constructor.name);
+          if (this.list[i].constructor.name == type) {
+            html += '<div class="multiColorLoad" id="multi_ColorLoad' + i + '" onclick="restoreMultiColor(this)"><div class="loadX2" onclick="removeMultiColor(event, this)">X</div></div>';
+            found = true;
+          }
+        }
+        if (found) {
+          html += '<div class="singeColorLoad clearAllButton" onclick="removeAllMultiColors()">Clear All</div>';
+        } else {
+          html = "&nbsp;Nothing saved yet";
+        }
+        $('#manyLoadOverlay').html(html);
+        break;
+      default:
+        console.log(type);
+    }
   }
 }
 
-class SavedSingleColors extends SavedData {
-  constructor() {
-    super("solidLoadOverlay","savedSingleColors");
-  }
-  redoHTML() {
-    if (this.list.length == 0) {
-      $('#' + this.overlay).html("&nbsp;Nothing saved yet");
-    } else {
-      let html = ''
-      for(let i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
-        html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="removeSingleColor(event, this)">X</div></div>';
-      }
-      html += '<div class="singeColorLoad clearAllButton" onclick="removeAllSingleColors()">Clear All</div>';
-      $('#' + this.overlay).html(html);
-    }
-  }
-  save(element) {
-    if (!element.equals(this.list[this.list.length - 1])) {
-      if (this.list.filter(e => e.equals(singleColor)).length != 0) {
-        this.list = this.list.filter(e => !e.equals(singleColor));
-      }
-      this.list.push(new SingleColor(singleColor));
-      sendRequest(this.name, this.list);
-    }
-    this.redoHTML();
-  }
-}
+//class SavedMultiColors extends SavedData {
+//  constructor() {
+//    super("manyLoadOverlay","savedMultiColors");
+//  }
+//  remove(index) {
+//    super.remove(index);
+//    drawMultiLoad();
+//  }
+//  redoHTML() {
+//    savedMultiColorsDrawn = false;
+//    if (this.list.length == 0) {
+//      $('#' + this.overlay).html("&nbsp;Nothing saved yet");
+//    } else {
+//      let html = ''
+//      for(let i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
+//        html += '<div class="multiColorLoad" id="multi_ColorLoad' + i + '" onclick="restoreMultiColor(this)"><div class="loadX2" onclick="removeMultiColor(event, this)">X</div></div>';
+//      }
+//      html += '<div class="singeColorLoad clearAllButton" onclick="removeAllMultiColors()">Clear All</div>';
+//      $('#' + this.overlay).html(html);
+//    }
+//  }
+//  save(element) {
+//    if (!element.equals(this.list[this.list.length - 1])) {
+//      if (this.list.filter(e => e.equals(multiColor)).length != 0) {
+//        this.list = this.list.filter(e => !e.equals(multiColor));
+//      }
+//      this.list.push(new MultiColor(multiColor));
+//      sendRequest(this.name, this.list);
+//    }
+//    this.redoHTML();
+//  }
+//}
 
-let SavedMultiColorsDrawn = false;
-class SavedMultiColors extends SavedData {
-  constructor() {
-    super("manyLoadOverlay","savedMultiColors");
-  }
-  remove(index) {
-    super.remove(index);
-    drawMultiLoad();
-  }
-  redoHTML() {
-    SavedMultiColorsDrawn = false;
-    if (this.list.length == 0) {
-      $('#' + this.overlay).html("&nbsp;Nothing saved yet");
-    } else {
-      let html = ''
-      for(let i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
-        html += '<div class="multiColorLoad" id="multi_ColorLoad' + i + '" onclick="restoreMultiColor(this)"><div class="loadX2" onclick="removeMultiColor(event, this)">X</div></div>';
-      }
-      html += '<div class="singeColorLoad clearAllButton" onclick="removeAllMultiColors()">Clear All</div>';
-      $('#' + this.overlay).html(html);
-    }
-  }
-  save(element) {
-    if (!element.equals(this.list[this.list.length - 1])) {
-      if (this.list.filter(e => e.equals(multiColor)).length != 0) {
-        this.list = this.list.filter(e => !e.equals(multiColor));
-      }
-      this.list.push(new MultiColor(multiColor));
-      sendRequest(this.name, this.list);
-    }
-    this.redoHTML();
-  }
-}
 let singleColor;
 let multiColor;
-let savedSingleColors = new SavedSingleColors();
-let savedMultiColors = new SavedMultiColors();
+let savedData = new SavedData();
+//let savedSingleColors = new SavedSingleColors();
+//let savedMultiColors = new SavedMultiColors();
 let lastRequestName = "";
 let lastSent = 0;
 let lastRequest = 0;
@@ -583,7 +627,7 @@ function toggleSelect() {
     overlayOn(heldLight, lastMouseX, lastMouseY);
   } else {
     multiColor.redrawLights();
-    if(!multiColor.equals(savedMultiColors.list[savedMultiColors.list.length - 1])) {
+    if(!multiColor.equals(savedData.multi.list[savedData.multi.list.length - 1])) {
       $("#multiColorSave").html('save'); //reset save button
       $("#multiColorSave")[0].className = 'topbutton'; //reset save button
     }
@@ -714,14 +758,14 @@ function saveButton(button) {
 function saveSingleColor(button) {
   if (button.innerHTML == "save") { //if we haven't already saved
     saveButton(button);
-    savedSingleColors.save(singleColor);
+    savedData.save(singleColor);
   }
 }
 
 function saveMultiColor(button) {
   if (button.innerHTML == "save") { //if we haven't already saved
     saveButton(button);
-    savedMultiColors.save(multiColor);
+    savedData.save(multiColor);
   }
 }
 
@@ -734,7 +778,7 @@ function loadSingleColor(button) {
                               height: rect.width * 2.5,
                               top: rect.y - rect.width * 2.5,
                               left: rect.x});
-  savedSingleColors.active = true;
+  savedData.singleActive = true;
 }
 
 function loadMultiColor(button) {
@@ -747,102 +791,115 @@ function loadMultiColor(button) {
                               height: rect.width * 2.5,
                               top: rect.y - rect.width * 2.5,
                               left: rect.x - (rect.width * mult)});
-  savedMultiColors.active = true;
+  savedData.multiActive = true;
   // add canvas
   drawMultiLoad();
 }
 
 function redrawMultiLoad() {
-  for(let j = savedMultiColors.list.length - 1; j >=0; j--) {
-    let canvas = $("#multiLoad" + j)[0];
-    let countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
-    let countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
-    let spacing = 0;
-    spacing += 1;
-    let sizeX = canvas.width / (spacing * countX);
-    let sizeY = canvas.height / (spacing * countY);
-    let size = Math.min(sizeX, sizeY);
-    // override spacing if it's too big
-    //size = Math.min(size, 30);
+  for(let j = savedData.list.length - 1; j >=0; j--) {
+    if (savedData.list[j].constructor.name == "MultiColor") {
+      let canvas = $("#multiLoad" + j)[0];
+      let countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
+      let countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
+      let spacing = 0;
+      spacing += 1;
+      let sizeX = canvas.width / (spacing * countX);
+      let sizeY = canvas.height / (spacing * countY);
+      let size = Math.min(sizeX, sizeY);
+      // override spacing if it's too big
+      //size = Math.min(size, 30);
 
-    let ctx = canvas.getContext("2d");
-    for(let i=0; i<lightsPos.length; i++) {
-      let x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size - 5;
-      let y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size - 5;
+      let ctx = canvas.getContext("2d");
+      for(let i=0; i<lightsPos.length; i++) {
+        let x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size - 5;
+        let y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size - 5;
 
-      ctx.fillStyle = savedMultiColors.list[j].colors[i];
-      ctx.fillRect(x, y, size/(spacing), size/(spacing));
-      //ctx.beginPath();
-      ////ctx.lineWidth = 2;
-      ////ctx.strokeStyle = 'black';
-      //ctx.arc(x, y, size / (spacing+1), 0, 2 * Math.PI, false);
-      ctx.fill();
-      //ctx.stroke();
+        ctx.fillStyle = savedData.list[j].colors[i];
+        ctx.fillRect(x, y, size/(spacing), size/(spacing));
+        //ctx.beginPath();
+        ////ctx.lineWidth = 2;
+        ////ctx.strokeStyle = 'black';
+        //ctx.arc(x, y, size / (spacing+1), 0, 2 * Math.PI, false);
+        ctx.fill();
+        //ctx.stroke();
+      }
     }
   }
 }
 
+let savedMultiColorsDrawn = false;
 function drawMultiLoad() {
-  if (!SavedMultiColorsDrawn && savedMultiColors.list.length > 0) {
-    SavedMultiColorsDrawn = true;
-    let rect = $("#multi_ColorLoad0")[0].getBoundingClientRect();
-    for(let i = savedMultiColors.list.length - 1; i >=0; i--) {
-      $('#multi_ColorLoad' + i).prepend('<canvas style="position: absolute; top: 0px;" id="multiLoad' + i + '" width=' + rect.width + ' height=' + rect.height + '></canvas>');
+  if (!savedMultiColorsDrawn) {
+    let found = false;
+    let rect = null;
+    for(let i = savedData.list.length - 1; i >=0; i--) {
+      if (savedData.list[i].constructor.name == "MultiColor") {
+        if (rect === null) {
+          rect = $("#multi_ColorLoad" + i)[0].getBoundingClientRect();
+        }
+        $('#multi_ColorLoad' + i).prepend('<canvas style="position: absolute; top: 0px;" id="multiLoad' + i + '" width=' + rect.width + ' height=' + rect.height + '></canvas>');
+        found = true;
+      }
     }
-    redrawMultiLoad();
+    if (found) {
+      savedMultiColorsDrawn = true;
+      redrawMultiLoad();
+    }
   }
 }
 
 
 function restoreSingleColor(button) {
-  let color = savedSingleColors.list[parseInt(button.id.substring(15))].color;
+  let color = savedData.list[parseInt(button.id.substring(15))].color;
   singleColor.setColor(color);
 }
 
 function removeSingleColor(event, button) {
   event.stopPropagation();
   let index = parseInt(button.parentElement.id.substring(15));
-  if (singleColor.equals(savedSingleColors.list[index])) {
+  if (singleColor.equals(savedData.list[index])) {
     $("#singleColorSave").html('save'); //reset save button
     $("#singleColorSave")[0].className = 'topbutton'; //reset save button
   }
-  savedSingleColors.remove(index);
+  savedData.remove(index);
 }
 
 function restoreMultiColor(button) {
-  let color = savedMultiColors.list[parseInt(button.id.substring(15))];
+  let color = savedData.list[parseInt(button.id.substring(15))];
   multiColor = new MultiColor(color, true, true);
 }
 
 function removeMultiColor(event, button) {
   event.stopPropagation();
   let index = parseInt(button.parentElement.id.substring(15));
-  if (multiColor.equals(savedMultiColors.list[index])) {
+  if (multiColor.equals(savedData.list[index])) {
     $("#multiColorSave").html('save'); //reset save button
     $("#multiColorSave")[0].className = 'topbutton'; //reset save button
   }
-  savedMultiColors.remove(index);
+  savedData.remove(index);
+  drawMultiLoad();
 }
 function removeAllSingleColors() {
   $("#singleColorSave").html('save'); //reset save button
   $("#singleColorSave")[0].className = 'topbutton'; //reset save button
-  savedSingleColors.removeAll();
+  savedData.removeAll("SingleColor");
 }
 
 function removeAllMultiColors() {
   $("#multiColorSave").html('save'); //reset save button
   $("#multiColorSave")[0].className = 'topbutton'; //reset save button
-  savedMultiColors.removeAll();
+  savedData.removeAll("MultiColor");
 }
 
 function loadSingleOverlayOff() {
   $("#solidLoadOverlay").css({display: 'none'});
-  savedSingleColors.active = false;
+  savedData.singleActive = false;
 }
 
 function loadMultiOverlayOff() {
   $("#manyLoadOverlay").css({display: 'none'});
-  savedMultiColors.active = false;
+  savedData.multiActive = false;
 }
 
 function resetOnAndBrightness(send = true) {
@@ -946,7 +1003,7 @@ function setSolidColorpickerSize() {
   $("#solidColor")[0].jscolor.height = height - $("#solidColor").height() - (3.3 * br);
   $("#solidColorCenter").css("height", height);
   $("#solidColor")[0].jscolor.show();
-  if(savedSingleColors.active) {
+  if(savedData.singleActive) {
     let rect = $("#loadSingleColor")[0].getBoundingClientRect();
     $("#solidLoadOverlay").css({width: rect.width,
                                 height: rect.width * 2.5,
@@ -967,7 +1024,7 @@ function setMultiColorpickerSize() {
   $("#manyColorEntryCenter").css("height", height);
   canvas.height = height * window.devicePixelRatio;
   multiColor.redrawLightsPreserve();
-  if(savedMultiColors.active) {
+  if(savedData.multiActive) {
     let rect = $("#loadMultiColor")[0].getBoundingClientRect();
     let mult = 0.5;
     $("#manyLoadOverlay").css({width: rect.width * (1 + mult),
@@ -976,7 +1033,7 @@ function setMultiColorpickerSize() {
                                 top: rect.y - rect.width * 2.5,
                                 left: rect.x - rect.width * mult});
     rect = $("#multi_ColorLoad0")[0].getBoundingClientRect();
-    for(let i = savedMultiColors.list.length - 1; i >=0; i--) {
+    for(let i = savedData.multi.list.length - 1; i >=0; i--) {
       $("#multiLoad" + i).width(rect.width);
       $("#multiLoad" + i).height(rect.height);
     }
@@ -986,12 +1043,12 @@ function setMultiColorpickerSize() {
 
 function setAnimatedSize() {
   let width = $("#animateCenter").width() * .99;
-  let canvas = document.getElementById("animateCanvas");
-  canvas.style.width = width + 'px';
-  canvas.width = width * window.devicePixelRatio;
   let height = $(window).height() - $("#animateCenter").offset().top - $("#animateSliders").outerHeight() - (1.6 * $("#animateBr").outerHeight()) - 3;
   //canvas.style.height = height + 'px';
   $("#animateCenter").css("height", height);
+  let canvas = document.getElementById("animateCanvas");
+  canvas.style.width = width + 'px';
+  canvas.width = width * window.devicePixelRatio;
   canvas.height = height * window.devicePixelRatio;
 }
 
@@ -1019,12 +1076,15 @@ function initialSetState(data) {
       case "multiColor":
         multiColor = new MultiColor(data.multiColor, true);
         break;
-      case "savedSingleColors":
-        savedSingleColors.load(Array.from(data.savedSingleColors, x => new SingleColor(x)));
+      case "savedData":
+        savedData.load(data.savedData);
         break;
-      case "savedMultiColors":
-        savedMultiColors.load(Array.from(data.savedMultiColors, x => new MultiColor(x)));
-        break;
+      //case "savedSingleColors":
+      //  savedSingleColors.load(Array.from(data.savedSingleColors, x => new SingleColor(x)));
+      //  break;
+      //case "savedMultiColors":
+      //  savedMultiColors.load(Array.from(data.savedMultiColors, x => new MultiColor(x)));
+      //  break;
       case "mode": //need to set mode last
         break;
       default:
@@ -1097,7 +1157,7 @@ function onDocumentMouseDown(e) { //todo: optimzie this to one loop
       overlayOff();
     }
   }
-  if (savedSingleColors.active) {
+  if (savedData.singleActive) {
     let t = target;
     let inOverlay = false;
     while (t != null) {
@@ -1111,7 +1171,7 @@ function onDocumentMouseDown(e) { //todo: optimzie this to one loop
       loadSingleOverlayOff();
     }
   }
-  if (savedMultiColors.active) {
+  if (savedData.multiActive) {
     let t = target;
     let inOverlay = false;
     while (t != null) {
