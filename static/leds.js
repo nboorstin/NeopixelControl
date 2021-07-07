@@ -207,7 +207,6 @@ class SavedData {
     switch(type) {
       case "SingleColor":
         for(let i = this.list.length - 1; i >=0; i--) {
-          console.log(this.list[i].constructor.name);
           if (this.list[i].constructor.name == type) {
             html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="removeSingleColor(event, this)">X</div></div>';
             found = true;
@@ -223,7 +222,6 @@ class SavedData {
       case "MultiColor":
         savedMultiColorsDrawn = false;
         for(let i = this.list.length - 1; i >=0; i--) {
-          console.log(this.list[i].constructor.name);
           if (this.list[i].constructor.name == type) {
             html += '<div class="multiColorLoad" id="multi_ColorLoad' + i + '" onclick="restoreMultiColor(this)"><div class="loadX2" onclick="removeMultiColor(event, this)">X</div></div>';
             found = true;
@@ -394,6 +392,7 @@ function activateTab(button, pageId, redraw=true, send=true) {
       setAnimatedSize();
     } else if (pageId == 'tabSaved') {
       sendRequest('mode', 'saved', send);
+      setSavedSize();
     } else {
       console.log(pageId);
     }
@@ -916,6 +915,9 @@ window.onresize = function(event) {
     case "Animated":
       setAnimatedSize();
       break;
+    case "Saved Designs":
+      setSavedSize();
+      break;
     default:
       console.log(activeTab);
   }
@@ -991,6 +993,17 @@ function setAnimatedSize() {
   canvas.height = height * window.devicePixelRatio;
 }
 
+function setSavedSize() {
+  let width = $("#savedCenter").width() * .99;
+  let height = $(window).height() - $("#savedCenter").offset().top - $("#savedSliders").outerHeight() - (1.6 * $("#savedBr").outerHeight()) - 3;
+  //canvas.style.height = height + 'px';
+  $("#savedCenter").css("height", height);
+  //let canvas = document.getElementById("animateCanvas");
+  //canvas.style.width = width + 'px';
+  //canvas.width = width * window.devicePixelRatio;
+  //canvas.height = height * window.devicePixelRatio;
+}
+
 function setColorBox(name) {
   let color = $("#"+name)[0].jscolor.toString("hex");
   $("#"+name).css("backgroundColor", color);
@@ -1025,7 +1038,6 @@ function initialSetState(data) {
     }
   }
   if ("mode" in data) {
-    let loadedTab = '';
     switch(data.mode) {
       case 'solidColor':
         activateTab($(".topbutton-active")[0], 'tabSolidColor', false, false);
@@ -1035,6 +1047,9 @@ function initialSetState(data) {
         break;
       case 'animate':
         activateTab($(".topbutton")[1], 'tabAnimate', false, false);
+        break;
+      case 'saved':
+        activateTab($(".topbutton")[2], 'tabSaved', false, false);
         break;
       default:
         console.log(data.mode);

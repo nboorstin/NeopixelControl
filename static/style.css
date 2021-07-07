@@ -308,7 +308,7 @@ input:checked + .slider .off
   text-align: center;
 }
 
-#saved > div
+#savedCenter > div
 {
  float: left;
  width: 150px;

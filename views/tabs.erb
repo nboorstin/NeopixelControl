@@ -11,26 +11,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
       let socketProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-      let socketURL = socketProtocol + window.location.host + "/<%= instance %>/site";
-      window.onload = function() {
-        // load previous state
-        $.getJSON("<%= instance %>.json", {_: new Date().getTime()}, initialSetState);
-        // add click listeners
-        document.addEventListener('mousedown', onDocumentMouseDown, false);
-        document.addEventListener('touchstart', onDocumentMouseDown, false);
+let socketURL = socketProtocol + window.location.host + "/<%= instance %>/site";
+window.onload = function() {
+  // load previous state
+  $.getJSON("<%= instance %>.json", {_: new Date().getTime()}, initialSetState);
+  // add click listeners
+  document.addEventListener('mousedown', onDocumentMouseDown, false);
+  document.addEventListener('touchstart', onDocumentMouseDown, false);
 
-        // hackishly keep the solid color open
-        solidColorHide = document.getElementById("solidColor").jscolor.hide;
-        document.getElementById("solidColor").jscolor.hide = function(){};
+  // hackishly keep the solid color open
+  solidColorHide = document.getElementById("solidColor").jscolor.hide;
+  document.getElementById("solidColor").jscolor.hide = function(){};
 
-        resetOnAndBrightness(false);
+  resetOnAndBrightness(false);
 
-        // try to set canvas size
-        setSolidColorpickerSize();
+  // try to set canvas size
+  setSolidColorpickerSize();
 
-        // and center text labels
-        centerSlidersText();
-      }
+  // and center text labels
+  centerSlidersText();
+}
     </script>
     <script src="leds.js"></script>
   </head>
@@ -61,18 +61,18 @@
               <td style="text-align:center"><button class="topbutton" onclick="saveSingleColor(this)" id="singleColorSave">save</button></td>
               <td style="text-align:center"><button id="loadSingleColor" class="topbutton" onclick="loadSingleColor(this)">load</button></td>
             </tr></table>
-          <div style="display: flex;">
-            <div style="display: block;">
-              <label class="switch">
-                <input type="checkbox" onClick="lightsOnOff(this)">
-                <span class="slider round"><span class="on">ON</span><span class="off">OFF</span></span>
-              </label>
-            </div>
-            <div style="flex-grow: 1;">
-              <span class="sliderText">Brightness: <label class="brightnessSliderLabel">0%</label></span>
+            <div style="display: flex;">
+              <div style="display: block;">
+                <label class="switch">
+                  <input type="checkbox" onClick="lightsOnOff(this)">
+                  <span class="slider round"><span class="on">ON</span><span class="off">OFF</span></span>
+                </label>
+              </div>
+              <div style="flex-grow: 1;">
+                <span class="sliderText">Brightness: <label class="brightnessSliderLabel">0%</label></span>
                 <input type="range" class="range brightnessSlider" onInput="brightnessChange(this)">
+              </div>
             </div>
-          </div>
         </div>
       </div>
 
@@ -81,14 +81,14 @@
         <br id="manyColorBr">
         <div class="background-rect" id="manyColorEntryCenter"> 
           <canvas id="manyColorCanvas" 
-            onclick="checkLightsMouse()"
-            onmousedown="multiColorPress()"
-            ontouchstart="multiColorTouch()"
-            onmouseup="multiColorRelease()"
-            ontouchend="multiColorRelease()"
-            onmousemove="multiColorMove()"
-            ontouchmove="multiColorTouchMove()"
-            height="200"></canvas>
+                  onclick="checkLightsMouse()"
+                  onmousedown="multiColorPress()"
+                  ontouchstart="multiColorTouch()"
+                  onmouseup="multiColorRelease()"
+                  ontouchend="multiColorRelease()"
+                  onmousemove="multiColorMove()"
+                  ontouchmove="multiColorTouchMove()"
+                  height="200"></canvas>
         </div>
         </br> 
         <div class="background-rect" id="manyColorEntrySliders">
@@ -117,7 +117,7 @@
         </div>
       </div>
       <div id="tabAnimate" style="display: none;">
-        <!-- many color tab -->
+        <!-- animation tab -->
         <br id="animateBr">
         <div class="background-rect" id="animateCenter"> 
           <!-- <canvas id="animateCanvas" 
@@ -130,7 +130,7 @@
             ontouchmove="multiColorTouchMove()"
             height="200"></canvas> -->
           <canvas id="animateCanvas"
-            height="200"></canvas>
+                  height="200"></canvas>
         </div>
         </br> 
         <div class="background-rect" id="animateSliders">
@@ -165,28 +165,45 @@
             </div>
         </div>
       </div>
-      <div id="tabSaved" style="display: none;">saved designs?</br>yeah i'm sure this will happen at some point...
-        <div id="saved">
-          <div><span>1</span></div>
-          <div><span>2</span></div>
-          <div><span>3</span></div>
-          <div><span>4</span></div>
-          <div><span>5</span></div>
-          <div><span>6</span></div>
-          <div><span>7</span></div>
-          <div><span>8</span></div>
-          <div><span>9</span></div>
-          <div><span>10</span></div>
-          <div><span>11</span></div>
-          <div><span>12</span></div>
-          <div><span>13</span></div>
-          <div><span>14</span></div>
-          <div><span>15</span></div>
-          <div><span>16</span></div>
-          <div><span>17</span></div>
-          <div><span>18</span></div>
-          <div><span>19</span></div>
-        </div>          
+      <div id="tabSaved" style="display: none;">
+        <!-- saved designs tab -->
+        <br id="savedBr">
+        <div class="background-rect" id="savedCenter"> 
+          <div>1</div>
+          <div>2</div>
+          <div>3</div>
+          <div>4</div>
+          <div>5</div>
+          <div>6</div>
+          <div>7</div>
+          <div>8</div>
+          <div>9</div>
+          <div>10</div>
+          <div>11</div>
+          <div>12</div>
+          <div>13</div>
+          <div>14</div>
+          <div>15</div>
+          <div>16</div>
+          <div>17</div>
+          <div>18</div>
+          <div>19</div>
+        </div>
+        </br> 
+        <div class="background-rect" id="savedSliders">
+          <div style="display: flex;">
+            <div style="display: block;">
+              <label class="switch">
+                <input type="checkbox" onClick="lightsOnOff(this)">
+                <span class="slider round"><span class="on">ON</span><span class="off">OFF</span></span>
+              </label>
+            </div>
+            <div style="flex-grow: 1;">
+              <span class="sliderText">Brightness: <label class="brightnessSliderLabel">0%</label></span>
+              <input type="range" class="range brightnessSlider" onInput="brightnessChange(this)">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="overlay" id="overlay" style="width: 235px; height: 50%;">
