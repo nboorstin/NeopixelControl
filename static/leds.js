@@ -148,12 +148,6 @@ class MultiColor {
       entries = entries.filter(e => e[0] != "randomColors");
     //}
     return JSON.stringify(this.colors) == JSON.stringify(other.colors);
-    //for (const [key, value] of entries) {
-    //  if (JSON.stringify(this[key]) != JSON.stringify(other[key])) {
-    //    return false;
-    //  }
-    //}
-    //return true;
   }
 }
 
@@ -188,7 +182,6 @@ class SavedData {
         return x;
       }
     });
-      //  savedSingleColors.load(Array.from(data.savedSingleColors, x => new SingleColor(x)));
     this.redoAllHTML();
   }
   remove(index) {
@@ -249,44 +242,9 @@ class SavedData {
   }
 }
 
-//class SavedMultiColors extends SavedData {
-//  constructor() {
-//    super("manyLoadOverlay","savedMultiColors");
-//  }
-//  remove(index) {
-//    super.remove(index);
-//    drawMultiLoad();
-//  }
-//  redoHTML() {
-//    savedMultiColorsDrawn = false;
-//    if (this.list.length == 0) {
-//      $('#' + this.overlay).html("&nbsp;Nothing saved yet");
-//    } else {
-//      let html = ''
-//      for(let i = this.list.length - 1; i >=0; i--) { //TODO: move to when savedSingleColors is updated
-//        html += '<div class="multiColorLoad" id="multi_ColorLoad' + i + '" onclick="restoreMultiColor(this)"><div class="loadX2" onclick="removeMultiColor(event, this)">X</div></div>';
-//      }
-//      html += '<div class="singeColorLoad clearAllButton" onclick="removeAllMultiColors()">Clear All</div>';
-//      $('#' + this.overlay).html(html);
-//    }
-//  }
-//  save(element) {
-//    if (!element.equals(this.list[this.list.length - 1])) {
-//      if (this.list.filter(e => e.equals(multiColor)).length != 0) {
-//        this.list = this.list.filter(e => !e.equals(multiColor));
-//      }
-//      this.list.push(new MultiColor(multiColor));
-//      sendRequest(this.name, this.list);
-//    }
-//    this.redoHTML();
-//  }
-//}
-
 let singleColor;
 let multiColor;
 let savedData = new SavedData();
-//let savedSingleColors = new SavedSingleColors();
-//let savedMultiColors = new SavedMultiColors();
 let lastRequestName = "";
 let lastSent = 0;
 let lastRequest = 0;
@@ -315,25 +273,6 @@ async function sendRequest(name, value, send=true, callback = null) {
   lastRequestName = name;
   lastSent = d.getTime()
 
-  //let xhr = new XMLHttpRequest();
-
-  //let url = window.location.href;
-  //url = url.substring(0, url.lastIndexOf('/')) + "/response";
-
-
-  //xhr.open("POST", url, true);
-  //xhr.setRequestHeader('Content-Type', 'application/json');
-  //if(callback != null) {
-  //  xhr.onreadystatechange = function() {
-  //    if (xhr.readyState == 4 && xhr.status == 200) {
-  //      callback(xhr.response);
-  //    }
-  //  }
-  //}
-  //xhr.send(JSON.stringify({
-  //      [name]: value
-  //}));
-  //
   if (socket.readyState > 1) {
     console.log("reloading socket...");
     socket = new WebSocket(socketURL);
@@ -1079,12 +1018,6 @@ function initialSetState(data) {
       case "savedData":
         savedData.load(data.savedData);
         break;
-      //case "savedSingleColors":
-      //  savedSingleColors.load(Array.from(data.savedSingleColors, x => new SingleColor(x)));
-      //  break;
-      //case "savedMultiColors":
-      //  savedMultiColors.load(Array.from(data.savedMultiColors, x => new MultiColor(x)));
-      //  break;
       case "mode": //need to set mode last
         break;
       default:
