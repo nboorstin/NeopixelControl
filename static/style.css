@@ -1,5 +1,5 @@
 body{
-  background-color: #f3f3f3ff;
+  background-color: #fffbd4;
   padding-left:30%;
   padding-right:30%;
   overflow: hidden;
@@ -273,6 +273,19 @@ input:checked + .slider .off
   position: relative;
 }
 
+.allLoad {
+  width: 23.5%;
+  min-width: 150px;
+  float: left;
+  border-radius: 6px;
+  background-color: #ccccccff;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;  
+  margin-top: 5%;
+  position: relative;
+}
+
 .loadX {
   background-color: #EEEEEE;
   width: 10%;
@@ -301,6 +314,20 @@ input:checked + .slider .off
   right: -5%;
 }
 
+.loadX3 {
+  background-color: #EEEEEE;
+  width: 10%;
+  height: 5%;
+  border-radius: 50%;
+  text-align: center;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;  
+  position: absolute;
+  top: -3%;
+  right: -5%;
+}
+
 .clearAllButton {
   background-color: white;
   padding-top: 0;
@@ -308,8 +335,14 @@ input:checked + .slider .off
   text-align: center;
 }
 
-#savedCenter > div
-{
- float: left;
- width: 150px;
+.clearAllSaved {
+  float: left;
+  width: 100%;
+  margin-bottom: 2%;
+}
+
+#savedCenter {
+  padding: 0;
+  overflow-x: -moz-hidden-unscrollable;
+  overflow-y: auto;
 }

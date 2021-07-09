@@ -196,19 +196,21 @@ class SavedData {
     sendRequest("savedData", this.list);
   }
   redoAllHTML() {
+    let redoSaved = true;
     for (const type of ["SingleColor", "MultiColor"]) {
-      this.redoHTML(type);
+      this.redoHTML(type, redoSaved);
+      redoSaved = false;
     }
   }
 
-  redoHTML(type) {
+  redoHTML(type, redoSaved = true) {
     let html = '';
     let found = false;
     switch(type) {
       case "SingleColor":
         for(let i = this.list.length - 1; i >=0; i--) {
           if (this.list[i].constructor.name == type) {
-            html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="removeSingleColor(event, this)">X</div></div>';
+            html += '<div class="singeColorLoad" id="singleColorLoad' + i + '" onclick="restoreSingleColor(this)" style="background-color: ' + this.list[i].color + ';"><div class="loadX" onclick="removeSingleColor(event, this)">&times</div></div>';
             found = true;
           }
         }
@@ -223,7 +225,7 @@ class SavedData {
         savedMultiColorsDrawn = false;
         for(let i = this.list.length - 1; i >=0; i--) {
           if (this.list[i].constructor.name == type) {
-            html += '<div class="multiColorLoad" id="multi_ColorLoad' + i + '" onclick="restoreMultiColor(this)"><div class="loadX2" onclick="removeMultiColor(event, this)">X</div></div>';
+            html += '<div class="multiColorLoad" id="multi_ColorLoad' + i + '" onclick="restoreMultiColor(this)"><div class="loadX2" onclick="removeMultiColor(event, this)">&times</div></div>';
             found = true;
           }
         }
@@ -236,6 +238,22 @@ class SavedData {
         break;
       default:
         console.log(type);
+    }
+    if (redoSaved) {
+      // saved designs tab
+      allLoadDrawn = false;
+      html = '';
+      found = false;
+      for(let i = this.list.length - 1; i >=0; i--) {
+        html += '<div class="allLoad" id="allSavedLoad' + i + '" onclick="restoreAll(this)"><div class="loadX3" onclick="removeSaved(event, this)">&times</div></div>';
+        found = true;
+      }
+      if (found) {
+        html += '<div class="singeColorLoad clearAllButton clearAllSaved" onclick="removeAllSaved()">Clear All</div>';
+      } else {
+        html = "&nbsp;Nothing saved yet";
+      }
+      $('#savedCenter').html(html);
     }
   }
 }
@@ -378,6 +396,7 @@ function activateTab(button, pageId, redraw=true, send=true) {
       node.style.display = (node == pageToActivate) ? 'block' : 'none';
     }
   }
+  let color = 0;
   if(pageId == 'tabSolidColor') {
     setSolidColorpickerSize();
     solidColorHide = document.getElementById("solidColor").jscolor.hide;
@@ -385,12 +404,15 @@ function activateTab(button, pageId, redraw=true, send=true) {
     sendRequest("mode", "solidColor", send);
   } else {
     if(pageId == 'tabManyColorEntry') {
+      color = 1;
       sendRequest("mode", "manyColors", send);
       setMultiColorpickerSize();
     } else if (pageId == 'tabAnimate') {
+      color = 2;
       sendRequest('mode', 'animate', send);
       setAnimatedSize();
     } else if (pageId == 'tabSaved') {
+      color = 3;
       sendRequest('mode', 'saved', send);
       setSavedSize();
     } else {
@@ -399,6 +421,7 @@ function activateTab(button, pageId, redraw=true, send=true) {
     document.getElementById("solidColor").jscolor.hide = solidColorHide;
     document.getElementById("solidColor").jscolor.hide();
   }
+  $("body").css({'background-color': backgroundColors[color]});
   centerSlidersText();
 }
 
@@ -599,6 +622,7 @@ function checkLightsMouse(e) {
 }
 
 let backgroundColor = "#ccccccff";
+let backgroundColors = ['#fffbd4', '#eaffe3', '#e3edff', '#f3f3f3']
 
 function hexToRgb(hex) {
   return /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex).slice(1).map(x => parseInt(x, 16));
@@ -734,6 +758,10 @@ function loadMultiColor(button) {
   drawMultiLoad();
 }
 
+function redrawAllLoad() {
+
+}
+
 function redrawMultiLoad() {
   for(let j = savedData.list.length - 1; j >=0; j--) {
     if (savedData.list[j].constructor.name == "MultiColor") {
@@ -768,6 +796,7 @@ function redrawMultiLoad() {
 
 let savedMultiColorsDrawn = false;
 function drawMultiLoad() {
+  console.trace();
   if (!savedMultiColorsDrawn) {
     let found = false;
     let rect = null;
@@ -784,6 +813,22 @@ function drawMultiLoad() {
       savedMultiColorsDrawn = true;
       redrawMultiLoad();
     }
+  }
+}
+
+let allLoadDrawn = false;
+function drawAllLoad() {
+  if (!allLoadDrawn) {
+    if ( savedData.list.length > 0) {
+      let rect = $("#allSavedLoad0")[0].getBoundingClientRect();
+      for(let i = savedData.list.length - 1; i >=0; i--) {
+        $('#allSavedLoad' + i).prepend('<canvas style="position: absolute; top: 0px;" id="allLoad' + i + '" width=' + rect.width + ' height=' + rect.height + '></canvas>');
+      }
+      allLoadDrawn = true;
+    }
+  }
+  if (savedData.list.length > 0) {
+      redrawAllLoad();
   }
 }
 
@@ -998,6 +1043,29 @@ function setSavedSize() {
   let height = $(window).height() - $("#savedCenter").offset().top - $("#savedSliders").outerHeight() - (1.6 * $("#savedBr").outerHeight()) - 3;
   //canvas.style.height = height + 'px';
   $("#savedCenter").css("height", height);
+
+  let children = $("#savedCenter").children();
+  if (children.length > 0) {
+    let maxLeft = 0;
+    $(".allLoad").css("margin-left", 0);
+    for (let i = savedData.list.length - 1; i >=0; i--) {
+      let left = $("#allSavedLoad"+i).offset().left;
+      if (left >= maxLeft) {
+        maxLeft = left;
+      } else {
+        break;
+      }
+    }
+    let first = $("#allSavedLoad" + (savedData.list.length - 1));
+    let minLeft = first.offset().left;
+    let count = Math.round((maxLeft - minLeft) / first.outerWidth());
+    let space = $("#savedCenter").outerWidth() - (count * first.outerWidth());
+    $(".allLoad").css({
+      height: children.width() * 2,
+      "margin-left": space / (count + 1)
+    });
+  }
+  drawAllLoad();
   //let canvas = document.getElementById("animateCanvas");
   //canvas.style.width = width + 'px';
   //canvas.width = width * window.devicePixelRatio;
