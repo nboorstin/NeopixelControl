@@ -761,18 +761,48 @@ function loadMultiColor(button) {
 function redrawAllLoad() {
   for(let j = savedData.list.length - 1; j >=0; j--) {
     let canvas = $("#allLoad" + j)[0];
-    let color = 0;
     switch(savedData.list[j].constructor.name) {
       case "SingleColor":
-        color = 0;
+        $("#allSavedLoad" + j).css("background-color", backgroundColors[0]);
+        drawLoad(j, canvas, true);
         break;
       case "MultiColor":
-        color = 1;
+        $("#allSavedLoad" + j).css("background-color", backgroundColors[1]);
+        drawLoad(j, canvas);
         break;
       default:
         console.log(savedData.list[j].constructor.name);
     }
-    $("#allSavedLoad" + j).css("background-color", backgroundColors[color]);
+  }
+}
+
+function drawLoad(j, canvas, singleColor = false) {
+  let countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
+  let countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
+  let spacing = 0;
+  spacing += 1;
+  let sizeX = canvas.width / (spacing * countX);
+  let sizeY = canvas.height / (spacing * countY);
+  let size = Math.min(sizeX, sizeY);
+  // override spacing if it's too big
+  //size = Math.min(size, 30);
+
+  let ctx = canvas.getContext("2d");
+  for(let i=0; i<lightsPos.length; i++) {
+    let x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size - 5;
+    let y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size - 5;
+    if (singleColor) {
+      ctx.fillStyle = savedData.list[j].color;
+    } else {
+      ctx.fillStyle = savedData.list[j].colors[i];
+    }
+    ctx.fillRect(x, y, size/(spacing), size/(spacing));
+    //ctx.beginPath();
+    ////ctx.lineWidth = 2;
+    ////ctx.strokeStyle = 'black';
+    //ctx.arc(x, y, size / (spacing+1), 0, 2 * Math.PI, false);
+    ctx.fill();
+    //ctx.stroke();
   }
 }
 
@@ -780,30 +810,7 @@ function redrawMultiLoad() {
   for(let j = savedData.list.length - 1; j >=0; j--) {
     if (savedData.list[j].constructor.name == "MultiColor") {
       let canvas = $("#multiLoad" + j)[0];
-      let countX = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[0];}));
-      let countY = 1+Math.max.apply(Math, lightsPos.map(function (o) {return o[1];}));
-      let spacing = 0;
-      spacing += 1;
-      let sizeX = canvas.width / (spacing * countX);
-      let sizeY = canvas.height / (spacing * countY);
-      let size = Math.min(sizeX, sizeY);
-      // override spacing if it's too big
-      //size = Math.min(size, 30);
-
-      let ctx = canvas.getContext("2d");
-      for(let i=0; i<lightsPos.length; i++) {
-        let x = (sizeX - size)*spacing*countX/2 + ((spacing/4)+lightsPos[i][0]) * spacing * size - 5;
-        let y = (sizeY - size)*spacing*countY/2 + ((spacing/4)+lightsPos[i][1]) * spacing * size - 5;
-
-        ctx.fillStyle = savedData.list[j].colors[i];
-        ctx.fillRect(x, y, size/(spacing), size/(spacing));
-        //ctx.beginPath();
-        ////ctx.lineWidth = 2;
-        ////ctx.strokeStyle = 'black';
-        //ctx.arc(x, y, size / (spacing+1), 0, 2 * Math.PI, false);
-        ctx.fill();
-        //ctx.stroke();
-      }
+      drawLoad(j, canvas);
     }
   }
 }
@@ -1032,10 +1039,15 @@ function setMultiColorpickerSize() {
                                 'font-size': rect.width / 10 + 'px',
                                 top: rect.y - rect.width * 2.5,
                                 left: rect.x - rect.width * mult});
-    rect = $("#multi_ColorLoad0")[0].getBoundingClientRect();
-    for(let i = savedData.multi.list.length - 1; i >=0; i--) {
-      $("#multiLoad" + i).width(rect.width);
-      $("#multiLoad" + i).height(rect.height);
+    rect = null;
+    for(let i = savedData.list.length - 1; i >=0; i--) {
+      if (savedData.list[i].constructor.name == "MultiColor") {
+        if (rect === null) {
+          rect = $("#multi_ColorLoad" + i)[0].getBoundingClientRect();
+        }
+        $("#multiLoad" + i).width(rect.width);
+        $("#multiLoad" + i).height(rect.height);
+      }
     }
     redrawMultiLoad();
   }
@@ -1072,12 +1084,13 @@ function setSavedSize() {
       });
     }
     $(".clearAllSaved").css("top", (1 + Math.floor((savedData.list.length - 1) / count)) * boxWidth * 2 * 1.05);
+    let rect = $("#allSavedLoad0")[0].getBoundingClientRect();
+    for(let i = savedData.list.length - 1; i >=0; i--) {
+      $("#allLoad" + i).width(rect.width);
+      $("#allLoad" + i).height(rect.height);
+    }
     drawAllLoad();
   }
-  //let canvas = document.getElementById("animateCanvas");
-  //canvas.style.width = width + 'px';
-  //canvas.width = width * window.devicePixelRatio;
-  //canvas.height = height * window.devicePixelRatio;
 }
 
 function setColorBox(name) {
