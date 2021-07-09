@@ -276,14 +276,12 @@ input:checked + .slider .off
 .allLoad {
   width: 23.5%;
   min-width: 150px;
-  float: left;
   border-radius: 6px;
-  background-color: #ccccccff;
   border-color: black;
   border-style: solid;
   border-width: 1px;  
   margin-top: 5%;
-  position: relative;
+  position: absolute;
 }
 
 .loadX {
@@ -335,14 +333,10 @@ input:checked + .slider .off
   text-align: center;
 }
 
-.clearAllSaved {
-  float: left;
-  width: 100%;
-  margin-bottom: 2%;
-}
 
 #savedCenter {
   padding: 0;
   overflow-x: -moz-hidden-unscrollable;
   overflow-y: auto;
+  position: relative;
 }

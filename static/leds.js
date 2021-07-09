@@ -1060,24 +1060,18 @@ function setSavedSize() {
 
   let children = $("#savedCenter").children();
   if (children.length > 0) {
-    let maxLeft = 0;
-    $(".allLoad").css("margin-left", 0);
-    for (let i = savedData.list.length - 1; i >=0; i--) {
-      let left = $("#allSavedLoad"+i).offset().left;
-      if (left >= maxLeft) {
-        maxLeft = left;
-      } else {
-        break;
-      }
+    let boxWidth = $("#allSavedLoad0").outerWidth();
+    let totalWidth = $("#savedCenter").outerWidth();
+    let count = Math.floor(totalWidth / boxWidth);
+    let spacing = (totalWidth - (count * boxWidth)) / (count + 1);
+    for (let i = savedData.list.length - 1; i >= 0; i--) {
+      $("#allSavedLoad" + i).css({
+        height: boxWidth * 2,
+        left: spacing + ((savedData.list.length - 1 - i) % count) * (spacing + boxWidth),
+        top: Math.floor((savedData.list.length - 1 - i) / count) * boxWidth * 2 * 1.05
+      });
     }
-    let first = $("#allSavedLoad" + (savedData.list.length - 1));
-    let minLeft = first.offset().left;
-    let count = Math.round((maxLeft - minLeft) / first.outerWidth());
-    let space = $("#savedCenter").outerWidth() - (count * first.outerWidth());
-    $(".allLoad").css({
-      height: children.width() * 2,
-      "margin-left": space / (count + 1)
-    });
+    $(".clearAllSaved").css("top", (1 + Math.floor((savedData.list.length - 1) / count)) * boxWidth * 2 * 1.05);
     drawAllLoad();
   }
   //let canvas = document.getElementById("animateCanvas");
