@@ -191,8 +191,15 @@ class SavedData {
     sendRequest("savedData", this.list);
   }
   removeAll(type) {
+    if (type == "all") {
+      this.list = []
+      this.redoAllHTML();
+      saveActive = -1;
+      sendRequest("saveActive", saveActive);
+    } else {
     this.list = this.list.filter(e => e.constructor.name != type);
     this.redoHTML(type);
+    }
     sendRequest("savedData", this.list);
   }
   redoAllHTML() {
@@ -242,6 +249,7 @@ class SavedData {
     if (redoSaved) {
       // saved designs tab
       allLoadDrawn = false;
+      allLoadInitial = true;
       html = '';
       found = false;
       for(let i = this.list.length - 1; i >=0; i--) {
@@ -254,10 +262,15 @@ class SavedData {
         html = "&nbsp;Nothing saved yet";
       }
       $('#savedCenter').html(html);
+      if (saveActive != -1) {
+        $("#allSavedLoad" + saveActive).className = "allLoadActive";
+      }
     }
   }
 }
 
+
+let allLoadInitial = false;
 let singleColor;
 let multiColor;
 let savedData = new SavedData();
@@ -384,6 +397,13 @@ function activateTab(button, pageId, redraw=true, send=true) {
   /* thank you stackoverflow https://stackoverflow.com/a/1029252 */
   if(button.className == "topbutton-active") {
     return;
+  }
+  if (send) {
+    if (saveActive != -1) {
+      $(".allLoadActive")[0].className = "allLoad";
+    }
+    saveActive = -1;
+    sendRequest("saveActive", saveActive);
   }
   $(".topbutton-active")[0].className = "topbutton";
   button.className = "topbutton-active";
@@ -817,7 +837,6 @@ function redrawMultiLoad() {
 
 let savedMultiColorsDrawn = false;
 function drawMultiLoad() {
-  console.trace();
   if (!savedMultiColorsDrawn) {
     let found = false;
     let rect = null;
@@ -841,9 +860,8 @@ let allLoadDrawn = false;
 function drawAllLoad() {
   if (!allLoadDrawn) {
     if ( savedData.list.length > 0) {
-      let rect = $("#allSavedLoad0")[0].getBoundingClientRect();
       for(let i = savedData.list.length - 1; i >=0; i--) {
-        $('#allSavedLoad' + i).prepend('<canvas style="position: absolute; top: 0px;" id="allLoad' + i + '" width=' + rect.width + ' height=' + rect.height + '></canvas>');
+        $('#allSavedLoad' + i).prepend('<canvas style="position: absolute; top: 0px;" id="allLoad' + i + '" width=' + $("#allSavedLoad"+i).innerWidth() + ' height=' + $("#allSavedLoad"+i).innerHeight() + '></canvas>');
       }
       allLoadDrawn = true;
     }
@@ -853,6 +871,22 @@ function drawAllLoad() {
   }
 }
 
+let saveActive = -1;
+
+function restoreAll(button) {
+  let num = parseInt(button.id.substring(12));
+  if (num == saveActive) {
+    return;
+  }
+  //$(".topbutton-active")[0].className = "topbutton";
+  //button.className = "topbutton-active";
+  if (saveActive != -1) {
+    $(".allLoadActive")[0].className = "allLoad";
+  }
+  button.className = "allLoadActive";
+  saveActive = num;
+  sendRequest("saveActive", saveActive);
+}
 
 function restoreSingleColor(button) {
   let color = savedData.list[parseInt(button.id.substring(15))].color;
@@ -884,6 +918,26 @@ function removeMultiColor(event, button) {
   savedData.remove(index);
   drawMultiLoad();
 }
+
+function removeSaved(event, button) {
+  event.stopPropagation();
+  let index = parseInt(button.parentElement.id.substring(12));
+  if (singleColor.equals(savedData.list[index])) {
+    $("#singleColorSave").html('save'); //reset save button
+    $("#singleColorSave")[0].className = 'topbutton'; //reset save button
+  } else if (multiColor.equals(savedData.list[index])) {
+    $("#multiColorSave").html('save'); //reset save button
+    $("#multiColorSave")[0].className = 'topbutton'; //reset save button
+  }
+  savedData.remove(index);
+  setSavedSize();
+  drawAllLoad();
+}
+
+function removeAllSaved() {
+  savedData.removeAll("all");
+}
+
 function removeAllSingleColors() {
   $("#singleColorSave").html('save'); //reset save button
   $("#singleColorSave")[0].className = 'topbutton'; //reset save button
@@ -1084,10 +1138,9 @@ function setSavedSize() {
       });
     }
     $(".clearAllSaved").css("top", (1 + Math.floor((savedData.list.length - 1) / count)) * boxWidth * 2 * 1.05);
-    let rect = $("#allSavedLoad0")[0].getBoundingClientRect();
     for(let i = savedData.list.length - 1; i >=0; i--) {
-      $("#allLoad" + i).width(rect.width);
-      $("#allLoad" + i).height(rect.height);
+      $("#allLoad" + i).width($("#allSavedLoad" + i).innerWidth());
+      $("#allLoad" + i).height($("#allSavedLoad" + i).innerHeight());
     }
     drawAllLoad();
   }
@@ -1119,6 +1172,17 @@ function initialSetState(data) {
         break;
       case "savedData":
         savedData.load(data.savedData);
+        break;
+      case "saveActive":
+        if (allLoadInitial) {
+          if (saveActive != -1) {
+            $(".allLoadActive")[0].className = "allLoad";
+          }
+          console.log(data.saveActive);
+          $("#allSavedLoad" + data.saveActive).addClass("allLoadActive");
+          console.log($("#allSavedLoad" + data.saveActive).className);
+        }
+        saveActive = data.saveActive;
         break;
       case "mode": //need to set mode last
         break;

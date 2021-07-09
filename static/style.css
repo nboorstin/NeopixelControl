@@ -284,6 +284,17 @@ input:checked + .slider .off
   position: absolute;
 }
 
+.allLoadActive {
+  width: 23.5%;
+  min-width: 150px;
+  border-radius: 6px;
+  border-color: black;
+  border-style: solid;
+  border-width: 2.5px;
+  margin-top: 5%;
+  position: absolute;
+}
+
 .loadX {
   background-color: #EEEEEE;
   width: 10%;
