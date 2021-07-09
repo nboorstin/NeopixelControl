@@ -759,7 +759,21 @@ function loadMultiColor(button) {
 }
 
 function redrawAllLoad() {
-
+  for(let j = savedData.list.length - 1; j >=0; j--) {
+    let canvas = $("#allLoad" + j)[0];
+    let color = 0;
+    switch(savedData.list[j].constructor.name) {
+      case "SingleColor":
+        color = 0;
+        break;
+      case "MultiColor":
+        color = 1;
+        break;
+      default:
+        console.log(savedData.list[j].constructor.name);
+    }
+    $("#allSavedLoad" + j).css("background-color", backgroundColors[color]);
+  }
 }
 
 function redrawMultiLoad() {
@@ -1064,8 +1078,8 @@ function setSavedSize() {
       height: children.width() * 2,
       "margin-left": space / (count + 1)
     });
+    drawAllLoad();
   }
-  drawAllLoad();
   //let canvas = document.getElementById("animateCanvas");
   //canvas.style.width = width + 'px';
   //canvas.width = width * window.devicePixelRatio;
