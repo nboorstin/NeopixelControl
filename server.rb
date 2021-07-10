@@ -21,7 +21,11 @@ $data = {}
 $keys = ["solidColor", "on", "brightness", "mode", "multiColor"]
 def get(path)
   if $data[path].nil?
-    $data[path] = JSON.parse File.read "static/#{path}.json"
+    if File.file?("static/#{path}.json")
+      $data[path] = JSON.parse File.read "static/#{path}.json"
+    else
+      $data[path] = {}
+    end
   end
 end
 

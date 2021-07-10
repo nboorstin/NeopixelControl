@@ -267,7 +267,9 @@ class SavedData {
 
 
 let allLoadInitial = false;
-let singleColor;
+let temp = Object();
+temp.color = "#FF0000";
+let singleColor = new SingleColor(temp);
 let multiColor;
 let savedData = new SavedData();
 let lastRequestName = "";

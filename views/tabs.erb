@@ -14,7 +14,12 @@
 let socketURL = socketProtocol + window.location.host + "/<%= instance %>/site";
 window.onload = function() {
   // load previous state
-  $.getJSON("<%= instance %>.json", {_: new Date().getTime()}, initialSetState);
+  let loaded = true;
+  $.getJSON("<%= instance %>.json", {_: new Date().getTime()}, initialSetState).fail(function() {
+    $("#solidColor")[0].jscolor.fromString(singleColor.color);
+    setColorBox("solidColor");
+    //solidColor = new SolidColor("#FF0000");
+  });
   // add click listeners
   document.addEventListener('mousedown', onDocumentMouseDown, false);
   document.addEventListener('touchstart', onDocumentMouseDown, false);
