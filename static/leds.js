@@ -160,10 +160,6 @@ class SavedData {
   }
   save(element) {
     if (!element.equals(this.list[this.list.length - 1])) {
-      console.log(this.list);
-      for (const e of this.list) {
-        console.log(e.constructor.name);
-      }
       if (this.list.filter(e => e.equals(element)).length != 0) {
         this.list = this.list.filter(e => !e.equals(element));
       }
@@ -263,7 +259,7 @@ class SavedData {
       }
       $('#savedCenter').html(html);
       if (saveActive != -1) {
-        $("#allSavedLoad" + saveActive).className = "allLoadActive";
+        $("#allSavedLoad" + saveActive).addClass("allLoadActive");
       }
     }
   }
@@ -287,8 +283,8 @@ function echo(e) {
 socket.onmessage = echo;
 async function sendRequest(name, value, send=true, callback = null) {
   if(!send) {return;}
-  console.log("sending " + name + ", " + value);
-  console.trace();
+  //console.log("sending " + name + ", " + value);
+  //console.trace();
   let d = new Date() //TODO: should probably review this sometime
   let thisRequest = lastRequest = d.getTime();
   if(lastRequestName == name && d.getTime() - lastSent < minDelay) {
@@ -878,9 +874,7 @@ function restoreAll(button) {
   if (num == saveActive) {
     return;
   }
-  //$(".topbutton-active")[0].className = "topbutton";
-  //button.className = "topbutton-active";
-  if (saveActive != -1) {
+  if (saveActive != -1 && $(".allLoadActive")[0] != null) {
     $(".allLoadActive")[0].className = "allLoad";
   }
   button.className = "allLoadActive";
@@ -929,12 +923,23 @@ function removeSaved(event, button) {
     $("#multiColorSave").html('save'); //reset save button
     $("#multiColorSave")[0].className = 'topbutton'; //reset save button
   }
+  if (saveActive > index) {
+    saveActive--;
+    sendRequest("saveActive", saveActive);
+  } else if (saveActive == index) {
+    saveActive = -1;
+    sendRequest("saveActive", saveActive);
+  }
   savedData.remove(index);
   setSavedSize();
   drawAllLoad();
 }
 
 function removeAllSaved() {
+  $("#singleColorSave").html('save'); //reset save button
+  $("#singleColorSave")[0].className = 'topbutton'; //reset save button
+  $("#multiColorSave").html('save'); //reset save button
+  $("#multiColorSave")[0].className = 'topbutton'; //reset save button
   savedData.removeAll("all");
 }
 
@@ -1178,9 +1183,7 @@ function initialSetState(data) {
           if (saveActive != -1) {
             $(".allLoadActive")[0].className = "allLoad";
           }
-          console.log(data.saveActive);
           $("#allSavedLoad" + data.saveActive).addClass("allLoadActive");
-          console.log($("#allSavedLoad" + data.saveActive).className);
         }
         saveActive = data.saveActive;
         break;
